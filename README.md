@@ -20,7 +20,7 @@ int main()
   vector<int> v({1, 6, 2002, 19, 100});
   for(vector<int>::iterator it = v.begin(); it != v.end(); ++it)
   {
-      std::cout << *it;
+      std::cout << *it << " ";
   }
   std::cout << "\n";
   v[0] = v[1] + 1;
