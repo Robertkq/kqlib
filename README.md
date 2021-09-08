@@ -1,5 +1,7 @@
 This library is my take at recreating fundamental data structures and functions to help modify them as we like, I have tried to keep everythin as smilliar as std as I could.
 
+*Special thanks to @PetrFlajsingr for helping with logic, design and solution clarifications.
+
 # The main kqlib.h header includes:
 1. kqvector.h
 2. kqlinkedlist.h
