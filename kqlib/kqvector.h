@@ -189,7 +189,9 @@ namespace kq
 		void destroy();
 
 	};
-
+	/*
+	* @brief This is the default constructor for vector
+	*/
 	template<typename T>
 	vector<T>::vector() : kq_data(nullptr), kq_size(0), kq_cap(0) {}
 

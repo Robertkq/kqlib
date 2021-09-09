@@ -1,9 +1,9 @@
-// kqlib
-// Versiune: 0.1
-// Data: 14.07.2021
-
-// Robert Vuia
-// Petr - 
+/*
+* This library is recreating fundamental data structures and functions to help modify them.
+* 
+* Author: Robert Vuia
+* Special thanks to @PetrFlajsingr
+*/
 
 
 #ifndef kqlib_
@@ -15,6 +15,5 @@
 #include "kqother.h"
 #include "kqpair.h"
 #include "kqvector.h"
-
 
 #endif 
