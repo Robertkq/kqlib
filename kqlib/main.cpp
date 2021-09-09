@@ -26,6 +26,7 @@ int main()
 	std::cout << "\n";
 	v[0] = v[1] + 1;
 	std::cout << v.front();
+	vector<int> v2(v.begin(), v.end());
 
 	return 0;
 }

@@ -3,8 +3,14 @@
 
 #include <initializer_list>
 #include <utility>
-#include <xutility>
+#include <type_traits>
+#include <iterator>
 #include <stdexcept>
+
+namespace std
+{
+	template <class...> using void_t = void;
+}
 
 namespace kq
 {
@@ -12,7 +18,7 @@ namespace kq
 	struct reverseView;
 
 	// FUNCTION HEADERS //////////////////////////////////////////////////////////////////////////////////////
-	
+
 	template<typename container>
 	reverseView<container> reverseIter(container&);
 
@@ -47,7 +53,7 @@ namespace kq
 		return reverseView<container>(_container);
 	}
 
-	
+
 
 	template<typename value_type>
 	value_type abs(const value_type& number)
@@ -90,7 +96,7 @@ namespace kq
 			++n;
 		}
 	}
-	
+
 
 	// TYPE CHECKING //////////////////////////////////////////////////////////////////////////////////////
 
