@@ -125,7 +125,7 @@ namespace kq
 		vector& operator=(vector&& other) noexcept;
 
 		template<typename ilT>
-		vector& operator=(const std::initializer_list<ilT>&);
+		vector& operator=(const std::initializer_list<ilT>& ilist);
 
 		bool operator==(const vector& other) const;
 		bool operator!=(const vector& other) const { return !(*this == other); }
@@ -150,10 +150,10 @@ namespace kq
 		bool is_empty()	const { return kq_size == 0; }
 		value_type& push_back(const value_type&);
 		template<typename... Args>
-		value_type& emplace_back(Args&&...);
+		value_type& emplace_back(Args&&... args);
 		value_type& insert(iterator, const value_type&);
 		template<typename... Args>
-		value_type& emplace(iterator, Args&&...);
+		value_type& emplace(iterator position, Args&&... args);
 
 		void assign(size_t, const value_type&);
 		template<typename iterType>
@@ -248,7 +248,7 @@ namespace kq
 	}
 
 	template<typename T>
-	vector<T>& vector<T>::operator=(const vector& other)
+	typename vector<T>::vector& vector<T>::operator=(const vector& other)
 	{
 		if (this != &other)
 		{
@@ -265,7 +265,7 @@ namespace kq
 	}
 
 	template<typename T>
-	vector<T>& vector<T>::operator=(vector&& other) noexcept
+	typename vector<T>::vector& vector<T>::operator=(vector&& other) noexcept
 	{
 		if (this != other)
 		{
@@ -282,7 +282,7 @@ namespace kq
 
 	template<typename T>
 	template<typename ilT>
-	vector<T>& vector<T>::operator=(const std::initializer_list<ilT>& ilist)
+	typename vector<T>::vector& vector<T>::operator=(const std::initializer_list<ilT>& ilist)
 	{
 		clear();
 		assign(ilist);
@@ -305,7 +305,10 @@ namespace kq
 		}
 		return true;
 	}
-	
+	/*
+	* @brief There should be a description here
+	* @param value - it's the value to be added
+	*/
 
 	template<typename T>
 	typename vector<T>::value_type& vector<T>::push_back(const value_type& value)
@@ -314,7 +317,7 @@ namespace kq
 		{
 			realloc(kq_cap + kq_cap / 2);
 		}
-		new (kq_data + kq_size) value_type(value); // placement new
+		new (kq_data + kq_size) value_type(value);
 		kq_size++;
 		return *(kq_data + kq_size - 1);
 	}

@@ -145,9 +145,9 @@ namespace kq
 		value_type& push_back(const value_type&);
 		value_type& push_front(const value_type&);
 		template<typename... Args>
-		value_type& emplace_back(Args&&...);
+		value_type& emplace_back(Args&&... args);
 		template<typename... Args>
-		value_type& emplace_front(Args&&...);
+		value_type& emplace_front(Args&&... args);
 
 		void assign(size_t, const value_type&);
 		template<typename iterType>
@@ -241,7 +241,7 @@ namespace kq
 	}
 
 	template<typename T>
-	deque<T>& deque<T>::operator=(const deque& other)
+	typename deque<T>::deque& deque<T>::operator=(const deque& other)
 	{
 		clear();
 		assign(other.begin(), other.end());
@@ -249,7 +249,7 @@ namespace kq
 	}
 
 	template<typename T>
-	deque<T>& deque<T>::operator=(deque&& other) noexcept
+	typename deque<T>::deque& deque<T>::operator=(deque&& other) noexcept
 	{
 		clear();
 		kq_data = other.kq_data;
@@ -265,7 +265,7 @@ namespace kq
 
 	template<typename T>
 	template<typename ilT>
-	deque<T>& deque<T>::operator=(const std::initializer_list<ilT>& ilist)
+	typename deque<T>::deque& deque<T>::operator=(const std::initializer_list<ilT>& ilist)
 	{
 		clear();
 		assign(ilist);

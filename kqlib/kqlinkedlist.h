@@ -161,12 +161,12 @@ namespace kq
 		value_type& push_back(const value_type&);
 		value_type& push_front(const value_type&);
 		template<typename... Args>
-		value_type& emplace_back(Args&&...);
+		value_type& emplace_back(Args&&... args);
 		template<typename... Args>
-		value_type& emplace_front(Args&&...);
+		value_type& emplace_front(Args&&... args);
 		value_type& insert(iterator, const value_type&);
 		template<typename... Args>
-		value_type& emplace(iterator, Args&&...);
+		value_type& emplace(iterator, Args&&... args);
 
 		void assign(size_t, const value_type&);
 		template<typename iterType>
@@ -231,7 +231,7 @@ namespace kq
 	}
 
 	template<typename T>
-	list<T>::list(size_t size, const typename list<T>::value_type& objectToFill)
+	list<T>::list(size_t size, const value_type& objectToFill)
 		: kq_data((element*)::operator new(sizeof(element))), kq_size(0)
 	{
 		kq_data->next = kq_data;
@@ -267,7 +267,7 @@ namespace kq
 	}
 
 	template<typename T>
-	list<T>& list<T>::operator=(const list& other)
+	typename list<T>::list& list<T>::operator=(const list& other)
 	{
 		if (this != &other)
 		{
@@ -281,7 +281,7 @@ namespace kq
 	}
 
 	template<typename T>
-	list<T>& list<T>::operator=(list&& other) noexcept
+	typename list<T>::list& list<T>::operator=(list && other) noexcept
 	{
 		if (this != &other)
 		{
@@ -299,7 +299,7 @@ namespace kq
 
 	template<typename T>
 	template<typename ilT>
-	list<T>& list<T>::operator=(const std::initializer_list<ilT>& ilist)
+	typename list<T>::list& list<T>::operator=(const std::initializer_list<ilT>& ilist)
 	{
 		clear();
 		assign(ilist);
