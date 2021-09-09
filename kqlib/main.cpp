@@ -18,45 +18,14 @@ void print(container& list)
 
 int main()
 {
+	vector<int> v({ 1, 6, 2002, 19, 100 });
+	for (vector<int>::iterator it = v.begin(); it != v.end(); ++it)
 	{
-		auto start = std::chrono::system_clock::now();
-
-
-		
-		size_t size = 1000000;
-		while (size > 0)
-		{
-			std::vector<int> v({ 1,2,3,9,8,7,4,5,6 });
-			v.push_back(10);
-			v.push_back(11);
-			v.push_back(12);
-			--size;
-		}
-
-		auto end = std::chrono::system_clock::now();
-		auto elapsed = end - start;
-		std::cout << elapsed.count() << "\n";
+		std::cout << *it << " ";
 	}
-
-	{
-		auto start = std::chrono::system_clock::now();
-
-
-		
-		size_t size = 1000000;
-		while (size > 0)
-		{
-			kq::vector<int> v({ 1,2,3,9,8,7,4,5,6 });
-			v.push_back(10);
-			v.push_back(11);
-			v.push_back(12);
-			--size;
-		}
-
-		auto end = std::chrono::system_clock::now();
-		auto elapsed = end - start;
-		std::cout << elapsed.count();
-	}
+	std::cout << "\n";
+	v[0] = v[1] + 1;
+	std::cout << v.front();
 
 	return 0;
 }
