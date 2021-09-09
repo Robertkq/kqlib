@@ -374,7 +374,7 @@ namespace kq
 		}
 	}
 	template<typename T>
-	void vector<T>::assign(size_t count, const vector<T>::value_type& objectToFill)
+	void vector<T>::assign(size_t count, const value_type& objectToFill)
 	{
 		clear();
 		reserve(count);
