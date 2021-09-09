@@ -8,7 +8,7 @@ This library is my take at recreating fundamental data structures and functions 
 3. kqdeque.h
 4. kqpair.h
 5. kqalgorithm.h
-6. kqother
+6. kqother.h
 
 # Examples
 ```cpp
