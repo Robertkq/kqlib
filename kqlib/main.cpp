@@ -26,7 +26,11 @@ int main()
 	std::cout << "\n";
 	v[0] = v[1] + 1;
 	std::cout << v.front();
-	vector<int> v2(v.begin(), v.end());
+	sort(v.begin(), v.end());
+	for (vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
 
 	return 0;
 }
