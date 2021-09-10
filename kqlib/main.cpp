@@ -6,9 +6,9 @@
 using namespace kq;
 
 template<typename container>
-void print(container& list)
+void print(container& cont)
 {
-	for (auto& element : list)
+	for (auto& element : cont)
 	{
 		std::cout << element << " ";
 	}
@@ -18,14 +18,14 @@ void print(container& list)
 
 int main()
 {
-	vector<int> v({ 1, 6, 2002, 19, 100 });
-	vector<int> v2(v.begin(), v.end());
-	vector<int> v3;
-	v3.assign(v2.begin(), v2.end());
+	vector<int> v;
+
+	v = { 1,2,3 };
+	v.push_back(4);
+
+	sort(v.begin(), v.end());
 
 	print(v);
-	print(v2);
-	print(v3);
 
 	return 0;
 }
