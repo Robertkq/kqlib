@@ -19,18 +19,13 @@ void print(container& list)
 int main()
 {
 	vector<int> v({ 1, 6, 2002, 19, 100 });
-	for (vector<int>::iterator it = v.begin(); it != v.end(); ++it)
-	{
-		std::cout << *it << " ";
-	}
-	std::cout << "\n";
-	v[0] = v[1] + 1;
-	std::cout << v.front();
-	sort(v.begin(), v.end());
-	for (vector<int>::iterator it = v.begin(); it != v.end(); ++it)
-	{
-		std::cout << *it << " ";
-	}
+	vector<int> v2(v.begin(), v.end());
+	vector<int> v3;
+	v3.assign(v2.begin(), v2.end());
+
+	print(v);
+	print(v2);
+	print(v3);
 
 	return 0;
 }

@@ -5,27 +5,6 @@
 
 namespace kq
 {
-		template<typename T>
-	struct less; // functor for compare function, lhs < rhs
-		template<typename T>
-	struct greater; // functor for compare function, lhs > rhs
-
-		template<typename iterType, typename T>
-	constexpr iterType find(iterType first, iterType last, const T& value);
-
-		template<typename iterType, typename Compare>
-	constexpr iterType max_element(iterType first, iterType last, Compare comp);
-
-		template<typename iterType, typename Compare>
-	constexpr iterType min_element(iterType first, iterType last, Compare comp );
-
-
-		template<typename iterType, typename Compare>
-	void sort(iterType first, iterType last, Compare comp );
-
-		template<typename iterType, typename Compare>
-	iterType sort_partition(iterType first, iterType last, Compare comp);
-
 
 
 	namespace details
@@ -51,10 +30,12 @@ namespace kq
 		}
 		template<typename T>
 		auto equal_compare_impl(const T& lhs, const T& rhs, eql_no_operator)
-			-> bool
+			-> bool = delete;
+		/*
 		{
 			//static_assert(false, "Cannot compare values, const operator functions needed (==, !=)");
 		}
+		*/
 
 		//Tag dispatch for less_compare_impl fucntions to return TRUE if lhs < rhs or in bad cases lhs <= rhs
 		struct less_no_operator{};
@@ -167,11 +148,13 @@ namespace kq
 		}
 		template<typename T>
 		auto less_compare_impl(const T& lhs, const T& rhs, less_no_operator)
-			-> bool
+			-> bool = delete;
+		/*
 		{
 			//static_assert(false, "Cannot compare values, const member operator functions needed (<, >)");
 			return false;
 		}
+		*/
 
 		//Tag dispatch for grt_compare_impl fucntions to return TRUE if lhs > rhs or in bad cases lhs >= rhs
 		struct grt_no_operator{};
@@ -284,11 +267,13 @@ namespace kq
 		}
 		template<typename T>
 		auto grt_compare_impl(const T& lhs, const T& rhs, grt_no_operator)
-			-> bool
+			-> bool = delete;
+		/*
 		{
 			//static_assert(false, "Cannot compare values, const member operator functions needed (<, >, <=, =>, ==, !=)");
 			return false;
 		}
+		*/
 	}
 
 	template<typename T>

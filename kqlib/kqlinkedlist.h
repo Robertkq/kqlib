@@ -126,7 +126,7 @@ namespace kq
 		list(list&&) noexcept;
 		list(size_t);
 		list(size_t, const value_type&);
-		template<typename iterType, std::enable_if_t<is_iterator<iterType>, int> = 0>
+		template<typename iterType, typename std::enable_if<is_iterator<iterType>, int>::type = 0>
 		list(iterType, iterType);
 		template<typename ilT>
 		list(const std::initializer_list<ilT>&);
@@ -170,7 +170,7 @@ namespace kq
 
 		void assign(size_t, const value_type&);
 		template<typename iterType>
-		auto assign(iterType, iterType)->std::enable_if_t<is_iterator<iterType>, void>;
+		auto assign(iterType, iterType)->typename std::enable_if<is_iterator<iterType>, void>::type;
 		template<typename ilT>
 		void assign(const std::initializer_list<ilT>&);
 
@@ -240,7 +240,7 @@ namespace kq
 	}
 
 	template<typename T>
-	template<typename iterType, std::enable_if_t<is_iterator<iterType>, int>>
+	template<typename iterType, typename std::enable_if<is_iterator<iterType>, int>::type>
 	list<T>::list(iterType first, iterType last)
 		: kq_data((element*)::operator new(sizeof(element))), kq_size(0)
 	{
@@ -492,7 +492,7 @@ namespace kq
 	template<typename T>
 	template<typename iterType>
 	auto list<T>::assign(iterType first, iterType last)
-		->std::enable_if_t<is_iterator<iterType>, void>
+		->typename std::enable_if<is_iterator<iterType>, void>::type
 	{
 		clear();
 		for (; first != last; ++first)

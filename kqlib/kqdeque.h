@@ -107,7 +107,7 @@ namespace kq
 		deque(deque&&);
 		deque(size_t);
 		deque(size_t, const value_type&);
-		template<typename iterType, std::enable_if_t<is_iterator<iterType>, int> = 0>
+		template<typename iterType, typename std::enable_if<is_iterator<iterType>, int>::type = 0>
 		deque(iterType, iterType);
 		template<typename ilT>
 		deque(const std::initializer_list<ilT>&);
@@ -151,7 +151,7 @@ namespace kq
 
 		void assign(size_t, const value_type&);
 		template<typename iterType>
-		auto assign(iterType, iterType)->std::enable_if_t<is_iterator<iterType>, void>;
+		auto assign(iterType, iterType)-> typename std::enable_if<is_iterator<iterType>, void>::type;
 		template<typename ilT>
 		void assign(const std::initializer_list<ilT>&);
 
@@ -219,7 +219,7 @@ namespace kq
 	}
 
 	template<typename T>
-	template<typename iterType, std::enable_if_t<is_iterator<iterType>, int>>
+	template<typename iterType, typename std::enable_if<is_iterator<iterType>, int>::type>
 	deque<T>::deque(iterType first, iterType last)
 		: kq_data(nullptr), kq_size(0), kq_cap(0), kq_margin(0)
 	{
@@ -352,7 +352,7 @@ namespace kq
 	}
 	template<typename T>
 	template<typename iterType>
-	auto deque<T>::assign(iterType first, iterType last)->std::enable_if_t<is_iterator<iterType>, void>
+	auto deque<T>::assign(iterType first, iterType last)-> typename std::enable_if<is_iterator<iterType>, void>::type
 	{
 		clear();
 		for (first; first != last; ++first)
