@@ -10,20 +10,38 @@ void print(container& cont)
 {
 	for (auto& element : cont)
 	{
-		std::cout << element << " ";
+		std::cout << element.name << " " << element.age << "\n";
 	}
 	std::cout << "\n";
 }
 
+struct Person
+{
+	Person() : name("Unknown"), age(0) {}
+	Person(std::string N, size_t A) : name(N), age(A) {}
+	bool operator==(const Person& other) const
+	{
+		if (age != other.age)
+		{
+			return false;
+		}
+		else
+		{
+			return name != other.name;
+		}
+	}
+	std::string name;
+	size_t age;
+};
 
 int main()
 {
-	vector<int> v;
+	vector<Person> v;
 
-	v = { 1,2,3 };
-	v.push_back(4);
+	v = { Person("Robert", 18), Person("Alexandra", 19), Person("Cristian", 20),
+		Person("Andrei", 21), Person("Daniel", 22) };
 
-	sort(v.begin(), v.end());
+	sort(v.begin(), v.end(), [](const Person& lhs, const Person& rhs) { return lhs.name < rhs.name; });
 
 	print(v);
 
