@@ -41,7 +41,13 @@ int main()
 	v = { Person("Robert", 18), Person("Alexandra", 19), Person("Cristian", 20),
 		Person("Andrei", 21), Person("Daniel", 22) };
 
+	print(v);
+
 	sort(v.begin(), v.end(), [](const Person& lhs, const Person& rhs) { return lhs.name < rhs.name; });
+
+	print(v);
+
+	sort(v.begin(), v.end(), [](const Person& lhs, const Person& rhs) { return lhs.age < rhs.age; });
 
 	print(v);
 
