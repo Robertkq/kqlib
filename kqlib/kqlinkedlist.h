@@ -557,19 +557,34 @@ namespace kq
 	template<typename T>
 	void list<T>::clear()
 	{
-		/*
-		element* current = kq_data->next;
-		while (current != kq_data)
+		
+		if (kq_size > 1)
 		{
-			element* next = current->next;
-			delete current;
-			current = next;
+			element* current = kq_data->next;
+			while (current != kq_data)
+			{
+				element* next = current->next;
+				delete current;
+				current = next;
+			}
+			kq_size = 0;
+			kq_data->next = kq_data;
+			kq_data->prev = kq_data;
 		}
-		kq_size = 0;*/
-		while (kq_size > 0)
+		else if (kq_size == 1)
+		{
+			delete kq_data->next;
+			kq_data->next = kq_data;
+			kq_data->prev = kq_data;
+		}
+
+
+		/*
+		* while (kq_size > 0)
 		{
 			pop_back();
 		}
+		*/
 	}
 
 	template<typename T>

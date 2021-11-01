@@ -1,4 +1,17 @@
 #include "kqlib.h"
+
+using namespace kq;
+
+int main()
+{
+
+	return 0;
+}
+
+
+
+/*
+#include "kqlib.h"
 #include "kqalgorithm.h"
 #include <chrono>
 #include <vector>
@@ -36,7 +49,7 @@ struct Person
 
 int main()
 {
-	
+
 	vector<Person> v;
 
 	v = { Person("Robert", 18), Person("Alexandra", 19), Person("Cristian", 20),
@@ -54,3 +67,4 @@ int main()
 
 	return 0;
 }
+*/
