@@ -36,6 +36,7 @@ struct Person
 
 int main()
 {
+	
 	vector<Person> v;
 
 	v = { Person("Robert", 18), Person("Alexandra", 19), Person("Cristian", 20),

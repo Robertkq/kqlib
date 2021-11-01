@@ -133,7 +133,7 @@ namespace kq
 		size_t size() const					{ return kq_size; }
 		size_t capacity() const				{ return kq_cap; }
 		pointer_type data()	const 			{ return kq_data; }
-
+		
 		iterator begin()					{ return kq_data; }
 		iterator end()						{ return (kq_data + kq_size); }
 		const_iterator being() const		{ return kq_data; }
@@ -215,7 +215,7 @@ namespace kq
 	}
 
 	template<typename T>
-	vector<T>::vector(size_t size) : kq_data((pointer_type)::operator new[](sizeof(value_type)* size)), kq_size(5), kq_cap(size) {}
+	vector<T>::vector(size_t size) : kq_data((pointer_type)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size) {}
 
 	template<typename T>
 	vector<T>::vector(size_t size, const value_type& objectToFill)
