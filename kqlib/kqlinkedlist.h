@@ -577,14 +577,6 @@ namespace kq
 			kq_data->next = kq_data;
 			kq_data->prev = kq_data;
 		}
-
-
-		/*
-		* while (kq_size > 0)
-		{
-			pop_back();
-		}
-		*/
 	}
 
 	template<typename T>

@@ -1,9 +1,16 @@
 #include "kqlib.h"
+#include <iostream>
 
 using namespace kq;
 
 int main()
 {
+	const vector<int> v(100, 3);
+
+	for (vector<int>::const_iterator it = v.cbegin(); it != v.cend(); ++it)
+	{
+		std::cout << *it << " ";
+	}
 
 	return 0;
 }
