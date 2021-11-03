@@ -5,12 +5,23 @@ using namespace kq;
 
 int main()
 {
-	const vector<int> v(100, 3);
+	vector<int> v;
 
-	for (vector<int>::const_iterator it = v.cbegin(); it != v.cend(); ++it)
-	{
-		std::cout << *it << " ";
-	}
+	v.emplace(v.begin(), 1);
+	v.emplace(v.begin(), 2);
+	v.emplace(v.begin(), 3);
+
+	for (auto e : v)
+		std::cout << e << " ";
+	std::cout << "\n";
+
+	v.emplace(v.begin() + 1, 4);
+
+	for (auto e : v)
+		std::cout << e << " ";
+	std::cout << "\n";
+
+
 
 	return 0;
 }

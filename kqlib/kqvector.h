@@ -2,6 +2,7 @@
 #define kqvector_
 
 #include "kqother.h"
+#include <iostream>
 
 namespace kq
 {
@@ -26,7 +27,7 @@ namespace kq
 		bool operator==(const V_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
 		bool operator!=(const V_iterator& rhs) const { return !(kq_ptr == rhs.kq_ptr); }
 		bool operator<(const V_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
-		bool operator>(const V_iterator& rhs) const { return kq_ptr > kq_ptr; }
+		bool operator>(const V_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
 		bool operator<=(const V_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
 		bool operator>=(const V_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
@@ -111,8 +112,8 @@ namespace kq
 		using const_reverse_iterator = V_reverse_iterator<value_type, true>;
 
 		vector();
-		vector(const vector& other);
-		vector(vector&& other) noexcept;
+		vector(const vector<T>& other);
+		vector(vector<T>&& other) noexcept;
 		vector(size_t);
 		vector(size_t, const value_type&);
 		template<typename iterType, typename std::enable_if<is_iterator<iterType>,int>::type = 0>
@@ -121,19 +122,20 @@ namespace kq
 		vector(const std::initializer_list<ilT>&);
 		~vector();
 
-		vector& operator=(const vector& other);
-		vector& operator=(vector&& other) noexcept;
+		vector& operator=(const vector<T>& other);
+		vector& operator=(vector<T>&& other) noexcept;
 
 		template<typename ilT>
 		vector& operator=(const std::initializer_list<ilT>& ilist);
 
-		bool operator==(const vector& other) const;
-		bool operator!=(const vector& other) const { return !(*this == other); }
+		bool operator==(const vector<T>& other) const;
+		bool operator!=(const vector<T>& other) const { return !(*this == other); }
 
 		size_t size() const					{ return kq_size; }
 		size_t capacity() const				{ return kq_cap; }
-		pointer_type data()	const 			{ return kq_data; }
-		
+		pointer_type data()					{ return kq_data; } 
+		const pointer_type data() const		{ return kq_data; }
+
 		iterator begin()					{ return kq_data; }
 		iterator end()						{ return (kq_data + kq_size); }
 		const_iterator being() const		{ return kq_data; }
@@ -148,6 +150,7 @@ namespace kq
 		const_reverse_iterator crend() const	{ return kq_data - 1; }
 
 		bool is_empty()	const { return kq_size == 0; }
+
 		value_type& push_back(const value_type&);
 		template<typename... Args>
 		value_type& emplace_back(Args&&... args);
@@ -166,9 +169,12 @@ namespace kq
 		void erase(iterator);
 		void clear();
 
+		void resize(size_t);
+		void resize(size_t, const value_type&);
+
 		void shrinkToFit() { realloc(kq_size); }
 		void reserve(size_t sizeToReserve) { if (sizeToReserve > kq_cap) { realloc(sizeToReserve); } }
-		void swap(vector&);
+		void swap(vector<T>&);
 
 		value_type& front();
 		const value_type& front() const;
@@ -305,10 +311,6 @@ namespace kq
 		}
 		return true;
 	}
-	/*
-	* @brief There should be a description here
-	* @param value - it's the value to be added
-	*/
 
 	template<typename T>
 	typename vector<T>::value_type& vector<T>::push_back(const value_type& value)
@@ -338,21 +340,22 @@ namespace kq
 	template<typename T>
 	typename vector<T>::value_type& vector<T>::insert(iterator position, const value_type& value)
 	{
-
-		if (position >= begin() && position < end())
+		// Note: iterator position will be invalid if we reallocate
+		if ((position > begin() && position < end()) || position == begin())
 		{
+			size_t safePosition = 0;
 			if (kq_size >= kq_cap)
 			{
+				safePosition = abs(position - begin());
 				realloc(kq_cap + kq_cap / 2);
 			}
-			new (kq_data + kq_size) value_type();
-			kq_size++;
-			// iterator = end - 2 it >= pos --it
-			for (iterator it = end() - 2; it >= position; --it)
+			++kq_size;
+			for (iterator it = end() - 2; it >= begin() + safePosition; --it)
 			{
-				*(it + 1) = *(it);
+				*(it + 1) = std::move(*it);
 			}
-			(kq_data + (kq::abs(begin() - position) - 1)) = value;
+			*(begin() + safePosition) = value;
+			return *(begin() + safePosition);
 		}
 
 	}
@@ -360,21 +363,25 @@ namespace kq
 	template<typename T> template<typename... Args>
 	typename vector<T>::value_type& vector<T>::emplace(iterator position, Args&&... args)
 	{
-		if (position >= begin() && position < end())
+		// Note: iterator position will be invalid if we reallocate
+		if ((position > begin() && position < end()) || position == begin())
 		{
+			value_type holder(std::forward<Args>(args)...);
+			size_t safePosition = 0;
 			if (kq_size >= kq_cap)
 			{
+				safePosition = abs(position - begin());
 				realloc(kq_cap + kq_cap / 2);
 			}
-			new (kq_data + kq_size) value_type(std::forward<Args>(args)...);
-			value_type holder = std::move(*(kq_data + kq_size));
 			kq_size++;
-			for (iterator it = end() - 2; it >= position; --it)
+			for (iterator it = end() - 2; it >= begin() + safePosition; --it)
 			{
-				*(it + 1) = std::move(*(it));
+				*(it + 1) = std::move(*it);
 			}
-			(kq_data + (kq::abs(begin() - position) - 1)) = std::move(holder);
+			*(begin() + safePosition) = std::move(holder);
+			return *(begin() + safePosition);
 		}
+
 	}
 	template<typename T>
 	void vector<T>::assign(size_t count, const value_type& objectToFill)
@@ -459,6 +466,46 @@ namespace kq
 			kq_data = nullptr;
 			kq_size = 0;
 			kq_cap = 0;
+		}
+	}
+
+	template<typename T>
+	void vector<T>::resize(size_t count)
+	{
+		if (count < kq_size)
+		{
+			kq_size = count;
+		}
+		else if (count > kq_size)
+		{
+			if (count > kq_cap)
+			{
+				reserve(count);
+			}
+			kq_size = count;
+		}
+	}
+
+	template<typename T>
+	void vector<T>::resize(size_t count, const value_type& value)
+	{
+		if (count < kq_size)
+		{
+			kq_size = count;
+		}
+		else if (count > kq_size)
+		{
+			if (count > kq_cap)
+			{
+				reserve(count);
+			}
+			count -= kq_size;
+			while (count > 0)
+			{
+				push_back(value);
+				--count;
+			}
+			
 		}
 	}
 
