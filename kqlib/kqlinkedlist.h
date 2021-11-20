@@ -177,6 +177,10 @@ namespace kq
 		void pop_back();
 		void pop_front();
 		void clear();
+
+		void resize(size_t);
+		void resize(size_t, const value_type&);
+
 		void erase(iterator);
 		void swap(list&);
 
@@ -576,6 +580,52 @@ namespace kq
 			delete kq_data->next;
 			kq_data->next = kq_data;
 			kq_data->prev = kq_data;
+		}
+	}
+
+	template<typename T>
+	void list<T>::resize(size_t count)
+	{
+		if (count < kq_size)
+		{
+			count = kq_size - count;
+			while (count > 0)
+			{
+				pop_back();
+				--count;
+			}
+		}
+		else if (count > kq_size)
+		{
+			count -= kq_size;
+			while (count > 0)
+			{
+				emplace_back();
+				--count;
+			}
+		}
+	}
+
+	template<typename T>
+	void list<T>::resize(size_t count, const value_type& value)
+	{
+		if (count < kq_size)
+		{
+			count = kq_size - count;
+			while (count > 0)
+			{
+				pop_back();
+				--count;
+			}
+		}
+		else if (count > kq_size)
+		{
+			count -= kq_size;
+			while (count > 0)
+			{
+				push_back(value);
+				--count;
+			}
 		}
 	}
 
