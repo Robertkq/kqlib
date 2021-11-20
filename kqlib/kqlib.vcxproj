@@ -152,6 +152,7 @@
     <ClInclude Include="kqother.h" />
     <ClInclude Include="kqpair.h" />
     <ClInclude Include="kqalgorithm.h" />
+    <ClInclude Include="kqstring.h" />
     <ClInclude Include="kqvector.h" />
   </ItemGroup>
   <ItemGroup>

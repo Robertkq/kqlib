@@ -2,7 +2,6 @@
 #define kqvector_
 
 #include "kqother.h"
-#include <iostream>
 
 namespace kq
 {

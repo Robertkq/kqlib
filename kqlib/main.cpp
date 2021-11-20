@@ -3,26 +3,23 @@
 
 using namespace kq;
 
+struct Base
+{
+	virtual void f() = delete;
+};
+struct Father : Base
+{
+	void f() override { std::cout << "Father"; }
+};
+struct Son : Father
+{
+	void f() override {}
+};
+
 int main()
 {
-	vector<int> v;
-
-	v.emplace(v.begin(), 1);
-	v.emplace(v.begin(), 2);
-	v.emplace(v.begin(), 3);
-
-	for (auto e : v)
-		std::cout << e << " ";
-	std::cout << "\n";
-
-	v.emplace(v.begin() + 1, 4);
-
-	for (auto e : v)
-		std::cout << e << " ";
-	std::cout << "\n";
-
-
-
+	Base* ptr = new Father;
+	ptr->f();
 	return 0;
 }
 

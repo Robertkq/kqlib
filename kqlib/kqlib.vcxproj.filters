@@ -36,6 +36,9 @@
     <ClInclude Include="kqdeque.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="kqstring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
