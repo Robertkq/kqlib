@@ -14,6 +14,7 @@
 #include "kqlinkedlist.h"
 #include "kqother.h"
 #include "kqpair.h"
+#include "kqstring.h"
 #include "kqvector.h"
 
 #endif 
