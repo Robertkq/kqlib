@@ -1,6 +1,7 @@
 #ifndef kqvector_
 #define kqvector_
 
+#include <iostream>
 #include "kqother.h"
 
 namespace kq
@@ -172,7 +173,7 @@ namespace kq
 		void resize(size_t, const value_type&);
 
 		void shrinkToFit() { realloc(kq_size); }
-		void reserve(size_t sizeToReserve) { if (sizeToReserve > kq_cap) { realloc(sizeToReserve); } }
+		void reserve(size_t capToReserve) { if (capToReserve > kq_cap) { realloc(capToReserve); } }
 		void swap(vector<T>&);
 
 		value_type& front();
@@ -272,7 +273,7 @@ namespace kq
 	template<typename T>
 	typename vector<T>::vector& vector<T>::operator=(vector&& other) noexcept
 	{
-		if (this != other)
+		if (this != &other)
 		{
 			clear();
 			kq_data = other.kq_data;
@@ -581,22 +582,17 @@ namespace kq
 	template<typename T>
 	void vector<T>::realloc(size_t newCap)
 	{
-		size_t copySize = kq_size;
+		
 		if (newCap < 2)
 		{
 			newCap = 2;
 		}
-		if (newCap < kq_size)
-		{
-			kq_size = newCap;
-			copySize = newCap;
-		}
 
-		pointer_type newBlock = (pointer_type) ::operator new[](sizeof(value_type)* newCap);
+		pointer_type newBlock = (pointer_type) ::operator new[](sizeof(value_type) * newCap);
 
 		if (kq_data != nullptr && newBlock != nullptr)
 		{
-			for (size_t i = 0; i < copySize; ++i)
+			for (size_t i = 0; i < kq_size; ++i)
 			{
 				new (newBlock + i) value_type(std::move(*(kq_data + i)));
 			}
