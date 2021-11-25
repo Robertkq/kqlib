@@ -59,10 +59,11 @@ namespace kq
 
         basic_string<T>& operator=(const char*);
 
-        size_t size() { return kq_size; }
-        size_t capacity() { return kq_cap; }
+        size_t size() const { return kq_size; }
+        size_t capacity() const { return kq_cap; }
 
-        reference_type push_back(const reference_type&);
+        reference_type push_back(const value_type&);
+        void pop_back();
 
         bool isEmpty() const { return kq_size == 0; }
         void clear();
@@ -183,6 +184,34 @@ namespace kq
     }
 
     template<typename T>
+    typename basic_string<T>::reference_type basic_string<T>::push_back(const value_type& elementToAdd)
+    {
+        // Don't do `kq_cap - 1` because cap might be 0
+        if (kq_size + 1 >= kq_cap)
+        {
+            std::cout << "Realloc\n";
+            realloc(kq_cap + kq_cap / 2);
+        }
+        *(kq_data + kq_size++) = elementToAdd;
+        *(kq_data + kq_size) = '\0';
+        return kq_data[kq_size - 1];
+    }
+
+    template<typename T>
+    void basic_string<T>::pop_back()
+    {
+        if (kq_size != 0)
+        {
+            --kq_size;
+            (kq_data + kq_size)->~T();
+            if (kq_size < kq_cap / 2)
+            {
+                realloc(kq_cap - kq_cap / 2)
+            }
+        }
+    }
+
+    template<typename T>
     void basic_string<T>::clear()
     {
         if (kq_data)
@@ -205,9 +234,10 @@ namespace kq
     template<typename T>
     void basic_string<T>::realloc(size_t newCapacity)
     {
-        if (newCapacity < 2)
+        // If newCapacity < 10, increase by 5, to have less small size reallocations
+        if (newCapacity < 10)
         {
-            newCapacity = 2;
+            newCapacity += 5;
         }
 
         pointer_type newBlock = new value_type[newCapacity];
