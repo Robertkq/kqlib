@@ -61,13 +61,18 @@ namespace kq
 
         size_t size() const { return kq_size; }
         size_t capacity() const { return kq_cap; }
+        pointer_type data() { return kq_data; }
+        const pointer_type data() const { return kq_data; }
 
         reference_type push_back(const value_type&);
+        template<typename... Args>
+        value_type& emplace_back(Args&&... args);
         void pop_back();
 
         bool isEmpty() const { return kq_size == 0; }
         void clear();
         void reserve(size_t);
+        void shrinkToFit();
     public:
         // friend functions
         friend std::ostream& operator<<(std::ostream& os, const string& value);
@@ -198,16 +203,32 @@ namespace kq
     }
 
     template<typename T>
+    template<typename... Args>
+    typename basic_string<T>::value_type& basic_string<T>::emplace_back(Args&&... args)
+    {
+        push_back(T(std::forward<Args>(args)...));
+    }
+
+    template<typename T>
     void basic_string<T>::pop_back()
     {
-        if (kq_size != 0)
+        if (kq_size > 1)
         {
             --kq_size;
             (kq_data + kq_size)->~T();
             if (kq_size < kq_cap / 2)
             {
-                realloc(kq_cap - kq_cap / 2)
+                realloc(kq_cap - kq_cap / 2);
             }
+        }
+        else if (kq_size == 1)
+        {
+            --kq_size;
+            (kq_data + kq_size)->~T();
+            delete[] kq_data;
+            kq_data = nullptr;
+            kq_size = 0;
+            kq_cap = 0;
         }
     }
 
@@ -224,6 +245,15 @@ namespace kq
         }
     }
 
+    template<typename T>
+    void basic_string<T>::shrinkToFit()
+    {
+        if (kq_size + 1 != kq_cap)
+        {
+            realloc(kq_size + 1);
+        }
+    }
+
     // friend functions
     std::ostream& operator<<(std::ostream& os, const string& value)
     {
@@ -234,7 +264,11 @@ namespace kq
     template<typename T>
     void basic_string<T>::realloc(size_t newCapacity)
     {
+        // Notes:
+        // newCapacity will contain the +1 for the '\0'
+        // 
         // If newCapacity < 10, increase by 5, to have less small size reallocations
+
         if (newCapacity < 10)
         {
             newCapacity += 5;
