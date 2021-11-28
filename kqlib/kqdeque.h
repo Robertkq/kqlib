@@ -375,10 +375,22 @@ namespace kq
 	template<typename T>
 	void deque<T>::pop_back()
 	{
-		(kq_data + kq_margin + --kq_size)->~value_type();
-		if (kq_size < kq_cap - kq_size)
+		if (kq_size > 1)
 		{
-			realloc(kq_cap / 2);
+			(kq_data + kq_margin + --kq_size)->~value_type();
+			if (kq_size < kq_cap - kq_size)
+			{
+				realloc(kq_cap / 2);
+			}
+		}
+		else
+		{
+			(kq_data + kq_margin + --kq_size)->~value_type();
+			::operator delete[] (kq_data);
+			kq_data = nullptr;
+			kq_size = 0;
+			kq_margin = 0;
+			kq_cap = 0;
 		}
 
 	}
@@ -401,7 +413,7 @@ namespace kq
 		if (kq_data != nullptr)
 		{
 			destroy();
-			delete[] kq_data;
+			::operator delete[](kq_data);
 			kq_data = nullptr;
 			kq_size = 0;
 			kq_margin = 0;
@@ -539,7 +551,7 @@ namespace kq
 		}
 
 		destroy();
-		delete[] kq_data;
+		::operator delete[] (kq_data);
 		kq_cap = newCap;
 		kq_data = newBlock;
 		

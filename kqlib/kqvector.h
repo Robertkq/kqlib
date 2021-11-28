@@ -172,8 +172,8 @@ namespace kq
 		void resize(size_t);
 		void resize(size_t, const value_type&);
 
-		void shrinkToFit() { realloc(kq_size); }
-		void reserve(size_t capToReserve) { if (capToReserve > kq_cap) { realloc(capToReserve); } }
+		void shrinkToFit()					{ if (kq_size != kq_cap) { realloc(kq_size); } }
+		void reserve(size_t capToReserve)	{ if (capToReserve > kq_cap) { realloc(capToReserve); } }
 		void swap(vector<T>&);
 
 		value_type& front();
@@ -426,15 +426,24 @@ namespace kq
 	template<typename T>
 	void vector<T>::pop_back()
 	{
-		if (kq_size != 0)
+		if (kq_size > 1)
 		{
-			kq_size--;
+			--kq_size;
 			(kq_data + kq_size)->~value_type();
 			if (kq_size < kq_cap / 2)
 			{
 				realloc(abs(kq_cap - kq_cap/2));
 			}
 				
+		}
+		else if (kq_size == 1)
+		{
+			--kq_size;
+			(kq_data + kq_size)->~value_type();
+			::operator delete[](kq_data);
+			kq_data = nullptr;
+			kq_size = 0;
+			kq_cap = 0;
 		}
 	}
 
@@ -445,14 +454,24 @@ namespace kq
 		{
 			if (position >= begin() && position < end())
 			{
-				for (position; position != end() - 1; ++position)
+				for (position; position != end() - 2; ++position)
 				{
 					*position = *(position + 1);
 				}
 				--kq_size;
 				(kq_data + kq_size)->~value_type();
-				if (kq_size < kq_cap / 2)
-					realloc(abs(kq_cap - kq_cap / 2));
+				if (kq_size == 0)
+				{
+					clear();
+				}
+				else
+				{
+					if (kq_size < kq_cap / 2)
+					{
+						realloc(abs(kq_cap - kq_cap / 2));
+					}
+				}
+					
 			}
 		}
 	}
