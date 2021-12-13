@@ -13,9 +13,9 @@ namespace kq
 
     // Template Aliases
 
-    using string = typename basic_string<char>;
+    using string = basic_string<char>;
 
-    using wstring = typename basic_string<wchar_t>;
+    using wstring = basic_string<wchar_t>;
 
     // String non-member functions
 
