@@ -13,9 +13,9 @@ namespace kq
 
     // Template Aliases
 
-    using string = typename basic_string<char>;
+    using string = basic_string<char>;
 
-    using wstring = typename basic_string<wchar_t>;
+    using wstring = basic_string<wchar_t>;
 
     // String non-member functions
 
@@ -28,14 +28,6 @@ namespace kq
         }
         return count;
     }
-
-    
-    
-    
-    
-    
-
-    
 
     // basic_string
 
@@ -64,15 +56,25 @@ namespace kq
         pointer_type data() { return kq_data; }
         const pointer_type data() const { return kq_data; }
 
-        reference_type push_back(const value_type&);
-        template<typename... Args>
-        value_type& emplace_back(Args&&... args);
-        void pop_back();
+        bool is_empty() const { return kq_size == 0; }
 
-        bool isEmpty() const { return kq_size == 0; }
-        void clear();
+        reference_type push_back(const value_type&);
+        
+        void pop_back();
+        void erase(iterator); // ADDME
+        void clear(); 
+
+        void resize(size_t); // ADDME
+        void resize(size_t, value_type); // ADDME
+
         void reserve(size_t);
         void shrinkToFit();
+        void swap(basic_string<T>&); // ADDME
+
+        value_type& back();
+        const value_type& back() const;
+        value_type& front();
+        const value_type& front() const;
     public:
         // friend functions
         friend std::ostream& operator<<(std::ostream& os, const string& value);
@@ -203,13 +205,6 @@ namespace kq
     }
 
     template<typename T>
-    template<typename... Args>
-    typename basic_string<T>::value_type& basic_string<T>::emplace_back(Args&&... args)
-    {
-        push_back(T(std::forward<Args>(args)...));
-    }
-
-    template<typename T>
     void basic_string<T>::pop_back()
     {
         if (kq_size > 1)
@@ -252,6 +247,30 @@ namespace kq
         {
             realloc(kq_size + 1);
         }
+    }
+
+    template<typename T>
+    basic_string<T>::value_type& basic_string<T>::back()
+    {
+
+    }
+
+    template<typename T>
+    const basic_string<T>::value_type& basic_string<T>::back() const
+    {
+
+    }
+
+    template<typename T>
+    basic_string<T>::value_type& basic_string<T>::front()
+    {
+
+    }
+
+    template<typename T>
+    const basic_string<T>::value_type& basic_string<T>::front() const
+    {
+
     }
 
     // friend functions
