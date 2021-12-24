@@ -61,7 +61,7 @@ namespace kq
         reference_type push_back(const value_type&);
         
         void pop_back();
-        void erase(iterator); // ADDME
+        //void erase(iterator); // ADDME
         void clear(); 
 
         void resize(size_t); // ADDME
@@ -250,25 +250,25 @@ namespace kq
     }
 
     template<typename T>
-    basic_string<T>::value_type& basic_string<T>::back()
+    typename basic_string<T>::value_type& basic_string<T>::back()
     {
 
     }
 
     template<typename T>
-    const basic_string<T>::value_type& basic_string<T>::back() const
+    typename const basic_string<T>::value_type& basic_string<T>::back() const
     {
 
     }
 
     template<typename T>
-    basic_string<T>::value_type& basic_string<T>::front()
+    typename basic_string<T>::value_type& basic_string<T>::front()
     {
 
     }
 
     template<typename T>
-    const basic_string<T>::value_type& basic_string<T>::front() const
+    typename const basic_string<T>::value_type& basic_string<T>::front() const
     {
 
     }

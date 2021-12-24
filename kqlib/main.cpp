@@ -1,29 +1,28 @@
 #include "kqlib.h"
 #include <iostream>
 
-using namespace kq;
-
-struct test
-{
-    int v;
-    int w;
-};
-
 
 int main()
 {
-    string s;
-
-    s.push_back('r');
-    std::cout << "String : " << s << ", size : " << s.size() << ", capacity : " << s.capacity() << "\n";
-    s.push_back('o');
-    std::cout << "String : " << s << ", size : " << s.size() << ", capacity : " << s.capacity() << "\n";
-    s.push_back('b');
-    std::cout << "String : " << s << ", size : " << s.size() << ", capacity : " << s.capacity() << "\n";
-    s.push_back('e');
-    std::cout << "String : " << s << ", size : " << s.size() << ", capacity : " << s.capacity() << "\n";
-    s.push_back('r');
-    std::cout << "String : " << s << ", size : " << s.size() << ", capacity : " << s.capacity() << "\n";
-    s.push_back('t');
-    std::cout << "String : " << s << ", size : " << s.size() << ", capacity : " << s.capacity() << "\n";
+    kq::vector<int> A({1,2,3,4,5,6});
+    kq::vector<int> a(A.begin() + 1, A.end() - 1 );
+    for (auto& e : a)
+    {
+        std::cout << e << " ";
+    }
+    std::cout << "\n";
+    kq::list<int> B({ 1,2,3,4,5,6 });
+    kq::list<int> b(++B.begin(), --B.end());
+    for (auto& e : b)
+    {
+        std::cout << e << " ";
+    }
+    std::cout << "\n";
+    kq::deque<int> C({ 1,2,3,4,5,6 });
+    kq::deque<int> c(C.begin() + 1, C.end() - 1);
+    for (auto& e : c)
+    {
+        std::cout << e << " ";
+    }
+    std::cout << "\n";
 }

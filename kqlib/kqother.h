@@ -101,10 +101,17 @@ namespace kq
 	// TYPE CHECKING //////////////////////////////////////////////////////////////////////////////////////
 
 	template<typename iterType, typename = void>
-	constexpr bool is_iterator = false;
+	struct is_iterator
+	{
+		constexpr static bool value = false;
+	};
 
 	template<typename iterType>
-	constexpr bool is_iterator<iterType, std::void_t<typename iterType::iterator_category>> = true;
+	struct is_iterator<iterType, std::void_t<typename iterType::iterator_category>>
+	{
+		constexpr static bool value = true;
+	};
+
 
 	// PROTOTYPES //////////////////////////////////////////////////////////////////////////////////////
 	template<typename T>
