@@ -646,6 +646,7 @@ namespace kq
 			{
 				position.prev()->next = position.next();
 				position.next()->prev = position.prev();
+				//position->~T(); Probably called by the delete below
 				delete position.ptr();
 				--kq_size;
 			}
