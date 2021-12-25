@@ -7,7 +7,7 @@
 namespace kq
 {
 	template<typename T, bool constant>
-	struct V_iterator
+	struct v_iterator
 	{
 	public:
 		using value_type = T;
@@ -16,31 +16,31 @@ namespace kq
 		using difference_type = int;
 		using iterator_category = std::random_access_iterator_tag;
 		
-		V_iterator() : kq_ptr(nullptr) {}
-		V_iterator(const V_iterator& other) : kq_ptr(other.kq_ptr) {}
-		V_iterator(V_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-		V_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+		v_iterator() : kq_ptr(nullptr) {}
+		v_iterator(const v_iterator& other) : kq_ptr(other.kq_ptr) {}
+		v_iterator(v_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
+		v_iterator(pointer_type ptr) : kq_ptr(ptr) {}
 
-		V_iterator& operator=(const V_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-		V_iterator& operator=(V_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+		v_iterator& operator=(const v_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
+		v_iterator& operator=(v_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
-		bool operator==(const V_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
-		bool operator!=(const V_iterator& rhs) const { return !(kq_ptr == rhs.kq_ptr); }
-		bool operator<(const V_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
-		bool operator>(const V_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
-		bool operator<=(const V_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
-		bool operator>=(const V_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
+		bool operator==(const v_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
+		bool operator!=(const v_iterator& rhs) const { return !(kq_ptr == rhs.kq_ptr); }
+		bool operator<(const v_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
+		bool operator>(const v_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
+		bool operator<=(const v_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
+		bool operator>=(const v_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
-		V_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr++; return Tmp; }
-		V_iterator& operator++() { kq_ptr++; return *this; }
-		V_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr--; return Tmp; }
-		V_iterator& operator--() { kq_ptr--; return *this; }
-		V_iterator operator+(difference_type rhs) const { return kq_ptr + rhs; }
-		V_iterator operator-(difference_type rhs) const { return kq_ptr - rhs; }
-		V_iterator& operator+=(difference_type rhs) { kq_ptr += rhs; return *this; }
-		V_iterator& operator-=(difference_type rhs) { kq_ptr -= rhs; return *this; }
-		friend V_iterator operator+(difference_type lhs, const V_iterator& rhs) { return rhs.kq_ptr + lhs; }
-		size_t operator-(const V_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+		v_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr++; return Tmp; }
+		v_iterator& operator++() { kq_ptr++; return *this; }
+		v_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr--; return Tmp; }
+		v_iterator& operator--() { kq_ptr--; return *this; }
+		v_iterator operator+(difference_type rhs) const { return kq_ptr + rhs; }
+		v_iterator operator-(difference_type rhs) const { return kq_ptr - rhs; }
+		v_iterator& operator+=(difference_type rhs) { kq_ptr += rhs; return *this; }
+		v_iterator& operator-=(difference_type rhs) { kq_ptr -= rhs; return *this; }
+		friend v_iterator operator+(difference_type lhs, const v_iterator& rhs) { return rhs.kq_ptr + lhs; }
+		size_t operator-(const v_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 
 		pointer_type ptr() const { return kq_ptr; }
 
@@ -52,7 +52,7 @@ namespace kq
 	};
 
 	template<typename T, bool constant>
-	struct V_reverse_iterator
+	struct v_reverse_iterator
 	{
 	public:
 		using value_type = T;
@@ -61,31 +61,31 @@ namespace kq
 		using difference_type = int;
 		using iterator_category = std::random_access_iterator_tag;
 
-		V_reverse_iterator() : kq_ptr(nullptr) {}
-		V_reverse_iterator(const V_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
-		V_reverse_iterator(V_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-		V_reverse_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+		v_reverse_iterator() : kq_ptr(nullptr) {}
+		v_reverse_iterator(const v_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
+		v_reverse_iterator(v_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
+		v_reverse_iterator(pointer_type ptr) : kq_ptr(ptr) {}
 
-		V_reverse_iterator& operator=(const V_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-		V_reverse_iterator& operator=(V_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+		v_reverse_iterator& operator=(const v_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
+		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
-		bool operator==(const V_reverse_iterator& other) const { return kq_ptr == other.kq_ptr; }
-		bool operator!=(const V_reverse_iterator& other) const { return !(kq_ptr == other.kq_ptr); }
-		bool operator<(const V_reverse_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
-		bool operator>(const V_reverse_iterator& rhs) const { return kq_ptr < kq_ptr; }
-		bool operator<=(const V_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
-		bool operator>=(const V_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
+		bool operator==(const v_reverse_iterator& other) const { return kq_ptr == other.kq_ptr; }
+		bool operator!=(const v_reverse_iterator& other) const { return !(kq_ptr == other.kq_ptr); }
+		bool operator<(const v_reverse_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
+		bool operator>(const v_reverse_iterator& rhs) const { return kq_ptr < kq_ptr; }
+		bool operator<=(const v_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
+		bool operator>=(const v_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
 
-		V_reverse_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr--; return Tmp; }
-		V_reverse_iterator& operator++() { kq_ptr--; return *this; }
-		V_reverse_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr++; return Tmp; }
-		V_reverse_iterator& operator--() { kq_ptr++; return *this; }
-		V_reverse_iterator operator+(difference_type rhs) const { return kq_ptr - rhs; }
-		V_reverse_iterator operator-(difference_type rhs) const { return kq_ptr + rhs; }
-		V_reverse_iterator& operator+=(difference_type rhs)	{ kq_ptr -= rhs; return *this; }
-		V_reverse_iterator& operator-=(difference_type rhs)	{ kq_ptr += rhs; return *this; }
-		friend V_reverse_iterator operator+(difference_type lhs, const V_reverse_iterator& rhs) { return rhs.kq_ptr - lhs; }
-		size_t operator-(const V_reverse_iterator& rhs)	const { return abs(kq_ptr - rhs.kq_ptr); }
+		v_reverse_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr--; return Tmp; }
+		v_reverse_iterator& operator++() { kq_ptr--; return *this; }
+		v_reverse_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr++; return Tmp; }
+		v_reverse_iterator& operator--() { kq_ptr++; return *this; }
+		v_reverse_iterator operator+(difference_type rhs) const { return kq_ptr - rhs; }
+		v_reverse_iterator operator-(difference_type rhs) const { return kq_ptr + rhs; }
+		v_reverse_iterator& operator+=(difference_type rhs)	{ kq_ptr -= rhs; return *this; }
+		v_reverse_iterator& operator-=(difference_type rhs)	{ kq_ptr += rhs; return *this; }
+		friend v_reverse_iterator operator+(difference_type lhs, const v_reverse_iterator& rhs) { return rhs.kq_ptr - lhs; }
+		size_t operator-(const v_reverse_iterator& rhs)	const { return abs(kq_ptr - rhs.kq_ptr); }
 
 		pointer_type ptr() const { return kq_ptr; }
 
@@ -106,10 +106,10 @@ namespace kq
 		using value_type = T;
 		using reference_type = value_type&;
 		using pointer_type = value_type*;
-		using iterator = V_iterator<value_type, false>;
-		using const_iterator = V_iterator<value_type, true>;
-		using reverse_iterator = V_reverse_iterator<value_type, false>;
-		using const_reverse_iterator = V_reverse_iterator<value_type, true>;
+		using iterator = v_iterator<value_type, false>;
+		using const_iterator = v_iterator<value_type, true>;
+		using reverse_iterator = v_reverse_iterator<value_type, false>;
+		using const_reverse_iterator = v_reverse_iterator<value_type, true>;
 
 		vector();
 		vector(const vector<T>& other);
