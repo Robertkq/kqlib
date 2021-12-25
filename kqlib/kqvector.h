@@ -344,9 +344,9 @@ namespace kq
 		if ((position > begin() && position < end()) || position == begin())
 		{
 			size_t safePosition = 0;
+			safePosition = abs(position - begin());
 			if (kq_size >= kq_cap)
 			{
-				safePosition = abs(position - begin());
 				realloc(kq_cap + kq_cap / 2);
 			}
 			++kq_size;
@@ -368,12 +368,12 @@ namespace kq
 		{
 			value_type holder(std::forward<Args>(args)...);
 			size_t safePosition = 0;
+			safePosition = abs(position - begin());
 			if (kq_size >= kq_cap)
 			{
-				safePosition = abs(position - begin());
 				realloc(kq_cap + kq_cap / 2);
 			}
-			kq_size++;
+			++kq_size;
 			for (iterator it = end() - 2; it >= begin() + safePosition; --it)
 			{
 				*(it + 1) = std::move(*it);
@@ -469,7 +469,10 @@ namespace kq
 	{
 		if (count < kq_size)
 		{
-			kq_size = count;
+			while (kq_size > count)
+			{
+				pop_back();
+			}
 		}
 		else if (count > kq_size)
 		{
@@ -477,7 +480,10 @@ namespace kq
 			{
 				reserve(count);
 			}
-			kq_size = count;
+			while (kq_size < count)
+			{
+				emplace_back();
+			}
 		}
 	}
 
@@ -486,7 +492,10 @@ namespace kq
 	{
 		if (count < kq_size)
 		{
-			kq_size = count;
+			while (kq_size > count)
+			{
+				pop_back();
+			}
 		}
 		else if (count > kq_size)
 		{
@@ -494,11 +503,9 @@ namespace kq
 			{
 				reserve(count);
 			}
-			count -= kq_size;
-			while (count > 0)
+			while (kq_size < count)
 			{
 				push_back(value);
-				--count;
 			}
 			
 		}
