@@ -243,6 +243,44 @@ namespace kq
     }
 
     template<typename T>
+    void basic_string<T>::resize(size_t count)
+    {
+        if (count < kq_size)
+        {
+            kq_size = count;
+        }
+        else if (count > kq_size)
+        {
+            if (count > kq_cap)
+            {
+                reserve(count);
+            }
+            kq_size = count;
+        }
+    }
+
+    template<typename T>
+    void basic_string<T>::resize(size_t count, value_type value)
+    {
+        if (count < kq_size)
+        {
+            while (!(kq_size != count))
+            {
+                pop_back();
+            }
+        }
+        else if (count > kq_size)
+        {
+            while (count > 0)
+            {
+                push_back(value);
+                --count;
+            }
+
+        }
+    }
+
+    template<typename T>
     void basic_string<T>::shrink_to_fit()
     {
         if (kq_size + 1 != kq_cap)
@@ -254,7 +292,7 @@ namespace kq
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
             return *kq_data;
         }
@@ -264,7 +302,7 @@ namespace kq
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::front() const
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
             return *kq_data;
         }
@@ -274,7 +312,7 @@ namespace kq
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::back()
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
             return *(kq_data + kq_size - 1);
         }
@@ -284,7 +322,7 @@ namespace kq
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::back() const
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
             return *(kq_data + kq_size - 1);
         }
