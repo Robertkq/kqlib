@@ -29,6 +29,64 @@ namespace kq
         return count;
     }
 
+    template<typename T, bool constant>
+    struct str_iterator
+    {
+    public:
+        using value_type = T;
+        using pointer_type = value_type*;
+        using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+
+        str_iterator() : kq_ptr() {}
+        str_iterator(const str_iterator& other) : kq_ptr(other.kq_ptr) {}
+        str_iterator(str_iterator&& other) : kq_ptr(other.kq_ptr) noexcept { other.kq_ptr = nullptr; }
+        str_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+        ~str_iterator() {}
+
+        str_iterator& operator=(const str_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
+        str_iterator& operator=(str_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr;  return *this; }
+
+        bool operator==(const str_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
+        bool operator!=(const str_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
+        bool operator<(const str_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
+        bool operator>(const str_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
+        bool operator <=(const str_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
+        bool operator >=(const str_iterator& rhs) const { return kq_ptr = > rhs.kq_ptr; }
+
+        str_iterator operator++(int) { pointer_type = kq_ptr; ++kq_ptr; }
+    private:
+        pointer_type kq_ptr;
+    };
+
+    template<typename T, bool constant>
+    struct str_reverse_iterator
+    {
+    public:
+        using value_type = T;
+        using pointer_type = value_type*;
+        using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+
+        str_reverse_iterator() : kq_ptr() {}
+        str_reverse_iterator(const str_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
+        str_reverse_iterator(str_reverse_iterator&& other) : kq_ptr(other.kq_ptr) noexcept { other.kq_ptr = nullptr; }
+        str_reverse_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+        ~str_reverse_iterator() {}
+
+        str_reverse_iterator& operator=(const str_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
+        str_reverse_iterator& operator=(str_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr;  return *this; }
+
+        bool operator==(const str_reverse_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
+        bool operator!=(const str_reverse_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
+        bool operator<(const str_reverse_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
+        bool operator>(const str_reverse_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
+        bool operator <=(const str_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
+        bool operator >=(const str_reverse_iterator& rhs) const { return kq_ptr = > rhs.kq_ptr; }
+
+
+    private:
+        pointer_type kq_ptr;
+    };
+
     // basic_string
 
     template<typename T>
@@ -292,7 +350,7 @@ namespace kq
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
-        if (kq_size == 0)
+        if (kq_size > 0)
         {
             return *kq_data;
         }
@@ -302,7 +360,7 @@ namespace kq
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::front() const
     {
-        if (kq_size == 0)
+        if (kq_size > 0)
         {
             return *kq_data;
         }
@@ -312,7 +370,7 @@ namespace kq
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::back()
     {
-        if (kq_size == 0)
+        if (kq_size > 0)
         {
             return *(kq_data + kq_size - 1);
         }
@@ -322,7 +380,7 @@ namespace kq
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::back() const
     {
-        if (kq_size == 0)
+        if (kq_size > 0)
         {
             return *(kq_data + kq_size - 1);
         }
@@ -341,13 +399,7 @@ namespace kq
     {
         // Notes:
         // newCapacity will contain the +1 for the '\0'
-        // 
-        // If newCapacity < 10, increase by 5, to have less small size reallocations
 
-        if (newCapacity < 10)
-        {
-            newCapacity += 5;
-        }
 
         pointer_type newBlock = new value_type[newCapacity];
 
