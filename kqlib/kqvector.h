@@ -25,16 +25,16 @@ namespace kq
 		v_iterator& operator=(v_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
 		bool operator==(const v_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
-		bool operator!=(const v_iterator& rhs) const { return !(kq_ptr == rhs.kq_ptr); }
+		bool operator!=(const v_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
 		bool operator<(const v_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
 		bool operator>(const v_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
 		bool operator<=(const v_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
 		bool operator>=(const v_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
-		v_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr++; return Tmp; }
-		v_iterator& operator++() { kq_ptr++; return *this; }
-		v_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr--; return Tmp; }
-		v_iterator& operator--() { kq_ptr--; return *this; }
+		v_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+		v_iterator& operator++() { ++kq_ptr; return *this; }
+		v_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+		v_iterator& operator--() { --kq_ptr; return *this; }
 		v_iterator operator+(difference_type rhs) const { return kq_ptr + rhs; }
 		v_iterator operator-(difference_type rhs) const { return kq_ptr - rhs; }
 		v_iterator& operator+=(difference_type rhs) { kq_ptr += rhs; return *this; }
@@ -70,16 +70,16 @@ namespace kq
 		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
 		bool operator==(const v_reverse_iterator& other) const { return kq_ptr == other.kq_ptr; }
-		bool operator!=(const v_reverse_iterator& other) const { return !(kq_ptr == other.kq_ptr); }
+		bool operator!=(const v_reverse_iterator& other) const { return kq_ptr != other.kq_ptr; }
 		bool operator<(const v_reverse_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
 		bool operator>(const v_reverse_iterator& rhs) const { return kq_ptr < kq_ptr; }
 		bool operator<=(const v_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 		bool operator>=(const v_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
 
-		v_reverse_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr--; return Tmp; }
-		v_reverse_iterator& operator++() { kq_ptr--; return *this; }
-		v_reverse_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; kq_ptr++; return Tmp; }
-		v_reverse_iterator& operator--() { kq_ptr++; return *this; }
+		v_reverse_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+		v_reverse_iterator& operator++() { --kq_ptr; return *this; }
+		v_reverse_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+		v_reverse_iterator& operator--() { ++kq_ptr; return *this; }
 		v_reverse_iterator operator+(difference_type rhs) const { return kq_ptr - rhs; }
 		v_reverse_iterator operator-(difference_type rhs) const { return kq_ptr + rhs; }
 		v_reverse_iterator& operator+=(difference_type rhs)	{ kq_ptr -= rhs; return *this; }
