@@ -426,52 +426,26 @@ namespace kq
 	template<typename T>
 	void vector<T>::pop_back()
 	{
-		if (kq_size > 1)
+		if (kq_size > 0)
 		{
 			--kq_size;
-			(kq_data + kq_size)->~value_type();
-			if (kq_size < kq_cap / 2)
-			{
-				realloc(abs(kq_cap - kq_cap/2));
-			}
-				
-		}
-		else if (kq_size == 1)
-		{
-			--kq_size;
-			(kq_data + kq_size)->~value_type();
-			::operator delete[](kq_data);
-			kq_data = nullptr;
-			kq_size = 0;
-			kq_cap = 0;
+			(kq_data + kq_size)->~value_type();			
 		}
 	}
 
 	template<typename T>
 	void vector<T>::erase(iterator position)
 	{
-		if (kq_size != 0)
+		if (kq_size > 0)
 		{
 			if (position >= begin() && position < end())
 			{
-				for (position; position != end() - 2; ++position)
+				position->~T();
+				for (position; position != end() - 1; ++position)
 				{
-					*position = *(position + 1);
+					*position = std::move(*(position + 1));
 				}
 				--kq_size;
-				(kq_data + kq_size)->~value_type();
-				if (kq_size == 0)
-				{
-					clear();
-				}
-				else
-				{
-					if (kq_size < kq_cap / 2)
-					{
-						realloc(abs(kq_cap - kq_cap / 2));
-					}
-				}
-					
 			}
 		}
 	}
