@@ -51,9 +51,10 @@ namespace kq
 
         basic_string<T>& operator=(const char*);
 
-        size_t size() const { return kq_size; }
+        size_t size() const     { return kq_size; }
+        size_t length() const   { return kq_size; }
         size_t capacity() const { return kq_cap; }
-        pointer_type data() { return kq_data; }
+        pointer_type data()     { return kq_data; }
         const pointer_type data() const { return kq_data; }
 
         bool is_empty() const { return kq_size == 0; }
@@ -68,13 +69,14 @@ namespace kq
         void resize(size_t, value_type); // ADDME
 
         void reserve(size_t);
-        void shrinkToFit();
+        void shrink_to_fit();
         void swap(basic_string<T>&); // ADDME
 
-        value_type& back();
-        const value_type& back() const;
         value_type& front();
         const value_type& front() const;
+        value_type& back();
+        const value_type& back() const;
+        
     public:
         // friend functions
         friend std::ostream& operator<<(std::ostream& os, const string& value);
@@ -241,7 +243,7 @@ namespace kq
     }
 
     template<typename T>
-    void basic_string<T>::shrinkToFit()
+    void basic_string<T>::shrink_to_fit()
     {
         if (kq_size + 1 != kq_cap)
         {
@@ -250,27 +252,43 @@ namespace kq
     }
 
     template<typename T>
-    typename basic_string<T>::value_type& basic_string<T>::back()
-    {
-
-    }
-
-    template<typename T>
-    typename const basic_string<T>::value_type& basic_string<T>::back() const
-    {
-
-    }
-
-    template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
-
+        if (kq_size > 0)
+        {
+            return *kq_data;
+        }
+        throw std::out_of_range("front(), called on empty string");
     }
 
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::front() const
     {
+        if (kq_size > 0)
+        {
+            return *kq_data;
+        }
+        throw std::out_of_range("front(), called on empty string");
+    }
 
+    template<typename T>
+    typename basic_string<T>::value_type& basic_string<T>::back()
+    {
+        if (kq_size > 0)
+        {
+            return *(kq_data + kq_size - 1);
+        }
+        throw std::out_of_range("back(), called on empty string");
+    }
+
+    template<typename T>
+    typename const basic_string<T>::value_type& basic_string<T>::back() const
+    {
+        if (kq_size > 0)
+        {
+            return *(kq_data + kq_size - 1);
+        }
+        throw std::out_of_range("back(), called on empty string");
     }
 
     // friend functions
