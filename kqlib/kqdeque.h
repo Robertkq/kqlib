@@ -160,7 +160,7 @@ namespace kq
 		void clear();
 
 		void reserve(size_t);
-		void shrinkToFit() { realloc_exactly(kq_size); }
+		void shrink_to_fit() { realloc_exactly(kq_size); }
 		void swap(deque&);
 
 		value_type& front();
@@ -375,14 +375,17 @@ namespace kq
 	template<typename T>
 	void deque<T>::pop_back()
 	{
-		if (kq_size > 1)
+		if (kq_size > 0)
 		{
 			(kq_data + kq_margin + --kq_size)->~value_type();
+			/*
 			if (kq_size < kq_cap - kq_size)
 			{
 				realloc(kq_cap / 2);
 			}
+			*/
 		}
+		/*
 		else
 		{
 			(kq_data + kq_margin + --kq_size)->~value_type();
@@ -392,27 +395,32 @@ namespace kq
 			kq_margin = 0;
 			kq_cap = 0;
 		}
+		*/
 
 	}
 
 	template<typename T>
 	void deque<T>::pop_front()
 	{
-		if (kq_size > 1)
+		if (kq_size > 0)
 		{
 			(kq_data + kq_margin)->~value_type();
 			--kq_size;
 			++kq_margin;
+			/*
 			if (kq_margin >= kq_cap / 2)
 			{
 				realloc(kq_cap / 2);
 			}
+			*/
 		}
+		/*
 		else
 		{
 			(kq_data + kq_margin)->~value_type();
 			clear();
 		}
+		*/
 		
 	}
 
