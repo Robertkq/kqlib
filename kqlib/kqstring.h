@@ -169,6 +169,9 @@ namespace kq
         bool is_empty() const { return kq_size == 0; }
 
         reference_type push_back(const value_type&);
+
+        void assign(size_t, value_type); // ADDME
+        void assign(const basic_string<T>&); // ADDME
         
         void pop_back();
         void erase(iterator);
@@ -186,6 +189,11 @@ namespace kq
         const value_type& front() const;
         value_type& back();
         const value_type& back() const;
+
+        value_type& operator[](size_t index) {}
+        const value_type& operator[](size_t index) const {}
+        value_type& at(size_t) {}
+        const value_type& at(size_t) const {}
         
     public:
         // friend functions
