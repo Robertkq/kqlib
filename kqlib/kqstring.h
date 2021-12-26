@@ -36,10 +36,11 @@ namespace kq
         using value_type = T;
         using pointer_type = value_type*;
         using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using iterator_category = std::random_access_iterator_tag;
 
         str_iterator() : kq_ptr() {}
         str_iterator(const str_iterator& other) : kq_ptr(other.kq_ptr) {}
-        str_iterator(str_iterator&& other) : kq_ptr(other.kq_ptr) noexcept { other.kq_ptr = nullptr; }
+        str_iterator(str_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
         str_iterator(pointer_type ptr) : kq_ptr(ptr) {}
         ~str_iterator() {}
 
@@ -50,10 +51,25 @@ namespace kq
         bool operator!=(const str_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
         bool operator<(const str_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
         bool operator>(const str_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
-        bool operator <=(const str_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
-        bool operator >=(const str_iterator& rhs) const { return kq_ptr = > rhs.kq_ptr; }
+        bool operator<=(const str_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
+        bool operator>=(const str_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
-        str_iterator operator++(int) { pointer_type = kq_ptr; ++kq_ptr; }
+        str_iterator operator++(int) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+        str_iterator& operator++() { ++kq_ptr; return *this; }
+        str_iterator operator--(int) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+        str_iterator& operator--() { --kq_ptr; return *this; }
+        str_iterator operator+(int rhs) const { return kq_ptr + rhs; }
+        str_iterator operator-(int rhs) const { return kq_ptr - rhs; }
+        str_iterator& operator+=(int rhs) { kq_ptr += rhs; return *this; }
+        str_iterator& operator-=(int rhs) { kq_ptr -= rhs; return *this; }
+
+        friend str_iterator operator+(int lhs, const str_iterator& rhs) { return rhs.kq_ptr + lhs; }
+        size_t operator-(const str_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+
+        pointer_type ptr() const { return kq_ptr; }
+
+        reference_type operator*() const { return *kq_ptr; }
+        pointer_type operator->() const { return kq_ptr; }
     private:
         pointer_type kq_ptr;
     };
@@ -65,10 +81,11 @@ namespace kq
         using value_type = T;
         using pointer_type = value_type*;
         using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using iterator_category = std::random_access_iterator_tag;
 
         str_reverse_iterator() : kq_ptr() {}
         str_reverse_iterator(const str_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
-        str_reverse_iterator(str_reverse_iterator&& other) : kq_ptr(other.kq_ptr) noexcept { other.kq_ptr = nullptr; }
+        str_reverse_iterator(str_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
         str_reverse_iterator(pointer_type ptr) : kq_ptr(ptr) {}
         ~str_reverse_iterator() {}
 
@@ -80,7 +97,24 @@ namespace kq
         bool operator<(const str_reverse_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
         bool operator>(const str_reverse_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
         bool operator <=(const str_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
-        bool operator >=(const str_reverse_iterator& rhs) const { return kq_ptr = > rhs.kq_ptr; }
+        bool operator >=(const str_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
+
+        str_reverse_iterator operator++(int) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+        str_reverse_iterator& operator++() { --kq_ptr; return *this; }
+        str_reverse_iterator operator--(int) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+        str_reverse_iterator& operator--() { ++kq_ptr; return *this; }
+        str_reverse_iterator operator+(int rhs) const { return kq_ptr - rhs; }
+        str_reverse_iterator operator-(int rhs) const { return kq_ptr + rhs; }
+        str_reverse_iterator& operator+=(int rhs) { kq_ptr -= rhs; return *this; }
+        str_reverse_iterator& operator-=(int rhs) { kq_ptr += rhs; return *this; }
+
+        friend str_reverse_iterator operator+(int lhs, const str_reverse_iterator& rhs) { return rhs.kq_ptr + lhs; }
+        size_t operator-(const str_reverse_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+
+        pointer_type ptr() const { return kq_ptr; }
+
+        reference_type operator*() const { return *kq_ptr; }
+        pointer_type operator->() const { return kq_ptr; }
 
 
     private:
@@ -96,6 +130,10 @@ namespace kq
         using value_type = T; // char type
         using pointer_type = value_type*;
         using reference_type = value_type&;
+        using iterator = str_iterator<value_type, false>;
+        using const_iterator = str_iterator<value_type, true>;
+        using reverse_iterator = str_reverse_iterator<value_type, false>;
+        using const_reverse_iterator = str_reverse_iterator<value_type, true>;
     public:
         basic_string();
         basic_string(const char* str);
@@ -115,20 +153,34 @@ namespace kq
         pointer_type data()     { return kq_data; }
         const pointer_type data() const { return kq_data; }
 
+        iterator begin() { return kq_data; }
+        iterator end() { return (kq_data + kq_size - 1); }
+        const_iterator being() const { return kq_data; }
+        const_iterator end() const { return (kq_data + kq_size - 1); }
+        const_iterator cbegin() const { return kq_data; }
+        const_iterator cend() const { return (kq_data + kq_size - 1); }
+        reverse_iterator rbegin() { return (kq_data + kq_size - 1); }
+        reverse_iterator rend() { return kq_data - 1; }
+        const_reverse_iterator rbegin() const { return (kq_data + kq_size - 1); }
+        const_reverse_iterator rend() const { return (kq_data - 1); }
+        const_reverse_iterator crbegin() const { return (kq_data + kq_size - 1); }
+        const_reverse_iterator crend() const { return kq_data - 1; }
+
         bool is_empty() const { return kq_size == 0; }
 
         reference_type push_back(const value_type&);
         
         void pop_back();
-        //void erase(iterator); // ADDME
+        void erase(iterator);
+        void erase(const basic_string<T>&);
         void clear(); 
 
-        void resize(size_t); // ADDME
-        void resize(size_t, value_type); // ADDME
+        void resize(size_t);
+        void resize(size_t, value_type);
 
         void reserve(size_t);
         void shrink_to_fit();
-        void swap(basic_string<T>&); // ADDME
+        void swap(basic_string<T>&);
 
         value_type& front();
         const value_type& front() const;
@@ -256,7 +308,7 @@ namespace kq
         // Don't do `kq_cap - 1` because cap might be 0
         if (kq_size + 1 >= kq_cap)
         {
-            std::cout << "Realloc\n";
+            // std::cout << "Realloc\n";
             realloc(kq_cap + kq_cap / 2);
         }
         *(kq_data + kq_size++) = elementToAdd;
@@ -267,23 +319,61 @@ namespace kq
     template<typename T>
     void basic_string<T>::pop_back()
     {
-        if (kq_size > 1)
+        if (kq_size > 0)
         {
             --kq_size;
             (kq_data + kq_size)->~T();
-            if (kq_size < kq_cap / 2)
+        }
+    }
+
+    template<typename T>
+    void basic_string<T>::erase(iterator pos)
+    {
+        if (kq_size > 0)
+        {
+            if (pos >= begin() && pos < end())
             {
-                realloc(kq_cap - kq_cap / 2);
+                (pos.ptr())->~T();
+                for (; pos != end(); ++pos)
+                {
+                    *pos = *(pos + 1);
+                    // again, not using std::move, because && will be 8 bytes, which should usually be > T
+                }
+                --kq_size;
+                kq_data[kq_size] = '\0';
             }
         }
-        else if (kq_size == 1)
+    }
+
+    template<typename T>
+    void basic_string<T>::erase(const basic_string<T>& toRemove)
+    {
+        if (kq_size >= toRemove.size())
         {
-            --kq_size;
-            (kq_data + kq_size)->~T();
-            delete[] kq_data;
-            kq_data = nullptr;
-            kq_size = 0;
-            kq_cap = 0;
+            for (basic_string<T>::iterator it = begin(); it != end() - toRemove.size(); ++it)
+            {
+                auto copyIt = it;
+                bool found = true;
+                for (basic_string<T>::const_iterator it2 = toRemove.cbegin(); it2 != toRemove.cend(); ++it2)
+                {
+                    if ( (*it2) != (*(copyIt++)) )
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found == true)
+                {
+                    for (it; it != end() - toRemove.size() + 1; ++it)
+                    {
+                        it.ptr()->~T();
+                        *it = *(it + toRemove.size());
+                    }
+                    kq_size -= toRemove.size();
+                    kq_data[kq_size] = '\0';
+                    return;
+                }
+            }
         }
     }
 
@@ -305,7 +395,10 @@ namespace kq
     {
         if (count < kq_size)
         {
-            kq_size = count;
+            while (kq_size > count)
+            {
+                pop_back();
+            }
         }
         else if (count > kq_size)
         {
@@ -313,28 +406,34 @@ namespace kq
             {
                 reserve(count);
             }
-            kq_size = count;
+            while (kq_size < count)
+            {
+                push_back(T());
+            }
         }
     }
 
     template<typename T>
     void basic_string<T>::resize(size_t count, value_type value)
+        // not taking const& as param because value_type should be < 8 bytes
     {
         if (count < kq_size)
         {
-            while (!(kq_size != count))
+            while (kq_size > count)
             {
                 pop_back();
             }
         }
         else if (count > kq_size)
         {
-            while (count > 0)
+            if (count > kq_cap)
             {
-                push_back(value);
-                --count;
+                reserve(count);
             }
-
+            while (kq_size < count)
+            {
+                emplace_back(value);
+            }
         }
     }
 
@@ -345,6 +444,12 @@ namespace kq
         {
             realloc(kq_size + 1);
         }
+    }
+
+    template<typename T>
+    void basic_string<T>::swap(basic_string<T>& other)
+    {
+        swap(*this, other);
     }
 
     template<typename T>
