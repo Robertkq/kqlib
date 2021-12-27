@@ -352,7 +352,8 @@ namespace kq
 	}
 	template<typename T>
 	template<typename iterType>
-	auto deque<T>::assign(iterType first, iterType last) -> typename std::enable_if<is_iterator<iterType>::value, void>::type
+	auto deque<T>::assign(iterType first, iterType last) 
+		-> typename std::enable_if<is_iterator<iterType>::value, void>::type
 	{
 		clear();
 		for (first; first != last; ++first)
