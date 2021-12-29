@@ -4,6 +4,8 @@
 #include "kqother.h"
 #include <iostream>
 
+
+
 namespace kq
 {
     // Forward declarations
@@ -138,6 +140,7 @@ namespace kq
         basic_string();
         basic_string(const char* str);
         basic_string(const char* str, size_t amount);
+        basic_string(const basic_string<T>& str, size_t pos, size_t len = -1);
         basic_string(const basic_string<T>&);
         basic_string(basic_string<T>&&) noexcept;
         ~basic_string();
@@ -190,14 +193,18 @@ namespace kq
         value_type& back();
         const value_type& back() const;
 
-        value_type& operator[](size_t index) {}
-        const value_type& operator[](size_t index) const {}
-        value_type& at(size_t) {}
-        const value_type& at(size_t) const {}
+        value_type& operator[](size_t index) { return kq_data[index]; }
+        const value_type& operator[](size_t index) const { return kq_data[index]; }
+        value_type& at(size_t);
+        const value_type& at(size_t) const;
         
     public:
         // friend functions
-        friend std::ostream& operator<<(std::ostream& os, const string& value);
+        template<typename CharT, typename Traits>
+        friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&, const kq::basic_string<T>&);
+
+        template<typename CharT, typename Traits>
+        friend std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&, const kq::basic_string<T>&);
 
     private:
         void realloc(size_t);
@@ -224,6 +231,29 @@ namespace kq
             *(kq_data + i) = *(str++);
         }
         *(kq_data + kq_size) = '\0';
+    }
+
+    template<typename T>
+    basic_string<T>::basic_string(const basic_string<T>& str, size_t pos, size_t len)
+        : kq_data(nullptr), kq_size(0), kq_cap(0)
+    {
+        if (pos <= str.size())
+        {
+            if (pos + len < str.size())
+            {
+                reserve(len);
+            }
+            else if (pos + len >= str.size())
+            {
+                reserve(str.size() - pos);
+            }
+            while (len > 0 && str.size() - pos > 0)
+            {
+                push_back(str[pos]);
+                --len;
+                ++pos;
+            }
+        }
     }
 
     template<typename T>
@@ -500,11 +530,38 @@ namespace kq
         throw std::out_of_range("back(), called on empty string");
     }
 
-    // friend functions
-    std::ostream& operator<<(std::ostream& os, const string& value)
+    template<typename T>
+    typename basic_string<T>::value_type& basic_string<T>::at(size_t index)
     {
-        os << (value.kq_data);
+        assert(index >= size() && "index out of range");
+        return kq_data[index];
+    }
+
+    template<typename T>
+    typename const basic_string<T>::value_type& basic_string<T>::at(size_t index) const
+    {
+        assert(index >= size() && "index out of range");
+        return kq_data[index];
+    }
+
+    template<typename CharT, typename Traits>
+    std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const kq::basic_string<CharT>& str)
+    {
+        os << (str.kq_data);
         return os;
+    }
+
+    template<typename CharT, typename Traits>
+    std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, const kq::basic_string<CharT>& str)
+    {
+        char ch;
+        is.get(ch);
+        while (!isspace(ch))
+        {
+            str.push_back(ch);
+        }
+        str.shrink_to_fit();
+        return is;
     }
 
     template<typename T>
@@ -512,6 +569,10 @@ namespace kq
     {
         // Notes:
         // newCapacity will contain the +1 for the '\0'
+        if (newCapacity < 2)
+        {
+            newCapacity = 2;
+        }
 
 
         pointer_type newBlock = new value_type[newCapacity];
@@ -546,5 +607,7 @@ namespace kq
 
     
 }
+
+
 
 #endif
