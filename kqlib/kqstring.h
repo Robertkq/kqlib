@@ -559,6 +559,7 @@ namespace kq
         while (!isspace(ch))
         {
             str.push_back(ch);
+            is.get(ch);
         }
         str.shrink_to_fit();
         return is;
