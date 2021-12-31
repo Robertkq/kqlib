@@ -155,19 +155,21 @@ namespace kq
         size_t capacity() const { return kq_cap; }
         pointer_type data()     { return kq_data; }
         const pointer_type data() const { return kq_data; }
+        pointer_type c_str()            { return kq_data; }
+        const pointer_type c_str() const{ return kq_data; }
 
-        iterator begin() { return kq_data; }
-        iterator end() { return (kq_data + kq_size - 1); }
-        const_iterator being() const { return kq_data; }
-        const_iterator end() const { return (kq_data + kq_size - 1); }
-        const_iterator cbegin() const { return kq_data; }
+        iterator begin()    { return kq_data; }
+        iterator end()      { return (kq_data + kq_size - 1); }
+        const_iterator being() const    { return kq_data; }
+        const_iterator end() const      { return (kq_data + kq_size - 1); }
+        const_iterator cbegin() const   { return kq_data; }
         const_iterator cend() const { return (kq_data + kq_size - 1); }
-        reverse_iterator rbegin() { return (kq_data + kq_size - 1); }
-        reverse_iterator rend() { return kq_data - 1; }
-        const_reverse_iterator rbegin() const { return (kq_data + kq_size - 1); }
-        const_reverse_iterator rend() const { return (kq_data - 1); }
-        const_reverse_iterator crbegin() const { return (kq_data + kq_size - 1); }
-        const_reverse_iterator crend() const { return kq_data - 1; }
+        reverse_iterator rbegin()   { return (kq_data + kq_size - 1); }
+        reverse_iterator rend()     { return kq_data - 1; }
+        const_reverse_iterator rbegin() const   { return (kq_data + kq_size - 1); }
+        const_reverse_iterator rend() const     { return (kq_data - 1); }
+        const_reverse_iterator crbegin() const  { return (kq_data + kq_size - 1); }
+        const_reverse_iterator crend() const    { return kq_data - 1; }
 
         bool is_empty() const { return kq_size == 0; }
 
@@ -188,6 +190,8 @@ namespace kq
         void shrink_to_fit();
         void swap(basic_string<T>&);
 
+        basic_string<T> substr(size_t, size_t) const;
+
         value_type& front();
         const value_type& front() const;
         value_type& back();
@@ -201,10 +205,10 @@ namespace kq
     public:
         // friend functions
         template<typename CharT, typename Traits>
-        friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&, const kq::basic_string<T>&);
+        friend std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&, const kq::basic_string<CharT>&);
 
         template<typename CharT, typename Traits>
-        friend std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&, const kq::basic_string<T>&);
+        friend std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&, kq::basic_string<CharT>&);
 
     private:
         void realloc(size_t);
@@ -237,7 +241,7 @@ namespace kq
     basic_string<T>::basic_string(const basic_string<T>& str, size_t pos, size_t len)
         : kq_data(nullptr), kq_size(0), kq_cap(0)
     {
-        if (pos <= str.size())
+        if (pos < str.size())
         {
             if (pos + len < str.size())
             {
@@ -355,6 +359,24 @@ namespace kq
     }
 
     template<typename T>
+    void basic_string<T>::assign(size_t count, value_type value)
+    {
+        clear();
+        reserve(count);
+        while (count > 0)
+        {
+            push_back(value);
+            --count;
+        }
+    }
+
+    template<typename T>
+    void basic_string<T>::assign(const basic_string<T>& other)
+    {
+        *this = other;
+    }
+
+    template<typename T>
     void basic_string<T>::pop_back()
     {
         if (kq_size > 0)
@@ -392,7 +414,7 @@ namespace kq
             {
                 auto copyIt = it;
                 bool found = true;
-                for (basic_string<T>::const_iterator it2 = toRemove.cbegin(); it2 != toRemove.cend(); ++it2)
+                for (basic_string<T>::iterator it2 = toRemove.begin(); it2 != toRemove.end(); ++it2)
                 {
                     if ( (*it2) != (*(copyIt++)) )
                     {
@@ -491,6 +513,12 @@ namespace kq
     }
 
     template<typename T>
+    basic_string<T> basic_string<T>::substr(size_t pos, size_t count) const
+    {
+        return kq::basic_string<T>(*this, pos, count);
+    }
+
+    template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
         if (kq_size > 0)
@@ -552,7 +580,7 @@ namespace kq
     }
 
     template<typename CharT, typename Traits>
-    std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, const kq::basic_string<CharT>& str)
+    std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, kq::basic_string<CharT>& str)
     {
         char ch;
         is.get(ch);
