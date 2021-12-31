@@ -12,7 +12,7 @@ project(kqlib)
 set(CMAKE_CXX_STANDARD 14)
 
 set(TEST_SOURCES
-        kqlib.test/kqlib.test.cpp
+        kqlib.test/test.cpp
         )
 set(MAIN_SOURCES
         kqlib/main.cpp
