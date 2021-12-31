@@ -2,8 +2,6 @@
 #include "catch.hpp"
 #include  "../kqlib/kqlib.h"
 
-using namespace kq;
-
 namespace vector
 {
     TEST_CASE("vectors can be sized and resized", "[vector]") {
@@ -34,7 +32,7 @@ namespace vector
         kq::sort(v.begin(), v.end());
         REQUIRE(v == v2);
         v2.assign({ 5,4,3,2,1 });
-        kq::sort(v.begin(), v.end(), greater<int>{});
+        kq::sort(v.begin(), v.end(), kq::greater<int>{});
         REQUIRE(v == v2);
     }
 
