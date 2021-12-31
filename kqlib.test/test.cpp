@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include  "../kqlib/kqlib.h"
+#include  "../include/kqlib.h"
 
 namespace vector
 {
