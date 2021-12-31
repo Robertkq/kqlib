@@ -7,16 +7,15 @@
 
 
 cmake_minimum_required(VERSION 3.12)
+
+set(CMAKE_CXX_COMPILER "D:\\TDM-GCC4.9.2\\bin\\g++")
+
 project(kqlib)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(TEST_SOURCES
-        kqlib.test/test.cpp
-        )
 set(MAIN_SOURCES
-        kqlib/main.cpp
+        include/main.cpp
         )
 
-add_executable(kqlib_test ${TEST_SOURCES})
 add_executable(kqlib_main ${MAIN_SOURCES})

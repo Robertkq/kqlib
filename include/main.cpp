@@ -10,5 +10,6 @@ int main()
     {
         std::cout << e << " ";
     }
+    std::getchar();
     return 0;
 }

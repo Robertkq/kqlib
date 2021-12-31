@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{d6a575b2-a1b5-497e-8112-4ddfd33ad3d0}</ProjectGuid>
+    <ProjectGuid>{EF481A67-E28D-4BC7-8826-A61220D2C852}</ProjectGuid>
     <RootNamespace>kqlib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>kqlib</ProjectName>
