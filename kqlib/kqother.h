@@ -7,13 +7,11 @@
 #include <iterator>
 #include <stdexcept>
 
-namespace std
-{
-	template <class...> using void_t = void;
-}
-
 namespace kq
 {
+
+	template <class...> using void_t = void;
+
 	template<typename container>
 	struct reverseView;
 
@@ -107,7 +105,7 @@ namespace kq
 	};
 
 	template<typename iterType>
-	struct is_iterator<iterType, std::void_t<typename iterType::iterator_category>>
+	struct is_iterator<iterType, kq::void_t<typename iterType::iterator_category>>
 	{
 		constexpr static bool value = true;
 	};
