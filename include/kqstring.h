@@ -2,7 +2,8 @@
 #define kqstring_
 
 #include "kqother.h"
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 
 
@@ -150,6 +151,14 @@ namespace kq
 
         basic_string<T>& operator=(const char*);
 
+        bool operator==(const basic_string<T>&) const;
+        bool operator!=(const basic_string<T>& rhs) const { return (*this == rhs); }
+        bool operator>(const basic_string<T>&) const;
+        bool operator<(const basic_string<T>&) const;
+        bool operator>=(const basic_string<T>&) const;
+        bool operator<=(const basic_string<T>&) const;
+
+
         size_t size() const     { return kq_size; }
         size_t length() const   { return kq_size; }
         size_t capacity() const { return kq_cap; }
@@ -192,6 +201,10 @@ namespace kq
 
         basic_string<T> substr(size_t, size_t) const;
 
+        size_t find(value_type, size_t = 0) const; // ADDME
+        size_t find(const char*, size_t = 0) const; // ADDME
+        size_t find(const basic_string<T>&, size_t = 0) const; // ADDME
+
         value_type& front();
         const value_type& front() const;
         value_type& back();
@@ -209,6 +222,9 @@ namespace kq
 
         template<typename CharT, typename Traits>
         friend std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&, kq::basic_string<CharT>&);
+
+        typename<typename CharT, typename Traits>
+        friend std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&);
 
     private:
         void realloc(size_t);
@@ -333,6 +349,118 @@ namespace kq
         }
         kq_data[kq_size] = '\0';
         return *this;
+    }
+
+    template<typename T>
+    bool basic_string<T>::operator==(const basic_string<T>& rhs) const
+    {
+        if (kq_size != rhs.kq_size)
+        {
+            return false;
+        }
+        else
+        {
+            for (size_t i = 0; i < kq_size; ++i)
+            {
+                if (*(kq_data + i) != *(rhs.kq_data + i))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    template<typename T>
+    bool basic_string<T>::operator>(const basic_string<T>& rhs) const
+    {
+        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        for (size_t i = 0; i < size; i++)
+        {
+            if ((*this)[i] != rhs[i])
+            {
+                return (*this)[i] > rhs[i];
+            }
+        }
+        if (kq_size == rhs.kq_size)
+        {
+            return false;
+        }
+        else if (kq_size > size)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template<typename T>
+    bool basic_string<T>::operator<(const basic_string<T>& rhs) const
+    {
+        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        for (size_t i = 0; i < size; i++)
+        {
+            if ((*this)[i] != rhs[i])
+            {
+                return (*this)[i] < rhs[i];
+            }
+        }
+        if (kq_size == rhs.kq_size)
+        {
+            return false;
+        }
+        else if (kq_size > size)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    template<typename T>
+    bool basic_string<T>::operator>=(const basic_string<T>& rhs) const
+    {
+        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        for (size_t i = 0; i < size; i++)
+        {
+            if ((*this)[i] != rhs[i])
+            {
+                return (*this)[i] >= rhs[i];
+            }
+        }
+        if (kq_size >= rhs.kq_size)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template<typename T>
+    bool basic_string<T>::operator<=(const basic_string<T>& rhs) const
+    {
+        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        for (size_t i = 0; i < size; i++)
+        {
+            if ((*this)[i] != rhs[i])
+            {
+                return (*this)[i] <= rhs[i];
+            }
+        }
+        if (kq_size >= rhs.kq_size)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     template<typename T>
@@ -519,6 +647,53 @@ namespace kq
     }
 
     template<typename T>
+    size_t basic_string<T>::find(value_type ch, size_t pos) const
+    {
+        for (size_t i = pos; i < kq_size; ++i)
+        {
+            if (*(kq_data + i) == ch)
+            {
+                return i;
+            }
+        }
+        return kq_size;
+    }
+
+    template<typename T>
+    size_t basic_string<T>::find(const char* ptr, size_t pos) const
+    {
+        for (size_t i = pos; i < kq_size; ++i)
+        {
+            size_t j;
+            for (j = 0; ptr[j] != 0; ++j)
+            {
+                if (ptr[j++] != *(kq_data + i + j))
+                {
+                    break;
+                }
+            }
+            if (ptr[j] == 0)
+            {
+                return i;
+            }
+        }
+        return kq_size;
+    }
+
+    template<typename T>
+    size_t basic_string<T>::find(const basic_string<T>& str, size_t pos) const
+    {
+        for (size_t i = pos; i < kq_size; ++i)
+        {
+            if (substr(i, str.size()) == str)
+            {
+                return i;
+            }
+        }
+        return kq_size;
+    }
+
+    template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
         if (kq_size > 0)
@@ -591,6 +766,12 @@ namespace kq
         }
         str.shrink_to_fit();
         return is;
+    }
+
+    template<typename CharT, typename Traits>
+    std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&)
+    {
+
     }
 
     template<typename T>
