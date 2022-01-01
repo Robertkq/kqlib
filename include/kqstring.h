@@ -201,9 +201,9 @@ namespace kq
 
         basic_string<T> substr(size_t, size_t) const;
 
-        size_t find(value_type, size_t = 0) const; // ADDME
-        size_t find(const char*, size_t = 0) const; // ADDME
-        size_t find(const basic_string<T>&, size_t = 0) const; // ADDME
+        size_t find(value_type, size_t = 0) const;
+        size_t find(const char*, size_t = 0) const;
+        size_t find(const basic_string<T>&, size_t = 0) const;
 
         value_type& front();
         const value_type& front() const;
@@ -223,8 +223,8 @@ namespace kq
         template<typename CharT, typename Traits>
         friend std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&, kq::basic_string<CharT>&);
 
-        typename<typename CharT, typename Traits>
-        friend std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&);
+        template<typename CharT, typename Traits>
+        friend std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&, basic_string<CharT>&, CharT = '\n');
 
     private:
         void realloc(size_t);
@@ -769,9 +769,19 @@ namespace kq
     }
 
     template<typename CharT, typename Traits>
-    std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&)
+    std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>& is,
+                                               basic_string<CharT>& str,
+                                                CharT delim)
     {
-
+        char ch;
+        is.get(ch);
+        while ((!isspace(ch) || ch == ' ') && ch != delim)
+        {
+            str.push_back(ch);
+            is.get(ch);
+        }
+        str.shrink_to_fit();
+        return is;
     }
 
     template<typename T>
