@@ -467,63 +467,63 @@ namespace kq
 	template<typename T>
 	typename deque<T>::value_type& deque<T>::front() 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("front(), called on empty deque");
-			}
-			return *(kq_data + kq_margin);
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("front(), called on empty deque");
+		}
+		return *(kq_data + kq_margin);
 	}
 
 	template<typename T>
 	const typename deque<T>::value_type& deque<T>::front() const 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("front(), called on empty deque");
-			}
-			return *(kq_data + kq_margin);
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("front(), called on empty deque");
+		}
+		return *(kq_data + kq_margin);
 	}
 
 	template<typename T>
 	typename deque<T>::value_type& deque<T>::back() 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("back(), called on empty deque");
-			}
-			return *(kq_data + kq_margin + kq_size - 1);
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("back(), called on empty deque");
+		}
+		return *(kq_data + kq_margin + kq_size - 1);
 	}
 
 	template<typename T>
 	const typename deque<T>::value_type& deque<T>::back() const 
 	{ 
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("back(), called on empty deque");
-			}
-			return *(kq_data + kq_margin + kq_size - 1);
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("back(), called on empty deque");
+		}
+		return *(kq_data + kq_margin + kq_size - 1);
 	}
 
 	template<typename T>
 	typename deque<T>::value_type& deque<T>::at(size_t index)
 	{
-			// kq_margin + index > kq_cap
-			if (index >= kq_size)
-			{
-				throw std::out_of_range("at(), trying to acces elements out of range on deque");
-			}
-			return *(kq_data + kq_margin + index);
+		// kq_margin + index > kq_cap
+		if (index >= kq_size)
+		{
+			throw std::out_of_range("at(), trying to acces elements out of range on deque");
+		}
+		return *(kq_data + kq_margin + index);
 	}
 
 	template<typename T>
 	const typename deque<T>::value_type& deque<T>::at(size_t index) const
 	{
-			// kq_margin + index > kq_cap
-			if (index >= kq_size)
-			{
-				throw std::out_of_range("at(), trying to acces elements out of range on deque");
-			}
-			return *(kq_data + kq_margin + index);
+		// kq_margin + index > kq_cap
+		if (index >= kq_size)
+		{
+			throw std::out_of_range("at(), trying to acces elements out of range on deque");
+		}
+		return *(kq_data + kq_margin + index);
 	}
 
 	template<typename T>
