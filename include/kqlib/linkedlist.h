@@ -663,41 +663,41 @@ namespace kq
 	template<typename T>
 	typename list<T>::value_type& list<T>::front() 
 	{ 
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("front(), called on empty list");
-			}	
-			return kq_data->next->value;
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("front(), called on empty list");
+		}	
+		return kq_data->next->value;
 	}
 
 	template<typename T>
 	const typename list<T>::value_type& list<T>::front() const 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("front(), called on empty list");
-			}
-			return kq_data->next->value;
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("front(), called on empty list");
+		}
+		return kq_data->next->value;
 	}
 
 	template<typename T>
 	typename list<T>::value_type& list<T>::back() 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("back(), called on empty list");
-			}
-			return kq_data->prev->value;
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("back(), called on empty list");
+		}
+		return kq_data->prev->value;
 	}
 
 	template<typename T>
 	const typename list<T>::value_type& list<T>::back() const 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("back(), called on empty list");
-			}
-			return kq_data->prev->value;
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("back(), called on empty list");
+		}
+		return kq_data->prev->value;
 	}
 
 }
