@@ -1,7 +1,7 @@
 #ifndef kqlinkedlist_
 #define kqlinkedlist_
 
-#include "kqother.h"
+#include "other.h"
 
 namespace kq 
 {

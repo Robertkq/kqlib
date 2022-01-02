@@ -1,9 +1,9 @@
 ﻿#include <iostream>
-#include <vector>
+#include "kqlib.h"
 
 int main()
 {
-    std::vector<int> v({ 1,2,3 });
+    kq::vector<int> v({ 1,2,3 });
     for (auto& e : v)
     {
         std::cout << e << " ";

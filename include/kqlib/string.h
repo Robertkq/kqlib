@@ -1,9 +1,10 @@
 #ifndef kqstring_
 #define kqstring_
 
-#include "kqother.h"
 #include <istream>
 #include <ostream>
+
+#include "other.h"
 
 
 

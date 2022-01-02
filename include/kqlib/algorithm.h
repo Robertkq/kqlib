@@ -1,7 +1,7 @@
 #ifndef kqalgorithm_
 #define kqalgorithm_
 
-#include "kqother.h"
+#include "other.h"
 
 namespace kq
 {

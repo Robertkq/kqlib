@@ -1,7 +1,7 @@
 #ifndef kqpair_
 #define kqpair_
 
-#include "kqother.h"
+#include "other.h"
 
 namespace kq 
 {

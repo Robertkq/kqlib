@@ -9,12 +9,12 @@
 #ifndef kqlib_
 #define kqlib_
 
-#include "kqalgorithm.h"
-#include "kqdeque.h"
-#include "kqlinkedlist.h"
-#include "kqother.h"
-#include "kqpair.h"
-#include "kqstring.h"
-#include "kqvector.h"
+#include "kqlib\algorithm.h"
+#include "kqlib\deque.h"
+#include "kqlib\linkedlist.h"
+#include "kqlib\other.h"
+#include "kqlib\pair.h"
+#include "kqlib\string.h"
+#include "kqlib\vector.h"
 
 #endif 
