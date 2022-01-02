@@ -125,8 +125,6 @@ namespace kq
         pointer_type kq_ptr;
     };
 
-    // basic_string
-
     template<typename T>
     struct basic_string
     {
@@ -270,7 +268,7 @@ namespace kq
         {
             if (pos + len < str.size())
             {
-                reserve(len);
+                reserve(str.size() - pos);
             }
             else if (pos + len >= str.size())
             {
@@ -824,54 +822,60 @@ namespace kq
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
-            return *kq_data;
+            throw std::out_of_range("front(), called on empty string");
         }
-        throw std::out_of_range("front(), called on empty string");
+        return *kq_data;
     }
 
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::front() const
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
-            return *kq_data;
+            throw std::out_of_range("front(), called on empty string");
         }
-        throw std::out_of_range("front(), called on empty string");
+        return *kq_data;
     }
 
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::back()
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
-            return *(kq_data + kq_size - 1);
+            throw std::out_of_range("back(), called on empty string");
         }
-        throw std::out_of_range("back(), called on empty string");
+        return *(kq_data + kq_size - 1);
     }
 
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::back() const
     {
-        if (kq_size > 0)
+        if (kq_size == 0)
         {
-            return *(kq_data + kq_size - 1);
+            throw std::out_of_range("back(), called on empty string");
         }
-        throw std::out_of_range("back(), called on empty string");
+        return *(kq_data + kq_size - 1);
     }
 
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::at(size_t index)
     {
-        assert(index >= size() && "index out of range");
+        if (index >= kq_size || kq_size == 0)
+        {
+            throw std::out_of_range("at(), trying to access element out of range on string");
+        }
         return kq_data[index];
     }
 
     template<typename T>
     typename const basic_string<T>::value_type& basic_string<T>::at(size_t index) const
     {
-        assert(index >= size() && "index out of range");
+        if (index >= kq_size || kq_size == 0)
+        {
+            throw std::out_of_range("at(), trying to access element out of range on string");
+        }
         return kq_data[index];
     }
 
@@ -957,7 +961,5 @@ namespace kq
 
     
 }
-
-
 
 #endif
