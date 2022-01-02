@@ -531,7 +531,7 @@ namespace kq
     basic_string<T>& basic_string<T>::operator+=(value_type ch)
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_cap + 1];
+        aux.kq_data = new value_type[kq_size + 2];
         for (size_t i = 0; i < kq_size; ++i)
         {
             aux[i] = (*this)[i];
@@ -545,15 +545,43 @@ namespace kq
     }
 
     template<typename T>
-    basic_string<T>& basic_string<T>::operator+=(const char*)
+    basic_string<T>& basic_string<T>::operator+=(const char* ptr)
     {
-
+        basic_string<T> aux;
+        aux.kq_data = new value_type[kq_size + strlen(ptr) + 1];
+        for (size_t i = 0; i < kq_size; ++i)
+        {
+            aux[i] = (*this)[i];
+        }
+        for (size_t i = 0; i < strlen(ptr); ++i)
+        {
+            aux[kq_size + i] = ptr[i];
+        }
+        aux.kq_size = kq_size + strlen(ptr);
+        aux[aux.kq_size] = '\0';
+        aux.kq_cap = aux.kq_size + 1;
+        *this = std::move(aux);
+        return *this;
     }
 
     template<typename T>
-    basic_string<T>& basic_string<T>::operator+=(const basic_string<T>&)
+    basic_string<T>& basic_string<T>::operator+=(const basic_string<T>& other)
     {
-
+        basic_string<T> aux;
+        aux.kq_data = new value_type[kq_size + other.kq_size + 1];
+        for (size_t i = 0; i < kq_size; ++i)
+        {
+            aux[i] = (*this)[i];
+        }
+        for (size_t i = 0; i < other.kq_size; ++i)
+        {
+            aux[kq_size + i] = other[i];
+        }
+        aux.kq_size = kq_size + other.kq_size;
+        aux[aux.kq_size] = '\0';
+        aux.kq_cap = aux.kq_size + 1;
+        *this = std::move(aux);
+        return *this;
     }
 
 
