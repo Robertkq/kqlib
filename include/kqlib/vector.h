@@ -565,16 +565,20 @@ namespace kq
 	template<typename T>
 	typename vector<T>::value_type& vector<T>::at(size_t index)
 	{
-			if (index >= kq_size)
-				throw std::out_of_range("at(), trying to access elements out of range on vector");
+		if (index >= kq_size || kq_size == 0)
+		{
+			throw std::out_of_range("at(), trying to access elements out of range on vector");
+		}
 			return *(kq_data + index);
 	}
 
 	template<typename T>
 	const typename vector<T>::value_type& vector<T>::at(size_t index) const
 	{
-			if (index >= kq_size)
-				throw std::out_of_range("at(), trying to access elements out of range on vector");
+		if (index >= kq_size || kq_size == 0)
+		{
+			throw std::out_of_range("at(), trying to access elements out of range on vector");
+		}
 			return *(kq_data + index);
 	}
 
