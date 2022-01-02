@@ -508,7 +508,7 @@ namespace kq
 	typename deque<T>::value_type& deque<T>::at(size_t index)
 	{
 		// kq_margin + index > kq_cap
-		if (index >= kq_size)
+		if (index >= kq_size || kq_size == 0)
 		{
 			throw std::out_of_range("at(), trying to acces elements out of range on deque");
 		}
@@ -519,7 +519,7 @@ namespace kq
 	const typename deque<T>::value_type& deque<T>::at(size_t index) const
 	{
 		// kq_margin + index > kq_cap
-		if (index >= kq_size)
+		if (index >= kq_size || kq_size == 0)
 		{
 			throw std::out_of_range("at(), trying to acces elements out of range on deque");
 		}
