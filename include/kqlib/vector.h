@@ -581,10 +581,6 @@ namespace kq
 		return *(kq_data + index);
 	}
 
-
-
-
-
 	template<typename T>
 	void vector<T>::realloc(size_t newCap)
 	{
@@ -624,7 +620,5 @@ namespace kq
 	}
 
 }
-
-
 
 #endif
