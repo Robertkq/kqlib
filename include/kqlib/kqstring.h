@@ -757,6 +757,7 @@ namespace kq
     template<typename CharT, typename Traits>
     std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, kq::basic_string<CharT>& str)
     {
+        str.clear();
         char ch;
         is.get(ch);
         while (!isspace(ch))
@@ -773,6 +774,7 @@ namespace kq
                                                basic_string<CharT>& str,
                                                 CharT delim)
     {
+        str.clear();
         char ch;
         is.get(ch);
         while ((!isspace(ch) || ch == ' ') && ch != delim)
