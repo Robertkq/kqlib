@@ -523,43 +523,42 @@ namespace kq
 
 	template<typename T>
 	typename vector<T>::value_type& vector<T>::front() 
-	{ 
-	
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("front(), called on empty vector");
-			}
-			return *kq_data;
+	{
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("front(), called on empty vector");
+		}
+		return *kq_data;
 	}
 
 	template<typename T>
 	const typename vector<T>::value_type& vector<T>::front() const 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("front(), called on empty vector");
-			}
-			return *kq_data;
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("front(), called on empty vector");
+		}
+		return *kq_data;
 	}
 
 	template<typename T>
 	typename vector<T>::value_type& vector<T>::back() 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("back(), called on empty vector");
-			}
-			return *(kq_data + kq_size - 1);
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("back(), called on empty vector");
+		}
+		return *(kq_data + kq_size - 1);
 	}
 
 	template<typename T>
 	const typename vector<T>::value_type& vector<T>::back() const 
 	{
-			if (kq_size == 0)
-			{
-				throw std::out_of_range("back(), called on empty vector");
-			}
-			return *(kq_data + kq_size - 1);
+		if (kq_size == 0)
+		{
+			throw std::out_of_range("back(), called on empty vector");
+		}
+		return *(kq_data + kq_size - 1);
 	}
 
 	template<typename T>
@@ -569,7 +568,7 @@ namespace kq
 		{
 			throw std::out_of_range("at(), trying to access elements out of range on vector");
 		}
-			return *(kq_data + index);
+		return *(kq_data + index);
 	}
 
 	template<typename T>
@@ -579,7 +578,7 @@ namespace kq
 		{
 			throw std::out_of_range("at(), trying to access elements out of range on vector");
 		}
-			return *(kq_data + index);
+		return *(kq_data + index);
 	}
 
 
