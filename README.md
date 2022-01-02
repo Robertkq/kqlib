@@ -3,12 +3,13 @@ This library is my take at recreating fundamental data structures and functions 
 *Special thanks to @PetrFlajsingr for helping with logic, design and solution clarifications.
 
 # The main kqlib.h header includes:
-1. kqvector.h
-2. kqlinkedlist.h
-3. kqdeque.h
-4. kqpair.h
-5. kqalgorithm.h
-6. kqother.h
+
+1. kqlib\algorithm.h
+2. kqlib\deque.h
+3. kqlib\linkedlist.h
+4. kqlib\other.h
+5. kqlib\string.h
+6. kqlib\vector.h
 
 # Examples
 ```cpp
