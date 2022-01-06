@@ -284,6 +284,15 @@ namespace kq
 	};
 
 	template<typename T>
+	struct sort_partition_equal_to
+	{
+		bool operator()(const T& lhs, const T& rhs) const
+		{
+			return details::sort_partition_equal_compare_impl(lhs, rhs, details::sort_partition_eql_operator_tag{});
+		}
+	};
+
+	template<typename T>
 	struct less
 	{
 		bool operator()(const T& lhs, const T& rhs) const
@@ -306,7 +315,7 @@ namespace kq
 	{
 		for (; first != last; ++first)
 		{
-			if (details::equal_compare_impl(*first, value, details::eql_operator_tag{}))
+			if (equal_to<iterType::value_type>{}(*first, value, details::eql_operator_tag{}))
 			{
 				return first;
 			}
@@ -319,7 +328,7 @@ namespace kq
 	{
 		for (; first != last; ++first)
 		{
-			if (pred(*first))
+			if (p(*first))
 			{
 				return first;
 			}
@@ -332,7 +341,7 @@ namespace kq
 	{
 		for (; first != last; ++first)
 		{
-			if (pred(*first))
+			if (!q(*first))
 			{
 				return first;
 			}
@@ -358,13 +367,29 @@ namespace kq
 	template<typename iterType, typename UnaryPredicate>
 	constexpr size_t count_if(iterType first, iterType last, UnaryPredicate p)
 	{
-
+		size_t ret = 0;
+		for (; first != last; ++first)
+		{
+			if (p(*first))
+			{
+				++ret;
+			}
+		}
+		return ret;
 	}
 
 	template<typename iterType, typename UnaryPredicate>
 	constexpr size_t count_if_not(iterType first, iterType last, UnaryPredicate q)
 	{
-
+		size_t ret = 0;
+		for (; first != last; ++first)
+		{
+			if (!q(*first))
+			{
+				++ret;
+			}
+		}
+		return ret;
 	}
 
 	template<typename iterType, typename Compare = greater<typename iterType::value_type>>
@@ -426,7 +451,7 @@ namespace kq
 			if (comp(*first, *pivot))
 			{
 				++smaller;
-				if (!(details::sort_partition_equal_compare_impl(*smaller, *first, details::sort_partition_eql_operator_tag{})))
+				if (!(sort_partition_equal_to<iterType::value_type>{}(*smaller, *first)))
 				{
 					swap(*smaller, *first);
 				}
@@ -434,7 +459,7 @@ namespace kq
 			}
 		}
 		++smaller;
-		if (!(details::sort_partition_equal_compare_impl(*smaller, *pivot, details::sort_partition_eql_operator_tag{})))
+		if (!(sort_partition_equal_to<iterType::value_type>{}(*smaller, *first)))
 		{
 			swap(*smaller, *pivot);
 		}
