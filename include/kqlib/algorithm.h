@@ -6,7 +6,6 @@
 namespace kq
 {
 
-
 	namespace details
 	{
 		//Tag dispatch for equal_compare_impl functions to return TRUE if lhs == rhs
@@ -32,6 +31,30 @@ namespace kq
 		auto equal_compare_impl(const T& lhs, const T& rhs, eql_no_operator)
 			-> bool = delete;
 
+		struct sort_partition_eql_no_operator {};
+		struct sort_partition_eql_not_equal : sort_partition_eql_no_operator {};
+		struct sort_partition_eql_equal : sort_partition_eql_not_equal {};
+		struct sort_partition_eql_operator_tag : sort_partition_eql_equal {};
+
+
+		template<typename T>
+		auto sort_partition_equal_compare_impl(const T& lhs, const T& rhs, sort_partition_eql_equal)
+			-> decltype(lhs == rhs)
+		{
+			return lhs == rhs;
+		}
+		template<typename T>
+		auto sort_partition_equal_compare_impl(const T& lhs, const T& rhs, sort_partition_eql_not_equal)
+			-> decltype(lhs == rhs)
+		{
+			return !(lhs != rhs);
+		}
+		template<typename T>
+		auto sort_partition_equal_compare_impl(const T& lhs, const T& rhs, sort_partition_eql_no_operator)
+		{
+			return false; // so that we will not swap in the if statement of sort_partition
+		}
+
 		//Tag dispatch for less_compare_impl fucntions to return TRUE if lhs < rhs or in bad cases lhs <= rhs
 		struct less_no_operator{};
 		struct less_has_greater_or_equal : less_no_operator {};
@@ -51,14 +74,13 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_smaller)
 			-> decltype(lhs < rhs)
 		{
-			//std::cout << "max_element() lhs < rhs\n";
 			return (lhs < rhs);
 		}
+
 		template<typename T>
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_greater_E)
 			-> decltype(lhs > rhs&& lhs == rhs)
 		{
-			//std::cout << "max_element() lhs > rhs && lhs == rhs\n";
 			if (lhs == rhs)
 			{
 				return false;
@@ -69,7 +91,6 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_greater_NE)
 			-> decltype(lhs > rhs && lhs != rhs)
 		{
-			//std::cout << "max_element() lhs > rhs && lhs != rhs\n";
 			if (lhs != rhs)
 			{
 				return !(lhs > rhs);
@@ -80,7 +101,6 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_smaller_or_equal_E)
 			->decltype(lhs <= rhs && lhs == rhs)
 		{
-			//std::cout << "max_element() lhs <= rhs && lhs == rhs\n";
 			if (lhs == rhs)
 			{
 				return false;
@@ -91,7 +111,6 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_smaller_or_equal_NE)
 			->decltype(lhs <= rhs && lhs != rhs)
 		{
-			//std::cout << "max_element() lhs <= rhs && lhs != rhs\n";
 			if (lhs != rhs)
 			{
 				return lhs <= rhs;
@@ -102,7 +121,6 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_greater_or_equal_E)
 			->decltype(lhs >= rhs && lhs == rhs)
 		{
-			//std::cout << "max_element() lhs >= rhs && lhs == rhs\n";
 			if (lhs == rhs)
 			{
 				return false;
@@ -113,7 +131,6 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_greater_or_equal_NE)
 			->decltype(lhs >= rhs && lhs != rhs)
 		{
-			//std::cout << "max_element() lhs >= rhs && lhs != rhs\n";
 			if (lhs != rhs)
 			{
 				return !(lhs >= rhs);
@@ -124,21 +141,18 @@ namespace kq
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_greater)
 			-> decltype(lhs > rhs)
 		{
-			//std::cout << "max_element() lhs > rhs\n";
 			return !(lhs > rhs);
 		}
 		template<typename T>
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_smaller_or_equal)
 			-> decltype(lhs <= rhs)
 		{
-			//std::cout << "max_element() lhs <= rhs\n";
 			return lhs <= rhs;
 		}
 		template<typename T>
 		auto less_compare_impl(const T& lhs, const T& rhs, less_has_greater_or_equal)
 			-> decltype(lhs >= rhs)
 		{
-			//std::cout << "max_element() lhs >= rhs\n";
 			return !(lhs >= rhs);
 		}
 		template<typename T>
@@ -261,6 +275,15 @@ namespace kq
 	}
 
 	template<typename T>
+	struct equal_to
+	{
+		bool operator()(const T& lhs, const T& rhs) const
+		{
+			return details::equal_compare_impl(lhs, rhs, details::eql_operator_tag{});
+		}
+	};
+
+	template<typename T>
 	struct less
 	{
 		bool operator()(const T& lhs, const T& rhs) const
@@ -332,7 +355,6 @@ namespace kq
 		}
 		else
 		{
-			//std::cout << "\n=== sort_partition(" << *first << ", " << *last << ")\n";
 			iterType p = sort_partition(first, last, comp);
 			sort(first, p, comp);
 			sort(++p, last, comp);
@@ -348,12 +370,10 @@ namespace kq
 		--smaller;
 		for (; first != last; ++first)
 		{
-			//std::cout << "comp(" << *first << ", " << *pivot << ")\n";
 			if (comp(*first, *pivot))
 			{
 				++smaller;
-				//std::cout << "Swap between " << *smaller << " & " << *first << "\n";
-				if (!(equal_compare_impl(*smaller, *first, details::eql_operator_tag{})))
+				if (!(details::sort_partition_equal_compare_impl(*smaller, *first, details::sort_partition_eql_operator_tag{})))
 				{
 					swap(*smaller, *first);
 				}
@@ -361,8 +381,7 @@ namespace kq
 			}
 		}
 		++smaller;
-		//std::cout << "Last Swap between " << *smaller << " & " << *first << "\n";
-		if (!(equal_compare_impl(*smaller, *pivot, details::eql_operator_tag{})))
+		if (!(details::sort_partition_equal_compare_impl(*smaller, *pivot, details::sort_partition_eql_operator_tag{})))
 		{
 			swap(*smaller, *pivot);
 		}
