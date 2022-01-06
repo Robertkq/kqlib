@@ -140,6 +140,9 @@ namespace kq
         basic_string();
         basic_string(const char* str);
         basic_string(const char* str, size_t amount);
+        basic_string(size_t, value_type);
+        template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type = 0>
+        basic_string(iterType, iterType);
         basic_string(const basic_string<T>& str, size_t pos, size_t len = -1);
         basic_string(const basic_string<T>&);
         basic_string(basic_string<T>&&) noexcept;
@@ -174,11 +177,11 @@ namespace kq
         const pointer_type c_str() const{ return kq_data; }
 
         iterator begin()    { return kq_data; }
-        iterator end()      { return (kq_data + kq_size - 1); }
+        iterator end()      { return (kq_data + kq_size); }
         const_iterator being() const    { return kq_data; }
-        const_iterator end() const      { return (kq_data + kq_size - 1); }
+        const_iterator end() const      { return (kq_data + kq_size); }
         const_iterator cbegin() const   { return kq_data; }
-        const_iterator cend() const { return (kq_data + kq_size - 1); }
+        const_iterator cend() const { return (kq_data + kq_size); }
         reverse_iterator rbegin()   { return (kq_data + kq_size - 1); }
         reverse_iterator rend()     { return kq_data - 1; }
         const_reverse_iterator rbegin() const   { return (kq_data + kq_size - 1); }
@@ -258,6 +261,28 @@ namespace kq
             *(kq_data + i) = *(str++);
         }
         *(kq_data + kq_size) = '\0';
+    }
+
+    template<typename T>
+    basic_string<T>::basic_string(size_t size, value_type ch)
+        : kq_data(new value_type[size+1]), kq_size(size), kq_cap(size+1)
+    {
+        for (size_t i = 0; i < size; ++i)
+        {
+            *(kq_data + i) = ch;
+        }
+        *(kq_data + kq_size) = '\0';
+    }
+
+    template<typename T>
+    template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type>
+    basic_string<T>::basic_string(iterType begin, iterType end)
+        : kq_data(nullptr), kq_size(0), kq_cap(0)
+    {
+        for (; begin != end; ++begin)
+        {
+            push_back(*begin);
+        }
     }
 
     template<typename T>
@@ -830,7 +855,7 @@ namespace kq
     }
 
     template<typename T>
-    typename const basic_string<T>::value_type& basic_string<T>::front() const
+    const typename basic_string<T>::value_type& basic_string<T>::front() const
     {
         if (kq_size == 0)
         {
@@ -850,7 +875,7 @@ namespace kq
     }
 
     template<typename T>
-    typename const basic_string<T>::value_type& basic_string<T>::back() const
+    const typename basic_string<T>::value_type& basic_string<T>::back() const
     {
         if (kq_size == 0)
         {
@@ -870,7 +895,7 @@ namespace kq
     }
 
     template<typename T>
-    typename const basic_string<T>::value_type& basic_string<T>::at(size_t index) const
+    const typename basic_string<T>::value_type& basic_string<T>::at(size_t index) const
     {
         if (index >= kq_size || kq_size == 0)
         {
