@@ -25,8 +25,8 @@ namespace kq
 			pair& operator=(const pair& other) { first = other.first; second = other.second; }
 			pair& operator=(pair&& other) noexcept { first = std::move(other.first); second = std::move(other.second); }
 
-			bool operator==(const pair& other);
-			bool operator!=(const pair& other);
+			bool operator==(const pair& other) const;
+			bool operator!=(const pair& other) const;
 
 			first_type first;
 			second_type second;
@@ -39,13 +39,13 @@ namespace kq
 		}
 
 		template<typename fT, typename sT>
-		bool pair<fT, sT>::operator==(const pair<fT, sT>& other)
+		bool pair<fT, sT>::operator==(const pair<fT, sT>& other) const
 		{
 			return (equal_compare_impl(first, other.first) && equal_compare_impl(second, other.second));
 		}
 
 		template<typename fT, typename sT>
-		bool pair<fT, sT>::operator!=(const pair<fT, sT>& other)
+		bool pair<fT, sT>::operator!=(const pair<fT, sT>& other) const
 		{
 			return !(equal_compare_impl(first, other.first) && equal_compare_impl(second, other.second));
 		}
