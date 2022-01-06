@@ -139,7 +139,7 @@ namespace kq
 
 		iterator begin()					{ return kq_data; }
 		iterator end()						{ return (kq_data + kq_size); }
-		const_iterator being() const		{ return kq_data; }
+		const_iterator begin() const		{ return kq_data; }
 		const_iterator end() const			{ return (kq_data + kq_size); }
 		const_iterator cbegin() const		{ return kq_data; }
 		const_iterator cend() const			{ return (kq_data + kq_size); }
