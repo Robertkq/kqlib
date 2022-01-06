@@ -340,6 +340,33 @@ namespace kq
 		return last;
 	}
 
+	template<typename iterType, typename T>
+	constexpr size_t count(iterType first, iterType last, const T& value)
+	{
+		size_t ret = 0;
+		for (; first != last; ++first)
+		{
+			if (equal_to<T>{}(*first, value))
+			{
+				// Notee: *first and value must be of the same type,
+				++ret;
+			}
+		}
+		return ret;
+	}
+
+	template<typename iterType, typename UnaryPredicate>
+	constexpr size_t count_if(iterType first, iterType last, UnaryPredicate p)
+	{
+
+	}
+
+	template<typename iterType, typename UnaryPredicate>
+	constexpr size_t count_if_not(iterType first, iterType last, UnaryPredicate q)
+	{
+
+	}
+
 	template<typename iterType, typename Compare = greater<typename iterType::value_type>>
 	constexpr iterType max_element(iterType first, iterType last, Compare comp = greater<typename iterType::value_type>{})
 	{
