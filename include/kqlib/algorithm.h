@@ -314,6 +314,32 @@ namespace kq
 		return last;
 	}
 
+	template<typename iterType, typename UnaryPredicate>
+	constexpr iterType find_if(iterType first, iterType last, UnaryPredicate p)
+	{
+		for (; first != last; ++first)
+		{
+			if (pred(*first))
+			{
+				return first;
+			}
+		}
+		return last;
+	}
+
+	template<typename iterType, typename UnaryPredicate>
+	constexpr iterType find_if_not(iterType first, iterType last, UnaryPredicate q)
+	{
+		for (; first != last; ++first)
+		{
+			if (pred(*first))
+			{
+				return first;
+			}
+		}
+		return last;
+	}
+
 	template<typename iterType, typename Compare = greater<typename iterType::value_type>>
 	constexpr iterType max_element(iterType first, iterType last, Compare comp = greater<typename iterType::value_type>{})
 	{
