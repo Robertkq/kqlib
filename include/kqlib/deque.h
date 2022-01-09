@@ -123,7 +123,7 @@ namespace kq
 		bool operator!=(const deque& other) const { return !(*this == other); }
 
 		size_t size() const { return kq_size; }
-		size_t cap() const { return kq_cap; }
+		size_t capacity() const { return kq_cap; }
 		pointer_type data() const { return kq_data; }
 		size_t margin() const { return kq_margin; }
 

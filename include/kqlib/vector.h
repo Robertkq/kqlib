@@ -173,7 +173,7 @@ namespace kq
 		void resize(size_t);
 		void resize(size_t, const value_type&);
 
-		void shrinkToFit()					{ if (kq_size != kq_cap) { realloc(kq_size); } }
+		void shrink_to_fit()					{ if (kq_size != kq_cap) { realloc(kq_size); } }
 		void reserve(size_t capToReserve)	{ if (capToReserve > kq_cap) { realloc(capToReserve); } }
 		void swap(vector<T>&);
 
