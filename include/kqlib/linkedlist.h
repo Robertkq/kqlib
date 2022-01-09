@@ -157,7 +157,8 @@ namespace kq
 		const_reverse_iterator crend() const { return kq_data; }
 
 		
-		bool is_empty() const { return kq_size == 0; }
+		bool empty() const { return kq_size == 0; }
+
 		value_type& push_back(const value_type&);
 		value_type& push_front(const value_type&);
 		template<typename... Args>

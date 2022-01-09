@@ -189,7 +189,7 @@ namespace kq
         const_reverse_iterator crbegin() const  { return (kq_data + kq_size - 1); }
         const_reverse_iterator crend() const    { return kq_data - 1; }
 
-        bool is_empty() const { return kq_size == 0; }
+        bool empty() const { return kq_size == 0; }
 
         reference_type push_back(const value_type&);
 
