@@ -104,7 +104,7 @@ namespace kq
 
 		deque();
 		deque(const deque&);
-		deque(deque&&);
+		deque(deque&&) noexcept;
 		deque(size_t);
 		deque(size_t, const value_type&);
 		template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type = 0>
@@ -198,7 +198,7 @@ namespace kq
 	}
 
 	template<typename T>
-	deque<T>::deque(deque&& other)
+	deque<T>::deque(deque&& other) noexcept
 		: kq_data(other.kq_data), kq_size(other.kq_size), kq_cap(other.kq_cap), kq_margin(other.kq_margin)
 	{
 		other.kq_data = nullptr;
