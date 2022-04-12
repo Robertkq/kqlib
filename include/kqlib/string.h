@@ -38,14 +38,16 @@ namespace kq
     {
     public:
         using value_type = T;
-        using pointer_type = value_type*;
-        using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using pointer = value_type*;
+        using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using difference_type = size_t;
         using iterator_category = std::random_access_iterator_tag;
+
 
         str_iterator() : kq_ptr() {}
         str_iterator(const str_iterator& other) : kq_ptr(other.kq_ptr) {}
         str_iterator(str_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-        str_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+        str_iterator(pointer ptr) : kq_ptr(ptr) {}
         ~str_iterator() {}
 
         str_iterator& operator=(const str_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
@@ -58,9 +60,9 @@ namespace kq
         bool operator<=(const str_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
         bool operator>=(const str_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
-        str_iterator operator++(int) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+        str_iterator operator++(int) { pointer Tmp = kq_ptr; ++kq_ptr; return Tmp; }
         str_iterator& operator++() { ++kq_ptr; return *this; }
-        str_iterator operator--(int) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+        str_iterator operator--(int) { pointer Tmp = kq_ptr; --kq_ptr; return Tmp; }
         str_iterator& operator--() { --kq_ptr; return *this; }
         str_iterator operator+(int rhs) const { return kq_ptr + rhs; }
         str_iterator operator-(int rhs) const { return kq_ptr - rhs; }
@@ -68,14 +70,14 @@ namespace kq
         str_iterator& operator-=(int rhs) { kq_ptr -= rhs; return *this; }
 
         friend str_iterator operator+(int lhs, const str_iterator& rhs) { return rhs.kq_ptr + lhs; }
-        size_t operator-(const str_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+        difference_type operator-(const str_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 
-        pointer_type ptr() const { return kq_ptr; }
+        pointer ptr() const { return kq_ptr; }
 
-        reference_type operator*() const { return *kq_ptr; }
-        pointer_type operator->() const { return kq_ptr; }
+        reference operator*() const { return *kq_ptr; }
+        pointer operator->() const { return kq_ptr; }
     private:
-        pointer_type kq_ptr;
+        pointer kq_ptr;
     };
 
     template<typename T, bool constant>
@@ -83,14 +85,15 @@ namespace kq
     {
     public:
         using value_type = T;
-        using pointer_type = value_type*;
-        using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using pointer = value_type*;
+        using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using difference_type = size_t;
         using iterator_category = std::random_access_iterator_tag;
 
         str_reverse_iterator() : kq_ptr() {}
         str_reverse_iterator(const str_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
         str_reverse_iterator(str_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-        str_reverse_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+        str_reverse_iterator(pointer ptr) : kq_ptr(ptr) {}
         ~str_reverse_iterator() {}
 
         str_reverse_iterator& operator=(const str_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
@@ -103,9 +106,9 @@ namespace kq
         bool operator <=(const str_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
         bool operator >=(const str_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
-        str_reverse_iterator operator++(int) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+        str_reverse_iterator operator++(int) { pointer Tmp = kq_ptr; --kq_ptr; return Tmp; }
         str_reverse_iterator& operator++() { --kq_ptr; return *this; }
-        str_reverse_iterator operator--(int) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+        str_reverse_iterator operator--(int) { pointer Tmp = kq_ptr; ++kq_ptr; return Tmp; }
         str_reverse_iterator& operator--() { ++kq_ptr; return *this; }
         str_reverse_iterator operator+(int rhs) const { return kq_ptr - rhs; }
         str_reverse_iterator operator-(int rhs) const { return kq_ptr + rhs; }
@@ -113,16 +116,16 @@ namespace kq
         str_reverse_iterator& operator-=(int rhs) { kq_ptr += rhs; return *this; }
 
         friend str_reverse_iterator operator+(int lhs, const str_reverse_iterator& rhs) { return rhs.kq_ptr + lhs; }
-        size_t operator-(const str_reverse_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+        difference_type operator-(const str_reverse_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 
-        pointer_type ptr() const { return kq_ptr; }
+        pointer ptr() const { return kq_ptr; }
 
-        reference_type operator*() const { return *kq_ptr; }
-        pointer_type operator->() const { return kq_ptr; }
+        reference operator*() const { return *kq_ptr; }
+        pointer operator->() const { return kq_ptr; }
 
 
     private:
-        pointer_type kq_ptr;
+        pointer kq_ptr;
     };
 
     template<typename T>
@@ -130,8 +133,8 @@ namespace kq
     {
     public:
         using value_type = T; // char type
-        using pointer_type = value_type*;
-        using reference_type = value_type&;
+        using pointer = value_type*;
+        using reference = value_type&;
         using iterator = str_iterator<value_type, false>;
         using const_iterator = str_iterator<value_type, true>;
         using reverse_iterator = str_reverse_iterator<value_type, false>;
@@ -154,7 +157,7 @@ namespace kq
         basic_string<T>& operator=(const char*);
 
         bool operator==(const basic_string<T>&) const;
-        bool operator!=(const basic_string<T>& rhs) const { return (*this == rhs); }
+        bool operator!=(const basic_string<T>& rhs) const { return !(*this == rhs); }
         bool operator>(const basic_string<T>&) const;
         bool operator<(const basic_string<T>&) const;
         bool operator>=(const basic_string<T>&) const;
@@ -171,10 +174,10 @@ namespace kq
         size_t size() const     { return kq_size; }
         size_t length() const   { return kq_size; }
         size_t capacity() const { return kq_cap; }
-        pointer_type data()     { return kq_data; }
-        const pointer_type data() const { return kq_data; }
-        pointer_type c_str()            { return kq_data; }
-        const pointer_type c_str() const{ return kq_data; }
+        pointer data()     { return kq_data; }
+        const pointer data() const { return kq_data; }
+        pointer c_str()            { return kq_data; }
+        const pointer c_str() const{ return kq_data; }
 
         iterator begin()    { return kq_data; }
         iterator end()      { return (kq_data + kq_size); }
@@ -191,7 +194,7 @@ namespace kq
 
         bool empty() const { return kq_size == 0; }
 
-        reference_type push_back(const value_type&);
+        reference push_back(const value_type&);
 
         void assign(size_t, value_type);
         void assign(const basic_string<T>&);
@@ -240,7 +243,7 @@ namespace kq
         void realloc(size_t);
         void destroy();
     private:
-        pointer_type kq_data;
+        pointer kq_data;
         size_t kq_size;
         size_t kq_cap;
 
@@ -618,7 +621,7 @@ namespace kq
     }
 
     template<typename T>
-    typename basic_string<T>::reference_type basic_string<T>::push_back(const value_type& elementToAdd)
+    typename basic_string<T>::reference basic_string<T>::push_back(const value_type& elementToAdd)
     {
         // Don't do `kq_cap - 1` because cap might be 0
         if (kq_size + 1 >= kq_cap)
@@ -954,7 +957,7 @@ namespace kq
         }
 
 
-        pointer_type newBlock = new value_type[newCapacity];
+        pointer newBlock = new value_type[newCapacity];
 
         if (kq_data && newBlock)
         {

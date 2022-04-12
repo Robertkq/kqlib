@@ -310,12 +310,28 @@ namespace kq
 		}
 	};
 
+	template<typename iterType>
+	constexpr void reverse(iterType first, iterType last)
+	{
+		for (; first != last; ++first)
+		{
+			if (--last != first)
+			{
+				swap(*first, *last);
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+
 	template<typename iterType, typename T>
 	constexpr iterType find(iterType first, iterType last, const T& value)
 	{
 		for (; first != last; ++first)
 		{
-			if (equal_to<iterType::value_type>{}(*first, value, details::eql_operator_tag{}))
+			if (equal_to<iterType::value_type>{}(*first, value))
 			{
 				return first;
 			}

@@ -10,14 +10,15 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = T*;
-		using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+		using pointer = T*;
+		using difference_type = size_t;
+		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
 		using iterator_category = std::random_access_iterator_tag;
 
 		dq_iterator() : kq_ptr() {}
 		dq_iterator(const dq_iterator& other) : kq_ptr(other.kq_ptr) {}
 		dq_iterator(dq_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-		dq_iterator(pointer_type ptr_) : kq_ptr(ptr_) {};
+		dq_iterator(pointer ptr_) : kq_ptr(ptr_) {};
 		
 		dq_iterator& operator=(const dq_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
 		dq_iterator& operator=(dq_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
@@ -40,11 +41,11 @@ namespace kq
 		size_t operator-(const dq_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 		friend dq_iterator operator+(int lhs, const dq_iterator& rhs) { return rhs.kq_ptr + lhs; }
 
-		reference_type operator*() { return *kq_ptr; }
-		pointer_type operator->() const { return kq_ptr; }
+		reference operator*() { return *kq_ptr; }
+		pointer operator->() const { return kq_ptr; }
 
 	private:
-		pointer_type kq_ptr;
+		pointer kq_ptr;
 	};
 
 	template<typename T, bool constant>
@@ -52,14 +53,15 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = T*;
-		using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+		using pointer = T*;
+		using difference_type = size_t;
+		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
 		using iterator_category = std::random_access_iterator_tag;
 
 		dq_reverse_iterator() : kq_ptr() {}
 		dq_reverse_iterator(const dq_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
 		dq_reverse_iterator(dq_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-		dq_reverse_iterator(pointer_type ptr_) : kq_ptr(ptr_) {};
+		dq_reverse_iterator(pointer ptr_) : kq_ptr(ptr_) {};
 
 		dq_reverse_iterator& operator=(const dq_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
 		dq_reverse_iterator& operator=(dq_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
@@ -82,11 +84,11 @@ namespace kq
 		size_t operator-(const dq_reverse_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 		friend dq_reverse_iterator operator+(int lhs, const dq_reverse_iterator& rhs) { return rhs.kq_ptr - lhs; }
 
-		reference_type operator*() const { return *kq_ptr; }
-		pointer_type operator->() const { return kq_ptr; }
+		reference operator*() const { return *kq_ptr; }
+		pointer operator->() const { return kq_ptr; }
 
 	private:
-		pointer_type kq_ptr;
+		pointer kq_ptr;
 	};
 
 
@@ -95,8 +97,8 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = T*;
-		using reference_type = T&;
+		using pointer = T*;
+		using reference = T&;
 		using iterator = dq_iterator<value_type, false>;
 		using const_iterator = dq_iterator<value_type, true>;
 		using reverse_iterator = dq_reverse_iterator<value_type, false>;
@@ -124,7 +126,7 @@ namespace kq
 
 		size_t size() const { return kq_size; }
 		size_t capacity() const { return kq_cap; }
-		pointer_type data() const { return kq_data; }
+		pointer data() const { return kq_data; }
 		size_t margin() const { return kq_margin; }
 
 		iterator begin() { return kq_data + kq_margin; }
@@ -176,7 +178,7 @@ namespace kq
 		const value_type& at(size_t) const;
 
 	private:
-		pointer_type kq_data;
+		pointer kq_data;
 		size_t kq_size;
 		size_t kq_cap;
 		size_t kq_margin;
@@ -210,7 +212,7 @@ namespace kq
 
 	template<typename T>
 	deque<T>::deque(size_t size)																		// kq_cap / 2 - 1
-		: kq_data((pointer_type)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size), kq_margin(0)
+		: kq_data((pointer)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size), kq_margin(0)
 	{}
 
 	template<typename T>
@@ -368,7 +370,7 @@ namespace kq
 	{
 		clear();
 		realloc_exactly(ilist.size());
-		for (auto& element : ilist)
+		for (const auto& element : ilist)
 		{
 			push_back(element);
 		}
@@ -380,6 +382,7 @@ namespace kq
 		if (kq_size > 0)
 		{
 			(kq_data + kq_margin + --kq_size)->~value_type();
+			
 			/*
 			if (kq_size < kq_cap - kq_size)
 			{
@@ -535,7 +538,7 @@ namespace kq
 		{
 			newCap = 2;
 		}
-		pointer_type newBlock = (pointer_type)::operator new[](sizeof(value_type)*newCap);
+		pointer newBlock = (pointer)::operator new[](sizeof(value_type)*newCap);
 		size_t equalSides = 0;
 		size_t newMargin = 0;
 		if (newCap > kq_cap)
@@ -584,7 +587,7 @@ namespace kq
 		{
 			++newCap;
 		}
-		pointer_type newBlock = (pointer_type)::operator new[](sizeof(value_type)* newCap);
+		pointer newBlock = (pointer)::operator new[](sizeof(value_type)* newCap);
 
 		if (kq_data != nullptr && newBlock != nullptr)
 		{

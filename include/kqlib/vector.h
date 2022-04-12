@@ -12,15 +12,15 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = value_type*;
-		using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
-		using difference_type = int;
+		using pointer = value_type*;
+		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+		using difference_type = size_t;
 		using iterator_category = std::random_access_iterator_tag;
 		
 		v_iterator() : kq_ptr(nullptr) {}
 		v_iterator(const v_iterator& other) : kq_ptr(other.kq_ptr) {}
 		v_iterator(v_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-		v_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+		v_iterator(pointer ptr) : kq_ptr(ptr) {}
 
 		v_iterator& operator=(const v_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
 		v_iterator& operator=(v_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
@@ -32,24 +32,24 @@ namespace kq
 		bool operator<=(const v_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
 		bool operator>=(const v_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 
-		v_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+		v_iterator operator++(int) { pointer Tmp = kq_ptr; ++kq_ptr; return Tmp; }
 		v_iterator& operator++() { ++kq_ptr; return *this; }
-		v_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+		v_iterator operator--(int) { pointer Tmp = kq_ptr; --kq_ptr; return Tmp; }
 		v_iterator& operator--() { --kq_ptr; return *this; }
-		v_iterator operator+(difference_type rhs) const { return kq_ptr + rhs; }
-		v_iterator operator-(difference_type rhs) const { return kq_ptr - rhs; }
-		v_iterator& operator+=(difference_type rhs) { kq_ptr += rhs; return *this; }
-		v_iterator& operator-=(difference_type rhs) { kq_ptr -= rhs; return *this; }
+		v_iterator operator+(int rhs) const { return kq_ptr + rhs; }
+		v_iterator operator-(int rhs) const { return kq_ptr - rhs; }
+		v_iterator& operator+=(int rhs) { kq_ptr += rhs; return *this; }
+		v_iterator& operator-=(int rhs) { kq_ptr -= rhs; return *this; }
 		friend v_iterator operator+(difference_type lhs, const v_iterator& rhs) { return rhs.kq_ptr + lhs; }
-		size_t operator-(const v_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+		difference_type operator-(const v_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 
-		pointer_type ptr() const { return kq_ptr; }
+		pointer ptr() const { return kq_ptr; }
 
-		reference_type operator*() const { return *kq_ptr; }
-		pointer_type operator->() const { return kq_ptr; }
+		reference operator*() const { return *kq_ptr; }
+		pointer operator->() const { return kq_ptr; }
 
 	private:
-		pointer_type kq_ptr;
+		pointer kq_ptr;
 	};
 
 	template<typename T, bool constant>
@@ -57,15 +57,15 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = value_type*;
-		using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
-		using difference_type = int;
+		using pointer = value_type*;
+		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+		using difference_type = size_t;
 		using iterator_category = std::random_access_iterator_tag;
 
 		v_reverse_iterator() : kq_ptr(nullptr) {}
 		v_reverse_iterator(const v_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
 		v_reverse_iterator(v_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-		v_reverse_iterator(pointer_type ptr) : kq_ptr(ptr) {}
+		v_reverse_iterator(pointer ptr) : kq_ptr(ptr) {}
 
 		v_reverse_iterator& operator=(const v_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
 		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
@@ -77,26 +77,26 @@ namespace kq
 		bool operator<=(const v_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
 		bool operator>=(const v_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
 
-		v_reverse_iterator operator++(difference_type) { pointer_type Tmp = kq_ptr; --kq_ptr; return Tmp; }
+		v_reverse_iterator operator++(int) { pointer Tmp = kq_ptr; --kq_ptr; return Tmp; }
 		v_reverse_iterator& operator++() { --kq_ptr; return *this; }
-		v_reverse_iterator operator--(difference_type) { pointer_type Tmp = kq_ptr; ++kq_ptr; return Tmp; }
+		v_reverse_iterator operator--(int) { pointer Tmp = kq_ptr; ++kq_ptr; return Tmp; }
 		v_reverse_iterator& operator--() { ++kq_ptr; return *this; }
-		v_reverse_iterator operator+(difference_type rhs) const { return kq_ptr - rhs; }
-		v_reverse_iterator operator-(difference_type rhs) const { return kq_ptr + rhs; }
-		v_reverse_iterator& operator+=(difference_type rhs)	{ kq_ptr -= rhs; return *this; }
-		v_reverse_iterator& operator-=(difference_type rhs)	{ kq_ptr += rhs; return *this; }
-		friend v_reverse_iterator operator+(difference_type lhs, const v_reverse_iterator& rhs) { return rhs.kq_ptr - lhs; }
-		size_t operator-(const v_reverse_iterator& rhs)	const { return abs(kq_ptr - rhs.kq_ptr); }
+		v_reverse_iterator operator+(int rhs) const { return kq_ptr - rhs; }
+		v_reverse_iterator operator-(int rhs) const { return kq_ptr + rhs; }
+		v_reverse_iterator& operator+=(int rhs)	{ kq_ptr -= rhs; return *this; }
+		v_reverse_iterator& operator-=(int rhs)	{ kq_ptr += rhs; return *this; }
+		friend v_reverse_iterator operator+(int lhs, const v_reverse_iterator& rhs) { return rhs.kq_ptr - lhs; }
+		difference_type operator-(const v_reverse_iterator& rhs)	const { return abs(kq_ptr - rhs.kq_ptr); }
 
-		pointer_type ptr() const { return kq_ptr; }
+		pointer ptr() const { return kq_ptr; }
 
-		reference_type operator*() const { return *kq_ptr; }
-		pointer_type operator->() const { return kq_ptr; }
+		reference operator*() const { return *kq_ptr; }
+		pointer operator->() const { return kq_ptr; }
 
 		
 
 	private:
-		pointer_type kq_ptr;
+		pointer kq_ptr;
 	};
 
 	template<typename T>
@@ -105,8 +105,8 @@ namespace kq
 	public:
 		
 		using value_type = T;
-		using reference_type = value_type&;
-		using pointer_type = value_type*;
+		using reference = value_type&;
+		using pointer = value_type*;
 		using iterator = v_iterator<value_type, false>;
 		using const_iterator = v_iterator<value_type, true>;
 		using reverse_iterator = v_reverse_iterator<value_type, false>;
@@ -134,8 +134,8 @@ namespace kq
 
 		size_t size() const					{ return kq_size; }
 		size_t capacity() const				{ return kq_cap; }
-		pointer_type data()					{ return kq_data; } 
-		const pointer_type data() const		{ return kq_data; }
+		pointer data()					{ return kq_data; } 
+		const pointer data() const		{ return kq_data; }
 
 		iterator begin()					{ return kq_data; }
 		iterator end()						{ return (kq_data + kq_size); }
@@ -204,7 +204,7 @@ namespace kq
 
 	template<typename T>
 	vector<T>::vector(const vector& other)
-		: kq_data((pointer_type)::operator new[](sizeof(value_type)* other.kq_cap)), kq_size(other.kq_size), kq_cap(other.kq_cap)
+		: kq_data((pointer)::operator new[](sizeof(value_type)* other.kq_cap)), kq_size(other.kq_size), kq_cap(other.kq_cap)
 	{
 		for (size_t i = 0; i < kq_size; ++i)
 		{
@@ -222,7 +222,7 @@ namespace kq
 	}
 
 	template<typename T>
-	vector<T>::vector(size_t size) : kq_data((pointer_type)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size) {}
+	vector<T>::vector(size_t size) : kq_data((pointer)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size) {}
 
 	template<typename T>
 	vector<T>::vector(size_t size, const value_type& objectToFill)
@@ -260,7 +260,7 @@ namespace kq
 		if (this != &other)
 		{
 			clear();
-			kq_data = (pointer_type)::operator new[](sizeof(value_type)* other.kq_cap);
+			kq_data = (pointer)::operator new[](sizeof(value_type)* other.kq_cap);
 			kq_size = other.kq_size;
 			kq_cap = other.kq_cap;
 			for (size_t i = 0; i < kq_size; i++)
@@ -441,7 +441,7 @@ namespace kq
 		{
 			if (position >= begin() && position < end())
 			{
-				position->~T();
+				(*position).~T();
 				for (position; position != end() - 1; ++position)
 				{
 					*position = std::move(*(position + 1));
@@ -590,7 +590,7 @@ namespace kq
 			newCap = 2;
 		}
 
-		pointer_type newBlock = (pointer_type) ::operator new[](sizeof(value_type) * newCap);
+		pointer newBlock = (pointer) ::operator new[](sizeof(value_type) * newCap);
 
 		if (kq_data != nullptr && newBlock != nullptr)
 		{

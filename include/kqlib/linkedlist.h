@@ -13,9 +13,9 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = value_type*;
-		using difference_type = int;
-		using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
+		using pointer = value_type*;
+		using difference_type = size_t;
+		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
 		using element = linkedlist_element<value_type>;
 		using iterator_category = std::bidirectional_iterator_tag;
 
@@ -39,8 +39,8 @@ namespace kq
 		element* next() const { return kq_ptr->next; }
 		element* prev() const { return kq_ptr->prev; }
 
-		reference_type operator*() const { return kq_ptr->value; }
-		pointer_type operator->() const { return &(kq_ptr->value); }
+		reference operator*() const { return kq_ptr->value; }
+		pointer operator->() const { return &(kq_ptr->value); }
 
 	private:
 		element* kq_ptr;
@@ -51,9 +51,9 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = value_type*;
-		using reference_type = typename std::conditional<constant, const value_type&, value_type&>::type;
-		using difference_type = int;
+		using pointer = value_type*;
+		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+		using difference_type = size_t;
 		using element = linkedlist_element<value_type>;
 		using iterator_category = std::bidirectional_iterator_tag;
 
@@ -62,8 +62,8 @@ namespace kq
 		ll_reverse_iterator(ll_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
 		ll_reverse_iterator(element* llelement) : kq_ptr(llelement) {}
 
-		ll_reverse_iterator& operator=(const ll_reverse_iterator& other) { kq_ptr = other.kq_ptr; }
-		ll_reverse_iterator& operator=(ll_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; }
+		ll_reverse_iterator& operator=(const ll_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
+		ll_reverse_iterator& operator=(ll_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
 		bool operator==(const ll_reverse_iterator& other) const { return kq_ptr == other.kq_ptr; }
 		bool operator!=(const ll_reverse_iterator& other) const { return !(*this == other); }
@@ -77,8 +77,8 @@ namespace kq
 		element* next() const { return kq_ptr->next; }
 		element* prev() const { return kq_ptr->prev; }
 
-		reference_type operator*() const { return kq_ptr->value; }
-		pointer_type operator->() const	{ return &(kq_ptr->value); }
+		reference operator*() const { return kq_ptr->value; }
+		pointer operator->() const	{ return &(kq_ptr->value); }
 
 	private:
 		element* kq_ptr;
@@ -89,8 +89,8 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = value_type*;
-		using reference_type = value_type&;
+		using pointer = value_type*;
+		using reference = value_type&;
 
 		linkedlist_element() : value(), next(nullptr), prev(nullptr) {}
 		linkedlist_element(const linkedlist_element& other) : value(other.value), next(other.next), prev(other.prev) {}
@@ -113,8 +113,8 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer_type = value_type*;
-		using reference_type = value_type&;
+		using pointer = value_type*;
+		using reference = value_type&;
 		using element = linkedlist_element<value_type>;
 		using iterator = ll_iterator<value_type, false>;
 		using const_iterator = ll_iterator<value_type, true>;
@@ -204,7 +204,7 @@ namespace kq
 
 	template<typename T>
 	list<T>::list(const list& other) 
-		: kq_data((pointer_type)::operator new(sizeof(element))), kq_size(0)
+		: kq_data((pointer)::operator new(sizeof(element))), kq_size(0)
 	{
 		for (auto& element : other)
 		{
