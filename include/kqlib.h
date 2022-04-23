@@ -11,6 +11,7 @@
 
 #include "kqlib\algorithm.h"
 #include "kqlib\deque.h"
+#include "kqlib\format.h"
 #include "kqlib\linkedlist.h"
 #include "kqlib\other.h"
 #include "kqlib\pair.h"

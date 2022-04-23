@@ -1,8 +1,7 @@
 #ifndef kqstring_
 #define kqstring_
 
-#include <istream>
-#include <ostream>
+//#include <iostream>
 
 #include "other.h"
 
@@ -23,7 +22,7 @@ namespace kq
 
     // String non-member functions
 
-    size_t strlen(const char* source)
+    inline size_t strlen(const char* source)
     {
         size_t count{ 0 };
         while (*(source++) != '\0')
@@ -194,7 +193,8 @@ namespace kq
 
         bool empty() const { return kq_size == 0; }
 
-        reference push_back(const value_type&);
+        reference push_back(value_type);
+        reference insert(iterator, value_type);
 
         void assign(size_t, value_type);
         void assign(const basic_string<T>&);
@@ -621,7 +621,7 @@ namespace kq
     }
 
     template<typename T>
-    typename basic_string<T>::reference basic_string<T>::push_back(const value_type& elementToAdd)
+    typename basic_string<T>::reference basic_string<T>::push_back(value_type elementToAdd)
     {
         // Don't do `kq_cap - 1` because cap might be 0
         if (kq_size + 1 >= kq_cap)
@@ -632,6 +632,31 @@ namespace kq
         *(kq_data + kq_size++) = elementToAdd;
         *(kq_data + kq_size) = '\0';
         return kq_data[kq_size - 1];
+    }
+    
+    template<typename T>
+    typename basic_string<T>::reference basic_string<T>::insert(iterator position, value_type elementToAdd)
+    {
+        // Note: iterator position will be invalid if we reallocate
+        if ((position > begin() && position < end()) || position == begin())
+        {
+            size_t safePosition = abs(position - begin());
+            if (kq_size+1 >= kq_cap)
+            {
+                realloc(kq_cap + kq_cap / 2);
+            }
+            ++kq_size;
+            for (iterator it = end() - 1; it >= begin() + safePosition; --it)
+            {
+                *(it + 1) = *it;
+            }
+            *(begin() + safePosition) = elementToAdd;
+            return *(begin() + safePosition);
+        }
+        else if (position == end())
+        {
+            push_back(elementToAdd);
+        }
     }
 
     template<typename T>
@@ -910,6 +935,7 @@ namespace kq
     template<typename CharT, typename Traits>
     std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const kq::basic_string<CharT>& str)
     {
+        if(str.kq_data)
         os << (str.kq_data);
         return os;
     }

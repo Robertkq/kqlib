@@ -156,6 +156,7 @@
     <ClInclude Include="kqlib.h" />
     <ClInclude Include="kqlib\algorithm.h" />
     <ClInclude Include="kqlib\deque.h" />
+    <ClInclude Include="kqlib\format.h" />
     <ClInclude Include="kqlib\linkedlist.h" />
     <ClInclude Include="kqlib\other.h" />
     <ClInclude Include="kqlib\pair.h" />

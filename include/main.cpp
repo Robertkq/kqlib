@@ -1,44 +1,29 @@
 ﻿#include <iostream>
 #include "kqlib.h"
-#include <vector>
-#include <algorithm>
+#include "kqlib\format.h"
 
-struct A
+
+int main()
 {
-    A() : v() {}
-    A(int w) : v(w) {}
-    bool operator<(const A& other) const { return v < other.v; }
+    kq::vector<kq::string> v({ kq::string("Daniel Vuvucescu Robert Al VII-lea"),
+        kq::string("Gica Darius David Nr.1"),
+        kq::string("Negru Emanuel Ioan"),
+        kq::string("Dusanescu Toskana") });
 
-    int v;
-};
-
-struct Elev {
-    Elev(const char* n, int v) {
-        nume = n; varsta = v; 
+    for (int i = 0; i < v.size(); ++i)
+    {
+        std::cout << kq::format("Persoana {0:c50}, este top!\n", v[i]);
     }
-    bool operator<(const Elev& o) const {
-        return varsta < o.varsta;
+    std::cout << "\n\n\n";
+    for (int i = 0; i < v.size(); ++i)
+    {
+        std::cout << kq::format("Persoana {0:r50}, este top!\n", v[i]);
     }
-    kq::string nume;
-     int varsta;
-};
+    std::cout << "\n\n\n";
+    for (int i = 0; i < v.size(); ++i)
+    {
+        std::cout << kq::format("Persoana {0:50}, este top!\n", v[i]);
+    }
 
-void print(kq::vector<Elev>& v) {
-    for (auto& e : v)
-        std::cout << e.nume << " ";
-    std::cout << "\n";
-}
-int main() {
-    kq::vector<Elev> v({ Elev("Robert", 19),Elev("Andrei", 20),Elev("Darius", 18) });
-    print(v);           // Robert Andrei Darius
-    kq::sort(v.begin(), v.end());
-    print(v);           // Darius Robert Andrei - Ordonat crescator dupa varsta
-    kq::sort(v.begin(), v.end(), [](const Elev& a, const Elev& b) {
-        return a.nume < b.nume;
-        });
-    print(v);           // Andrei Darius Robert - Ordonat crescator dupa nume
-    std::cout << count_if(v.begin(), v.end(), [](const Elev& e) {
-        return e.varsta > 18;
-        }); // 2 - Doar 2 elevi au peste 18 ani.
     return 0;
 }

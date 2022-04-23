@@ -1,7 +1,7 @@
 #ifndef kqvector_
 #define kqvector_
 
-#include <iostream>
+//#include <iostream>
 
 #include "other.h"
 
@@ -344,8 +344,7 @@ namespace kq
 		// Note: iterator position will be invalid if we reallocate
 		if ((position > begin() && position < end()) || position == begin())
 		{
-			size_t safePosition = 0;
-			safePosition = abs(position - begin());
+			size_t safePosition = abs(position - begin());
 			if (kq_size >= kq_cap)
 			{
 				realloc(kq_cap + kq_cap / 2);
@@ -358,10 +357,15 @@ namespace kq
 			*(begin() + safePosition) = value;
 			return *(begin() + safePosition);
 		}
+		else if (position == end())
+		{
+			push_back(value);
+		}
 
 	}
 
-	template<typename T> template<typename... Args>
+	template<typename T> 
+	template<typename... Args>
 	typename vector<T>::value_type& vector<T>::emplace(iterator position, Args&&... args)
 	{
 		// Note: iterator position will be invalid if we reallocate
