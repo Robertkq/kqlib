@@ -1,7 +1,7 @@
 #ifndef kqstring_
 #define kqstring_
 
-//#include <iostream>
+#include <locale>
 
 #include "other.h"
 
