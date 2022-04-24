@@ -5,13 +5,13 @@
 #include "vector.h"
 //#include <iostream>
 
-namespace kq
-{
-    namespace format_details
-    {
+namespace kq {
 
-        inline char getAlign(kq::string& str)
-        {
+    namespace format_details {
+
+        static unsigned int precision{ 2 };
+
+        inline char getAlign(kq::string& str) {
             if (!str.empty() && !(str[0] >= 48 && str[0] <= 57)) {
                 char c = str[0];
                 str.erase(str.begin());
@@ -24,8 +24,7 @@ namespace kq
             return 'l';
         }
 
-        inline int stoi(const kq::string& str)
-        {
+        inline int stoi(const kq::string& str) {
             int ret = 0;
             for (size_t i = 0; i < str.size(); ++i)
             {
@@ -34,50 +33,73 @@ namespace kq
             return ret;
         }
 
-        inline kq::string to_string(const kq::string& str)
-        {
-            return str;
-        }
-
-        inline kq::string to_string(const char* ptr)
-        {
-            return ptr;
-        }
-
-        inline kq::string to_string(char c)
-        {
+        inline kq::string to_string(int i) {
+            bool negative = i < 0;
+            if (negative) { i = i * -1; }
             kq::string ret;
-            ret.push_back(c);
-            return ret;
-        }
-
-        inline kq::string to_string(int i)
-        {
-            kq::string ret;
-            while (i != 0)
-            {
+            while (i != 0) {
                 ret.insert(ret.begin(), char(48 + i % 10));
                 i /= 10;
             }
+            if (negative) {
+                ret.insert(ret.begin(), '-');
+            }
+            ret.shrink_to_fit();
+            return ret;
+        }
+
+        inline kq::string to_string(double d) {
+            kq::string ret;
+            bool negative = d < 0;
+            if (negative) { d = d * -1; }
+            double frac1, inte1,
+                frac2, inte2;
+            frac1 = modf(d, &inte1);
+            ret = to_string(static_cast<int>(inte1));
+            unsigned int p = precision;
+            ret.reserve(ret.capacity() + 1 + p);
+            if (p != 0) {
+                ret.push_back('.');
+            }
+            while (p > 0) {
+                frac1 *= 10;
+                frac2 = modf(frac1, &inte2);
+                frac1 = frac2;
+                ret.push_back(static_cast<char>(48+inte2));
+                --p;
+            }
+
+            return ret;
+        }
+
+        inline kq::string to_string(const kq::string& str) {
+            return str;
+        }
+
+        inline kq::string to_string(const char* ptr) {
+            return ptr;
+        }
+
+        inline kq::string to_string(char c) {
+            kq::string ret;
+            ret.push_back(c);
+            ret.shrink_to_fit();
             return ret;
         }
 
         template<typename T>
-        void format_args_add(kq::vector<kq::string>& v, T t)
-        {
+        void format_args_add(kq::vector<kq::string>& v, T t) {
             v.push_back(to_string(t));
         }
 
         template<typename T, typename... Args>
-        void format_args_add(kq::vector<kq::string>& v, T t, Args... Rest)
-        {
+        void format_args_add(kq::vector<kq::string>& v, T t, Args... Rest) {
             v.push_back(to_string(t));
             format_args_add(v, Rest...);
         }
 
         template<typename... Args>
-        kq::vector<kq::string> format_args(Args... args)
-        {
+        kq::vector<kq::string> format_args(Args... args) {
             kq::vector<kq::string> ret;
             format_args_add(ret, args...);
             return ret;
@@ -85,10 +107,13 @@ namespace kq
 
     } // end of format_details::
 
+    inline void format_set_precision(unsigned int newPrecision) {
+        format_details::precision = newPrecision;
+    }
+
 
     template<typename... Args>
-    kq::string format(const char* fmt, Args... args)
-    {
+    kq::string format(const char* fmt, Args... args) {
         kq::vector<kq::string> f_list = format_details::format_args(args...);
 
         //for (size_t i = 0; i < f_list.size(); ++i) { std::cout << "Arg " << i << ". " << f_list[i] << "\n"; }
@@ -106,14 +131,10 @@ namespace kq
         unsigned int    start_arg_pos,
             end_arg_pos;
 
-        for (size_t i = 0; i < str.size(); ++i)
-        {
-            if (str[i] == '{')
-            {
+        for (size_t i = 0; i < str.size(); ++i) {
+            if (str[i] == '{') {
                 start_arg_pos = i + 1;
-            }
-            else if (str[i] == '}')
-            {
+            } else if (str[i] == '}') {
                 end_arg_pos = i;
                 unsigned int difference = (end_arg_pos - start_arg_pos) + 2;
                 argid = -1;
@@ -153,15 +174,17 @@ namespace kq
 
                 if (argid == int(-1)) {
                     argid = defargid++;
+                    //std::cout << "\nnew argid=" << argid << "\n";
                 }
+                
 
                 int space_difference;
                 if (argatr != int(-1)) {
-                    space_difference = argatr - f_list[argid].size();
+                    space_difference = argatr - f_list.at(argid).size();
                 }
 
                 if (argalign == 'l' && argatr != int(-1)) {
-                    int space_difference = argatr - f_list[argid].size();
+                    int space_difference = argatr - f_list.at(argid).size();
                     while (space_difference-- > 0) {
                         str.insert(str.begin() + start_arg_pos - 1, ' ');
                     }
@@ -169,15 +192,15 @@ namespace kq
 
                 unsigned int first_half, second_half;
                 if (argalign == 'c' && argatr != int(-1)) {
-                    first_half = second_half = (argatr - f_list[argid].size()) / 2;
-                    if ((argatr - f_list[argid].size()) % 2 == 1) { ++first_half; }
+                    first_half = second_half = (argatr - f_list.at(argid).size()) / 2;
+                    if ((argatr - f_list.at(argid).size()) % 2 == 1) { ++first_half; }
                     while (first_half-- > 0) {
                         str.insert(str.begin() + start_arg_pos - 1, ' ');
                     }
                 }
 
 
-                for (kq::string::reverse_iterator it = f_list[argid].rbegin(); it != f_list[argid].rend(); ++it) {
+                for (kq::string::reverse_iterator it = f_list.at(argid).rbegin(); it != f_list.at(argid).rend(); ++it) {
                     str.insert(str.begin() + start_arg_pos - 1, *it);
                 }
 
@@ -188,7 +211,7 @@ namespace kq
                 }
 
                 if (argalign == 'r' && argatr != int(-1)) {
-                    int space_difference = argatr - f_list[argid].size();
+                    int space_difference = argatr - f_list.at(argid).size();
                     while (space_difference-- > 0) {
                         str.insert(str.begin() + start_arg_pos - 1, ' ');
                     }
