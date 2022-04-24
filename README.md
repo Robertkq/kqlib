@@ -6,10 +6,12 @@ This library is my take at recreating fundamental data structures and functions 
 
 1. kqlib\algorithm.h
 2. kqlib\deque.h
-3. kqlib\linkedlist.h
-4. kqlib\other.h
-5. kqlib\string.h
-6. kqlib\vector.h
+3. kqlib\format.h
+4. kqlib\linkedlist.h
+5. kqlib\other.h
+6. kqlib\pair.h
+7. kqlib\string.h
+8. kqlib\vector.h
 
 # Examples
 ```cpp
