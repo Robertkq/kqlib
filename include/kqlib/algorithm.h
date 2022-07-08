@@ -331,7 +331,7 @@ namespace kq
 	{
 		for (; first != last; ++first)
 		{
-			if (equal_to<iterType::value_type>{}(*first, value))
+			if (equal_to<typename iterType::value_type>{}(*first, value))
 			{
 				return first;
 			}
@@ -371,7 +371,7 @@ namespace kq
 		size_t ret = 0;
 		for (; first != last; ++first)
 		{
-			if (equal_to<T>{}(*first, value))
+			if (equal_to<typename iterType::value_type>{}(*first, value))
 			{
 				// Notee: *first and value must be of the same type,
 				++ret;
@@ -467,7 +467,7 @@ namespace kq
 			if (comp(*first, *pivot))
 			{
 				++smaller;
-				if (!(sort_partition_equal_to<iterType::value_type>{}(*smaller, *first)))
+				if (!(sort_partition_equal_to<typename iterType::value_type>{}(*smaller, *first)))
 				{
 					swap(*smaller, *first);
 				}
@@ -475,7 +475,7 @@ namespace kq
 			}
 		}
 		++smaller;
-		if (!(sort_partition_equal_to<iterType::value_type>{}(*smaller, *first)))
+		if (!(sort_partition_equal_to<typename iterType::value_type>{}(*smaller, *first)))
 		{
 			swap(*smaller, *pivot);
 		}

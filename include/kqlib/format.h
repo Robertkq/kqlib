@@ -93,15 +93,15 @@ namespace kq {
         }
 
         template<typename T, typename... Args>
-        void format_args_add(kq::vector<kq::string>& v, T t, Args... Rest) {
+        void format_args_add(kq::vector<kq::string>& v, T t, Args&&... Rest) {
             v.push_back(to_string(t));
-            format_args_add(v, Rest...);
+            format_args_add(v, std::forward<Args>(Rest)...);
         }
 
         template<typename... Args>
-        kq::vector<kq::string> format_args(Args... args) {
+        kq::vector<kq::string> format_args(Args&&... args) {
             kq::vector<kq::string> ret;
-            format_args_add(ret, args...);
+            format_args_add(ret, std::forward<Args>(args)...);
             return ret;
         }
 
@@ -111,9 +111,13 @@ namespace kq {
         format_details::precision = newPrecision;
     }
 
-
+    // How the formatting works:
+    // {argid:alignSIZE}
+    // argid - the number of the argument meant to be used
+    // align - c for center, l for left, r for right; alignment of the value
+    // SIZE - the size of the buffer of space
     template<typename... Args>
-    kq::string format(const char* fmt, Args... args) {
+    kq::string format(const char* fmt, Args&&... args) {
         kq::vector<kq::string> f_list = format_details::format_args(args...);
 
         //for (size_t i = 0; i < f_list.size(); ++i) { std::cout << "Arg " << i << ". " << f_list[i] << "\n"; }
@@ -228,6 +232,7 @@ namespace kq {
         str.shrink_to_fit();
         return str;
     }
+    // {argid:alignSIZE}
 } // end of kq::
 
 #endif

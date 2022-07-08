@@ -76,23 +76,25 @@ namespace kq
 	}
 
 	template<typename iterType>
-	iterType& next(iterType& iterator, size_t n)
+	iterType next(iterType iterator, size_t n)
 	{
 		while (n > 0)
 		{
 			++iterator;
 			--n;
 		}
+		return iterator;
 	}
 
 	template<typename iterType>
-	iterType& prev(iterType& iterator, size_t n)
+	iterType prev(iterType iterator, size_t n)
 	{
 		while (n > 0)
 		{
 			--iterator;
 			++n;
 		}
+		return iterator;
 	}
 
 

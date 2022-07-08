@@ -39,9 +39,9 @@ namespace vector
     TEST_CASE("empty vectors", "[vector]")
     {
         kq::vector<int> v;
-        REQUIRE(v.is_empty() == true);
+        REQUIRE(v.empty() == true);
         v.push_back(1);
-        REQUIRE(v.is_empty() == false);
+        REQUIRE(v.empty() == false);
     }
 
     TEST_CASE("find, in vector", "[vector]")
