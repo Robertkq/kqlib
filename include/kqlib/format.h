@@ -114,8 +114,11 @@ namespace kq {
     // How the formatting works:
     // {argid:alignSIZE}
     // argid - the number of the argument meant to be used
-    // align - c for center, l for left, r for right; alignment of the value
+    // align - c for center, l for left, r for right; alignment of the value 
     // SIZE - the size of the buffer of space
+
+    // All of those can be left empty
+
     template<typename... Args>
     kq::string format(const char* fmt, Args&&... args) {
         kq::vector<kq::string> f_list = format_details::format_args(args...);
