@@ -27,32 +27,29 @@ namespace kq {
     template<typename T, bool constant>
     struct sl_iterator
     {
-        //FIXME: this is a prottype, have to add bool template arg for const iterators
+        
         using value_type = T;
-        using element = sl_element<value_type>;
+        using pointer = value_type*;
         using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
-
-        sl_iterator(element* ptr) : kq_ptr(ptr) {}
-
-        bool operator!=(const sl_iterator& other) const { return kq_ptr != other.kq_ptr; }
-        bool operator==(const sl_iterator& other) const { return kq_ptr == other.kq_ptr; }
-
-        sl_iterator& operator++() { kq_ptr = kq_ptr->next; return *this; }
-
-        value_type& operator*() { return kq_ptr->value; }
-
-    private:
-        element* kq_ptr;
-    };
-
-    template<typename T, bool constant>
-    struct sl_reverse_iterator
-    {
-    public:
-        using value_type = T;
         using element = sl_element<value_type>;
-        using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using iterator_category = std::forward_iterator_tag;
 
+        sl_iterator() : kq_ptr()                                        {}
+        sl_iterator(const sl_iterator& other) : kq_ptr(other.kq_ptr)    {}
+        sl_iterator(sl_iterator&& other) : kq_ptr(other.kq_ptr)         { other.kq_ptr = nullptr; }
+        sl_iterator(element* ptr) : kq_ptr(ptr)                         {}
+
+        sl_iterator& operator=(const sl_iterator& other)                { kq_ptr = other.kq_ptr; }
+        sl_iterator& operator=(sl_iterator&& other)                     { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; }
+
+        bool operator!=(const sl_iterator& other) const                 { return kq_ptr != other.kq_ptr; }
+        bool operator==(const sl_iterator& other) const                 { return kq_ptr == other.kq_ptr; }
+
+        sl_iterator& operator++()                                       { kq_ptr = kq_ptr->next; return *this; }
+        sl_iterator& operator++(int)                                    { element* tmp = kq_ptr; ++kq_ptr; return tmp; }
+
+        reference operator*() const                                     { return kq_ptr->value; }
+        pointer operator->() const                                      { return &(kq_ptr->value); }
 
     private:
         element* kq_ptr;
@@ -69,8 +66,6 @@ namespace kq {
 
         using iterator = sl_iterator<value_type, false>;
         using const_iterator = sl_iterator<value_type, true>;
-        using reverse_iterator = sl_reverse_iterator<value_type, false>;
-        using const_reverse_iterator = sl_reverse_iterator<value, true>;
 
         iterator begin() const { return kq_ptr; }
         iterator end() const { return nullptr; }
