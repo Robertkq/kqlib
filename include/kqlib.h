@@ -18,4 +18,6 @@
 #include "kqlib\string.h"
 #include "kqlib\vector.h"
 
+#include "kqlib\unordered_map.h"
+
 #endif 
