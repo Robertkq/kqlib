@@ -1,6 +1,10 @@
 #ifndef kqsingle_list_
 #define kqsingle_list_
 
+#include "other.h"
+
+#include <iostream> // FIXME remove
+
 namespace kq {
 
     template<typename T>
@@ -38,8 +42,8 @@ namespace kq {
         sl_iterator(sl_iterator&& other) : kq_ptr(other.kq_ptr)         { other.kq_ptr = nullptr; }
         sl_iterator(element* ptr) : kq_ptr(ptr)                         {}
 
-        sl_iterator& operator=(const sl_iterator& other)                { kq_ptr = other.kq_ptr; }
-        sl_iterator& operator=(sl_iterator&& other)                     { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; }
+        sl_iterator& operator=(const sl_iterator& other)                { kq_ptr = other.kq_ptr; return *this; }
+        sl_iterator& operator=(sl_iterator&& other)                     { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
         bool operator!=(const sl_iterator& other) const                 { return kq_ptr != other.kq_ptr; }
         bool operator==(const sl_iterator& other) const                 { return kq_ptr == other.kq_ptr; }
@@ -71,14 +75,14 @@ namespace kq {
 
         iterator begin() { return kq_ptr; }
         iterator end() { return nullptr; }
-        const_iterator begin() const { return kq_ptr };
+        const_iterator begin() const { return kq_ptr; }
         iterator end() const { return nullptr; }
         const_iterator cbegin() const { return kq_ptr; } 
         const_iterator cend() const { return nullptr; }
 
         single_list() : kq_ptr(nullptr), kq_size(0) {}
-        single_list(const single_list& other) : kq_ptr(), kq_size();
-        single_list(single_list&& other) noexcept : kq_ptr(), kq_size();
+        single_list(const single_list& other);
+        single_list(single_list&& other) noexcept;
         template<typename ilT>
         single_list(const std::initializer_list<ilT>& il);
         ~single_list();
@@ -261,8 +265,10 @@ namespace kq {
                     if (it.next() == nullptr) { pop_back(); }
                     else 
                     {
-                        prev.ptr()->next = it->next();
+                        prev.ptr()->next = it.next();
                         delete it.ptr();
+                        --kq_size;
+                        return;
                     }
                 }
                 prev = it;
