@@ -27,7 +27,6 @@ namespace kq {
     template<typename T, bool constant>
     struct sl_iterator
     {
-        
         using value_type = T;
         using pointer = value_type*;
         using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
@@ -48,6 +47,9 @@ namespace kq {
         sl_iterator& operator++()                                       { kq_ptr = kq_ptr->next; return *this; }
         sl_iterator& operator++(int)                                    { element* tmp = kq_ptr; ++kq_ptr; return tmp; }
 
+        element* ptr() const                                            { return kq_ptr; }
+        element* next() const                                           { return kq_ptr->next; }
+
         reference operator*() const                                     { return kq_ptr->value; }
         pointer operator->() const                                      { return &(kq_ptr->value); }
 
@@ -67,13 +69,22 @@ namespace kq {
         using iterator = sl_iterator<value_type, false>;
         using const_iterator = sl_iterator<value_type, true>;
 
-        iterator begin() const { return kq_ptr; }
+        iterator begin() { return kq_ptr; }
+        iterator end() { return nullptr; }
+        const_iterator begin() const { return kq_ptr };
         iterator end() const { return nullptr; }
+        const_iterator cbegin() const { return kq_ptr; } 
+        const_iterator cend() const { return nullptr; }
 
         single_list() : kq_ptr(nullptr), kq_size(0) {}
-            
-
+        single_list(const single_list& other) : kq_ptr(), kq_size();
+        single_list(single_list&& other) noexcept : kq_ptr(), kq_size();
+        template<typename ilT>
+        single_list(const std::initializer_list<ilT>& il);
         ~single_list();
+
+        single_list& operator=(const single_list& other);
+        single_list& operator=(single_list&& other) noexcept;
 
         void push_back(const value_type& value);
         template<typename... Args>
@@ -81,11 +92,43 @@ namespace kq {
 
         void pop_back();
         void pop_front();
+        void erase(iterator pos);
+        void clear();
 
     private:
         element* kq_ptr;
         size_t kq_size;
     };
+
+    template<typename T>
+    single_list<T>::single_list(const single_list& other) 
+        : kq_ptr(), kq_size(other.kq_size)
+    {
+        //FIXME: this method is pretty lazy.. 
+        for (const_iterator it = other.begin(); it != other.end(); ++it)
+        {
+            push_back(*it);
+        }
+    }
+
+    template<typename T>
+    single_list<T>::single_list(single_list&& other) noexcept
+        : kq_ptr(other.kq_ptr), kq_size(other.kq_size)
+    {
+        other.kq_ptr = nullptr;
+        other.kq_size = 0;
+    }
+
+    template<typename T>
+    template<typename ilT>
+    single_list<T>::single_list(const std::initializer_list<ilT>& il)
+        : kq_ptr(), kq_size(0)
+    {
+        for (auto& element : il)
+        {
+            push_back(element);
+        }
+    }
 
     template<typename T>
     single_list<T>::~single_list()
@@ -98,6 +141,26 @@ namespace kq {
             delete current;
             current = next;
         }
+    }
+
+    template<typename T>
+    single_list<T>& single_list<T>::operator=(const single_list& other)
+    {
+        clear();
+        for (auto& element : other)
+        {
+            push_back(element);
+        }
+    }
+
+    template<typename T>
+    single_list<T>& single_list<T>::operator=(single_list&& other) noexcept
+    {
+        clear();
+        kq_ptr = other.kq_ptr;
+        kq_size = other.kq_size;
+        other.kq_ptr = nullptr;
+        other.kq_size = 0;
     }
 
     template<typename T>
@@ -177,6 +240,50 @@ namespace kq {
             kq_ptr = kq_ptr->next;
             delete dell;
             --kq_size;
+        }
+    }
+
+    template<typename T>
+    void single_list<T>::erase(iterator pos)
+    {
+        // check to see if iterator is from this list
+        iterator it = begin();
+
+        if (pos == it) { pop_front(); }
+        else
+        {
+            iterator prev = it;
+            ++it;
+            for (; it != end(); ++it)
+            {
+                if (it == pos)
+                {
+                    if (it.next() == nullptr) { pop_back(); }
+                    else 
+                    {
+                        prev.ptr()->next = it->next();
+                        delete it.ptr();
+                    }
+                }
+                prev = it;
+            }
+        }
+
+        
+    }
+    
+    template<typename T>
+    void single_list<T>::clear()
+    {
+        if (kq_size != 0)
+        {
+            element* current;
+            while (kq_ptr != nullptr)
+            {
+                current = kq_ptr;
+                kq_ptr = kq_ptr->next;
+                delete current;
+            }
         }
     }
 
