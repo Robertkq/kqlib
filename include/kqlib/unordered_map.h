@@ -56,14 +56,40 @@ namespace kq
 
         void insert(const value_type& pair) 
         {
-            if (load_factor() >= 0.9f)
+            if (contains(pair.first) == 0)
             {
-                rehash(kq_bucket_size * 2);
+                if (load_factor() >= 0.9f)
+                {
+                    rehash(kq_bucket_size * 2);
+                }
+                size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
+                kq_data[bucket_index].push_back(pair);
+                ++kq_size;
             }
-            size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
-            kq_data[bucket_index].push_back(pair);
-            ++kq_size;
         };
+
+        //FIXME: add const method
+        value_type& at(const key_type& key)
+        {
+            size_t bucket_to_search = kq_hasher(key);
+            for (auto& pair : kq_data[bucket_to_serach])
+            {
+                if (pair.first == key)
+                    return pair;
+            }
+            throw std::out_of_range("element with key not found");
+        }
+
+        bool contains(const key_type& key) const
+        {
+            size_t bucket_to_search = kq_hasher(key);
+            for (const auto& pair : kq_data[bucket_to_serach])
+            {
+                if (pair.first == key)
+                    return true;
+            }
+            return false;
+        }
 
         float load_factor() const { return static_cast<float>(kq_size) / static_cast<float>(kq_bucket_size); }
 
