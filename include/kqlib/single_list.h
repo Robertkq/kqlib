@@ -90,6 +90,8 @@ namespace kq {
         single_list& operator=(const single_list& other);
         single_list& operator=(single_list&& other) noexcept;
 
+        bool empty() const { return kq_size == 0; }
+
         void push_back(const value_type& value);
         template<typename... Args>
         void emplace_back(Args&&... args);
@@ -250,32 +252,31 @@ namespace kq {
     template<typename T>
     void single_list<T>::erase(iterator pos)
     {
-        // check to see if iterator is from this list
-        iterator it = begin();
-
-        if (pos == it) { pop_front(); }
-        else
+        if (kq_size != 0)
         {
-            iterator prev = it;
-            ++it;
-            for (; it != end(); ++it)
+            // check to see if iterator is from this list
+            iterator it = begin();
+            if (pos == it) { pop_front(); }
+            else
             {
-                if (it == pos)
+                iterator prev = it;
+                for (++it; it != end(); ++it)
                 {
-                    if (it.next() == nullptr) { pop_back(); }
-                    else 
+                    if (it == pos)
                     {
-                        prev.ptr()->next = it.next();
-                        delete it.ptr();
-                        --kq_size;
-                        return;
+                        if (it.next() == nullptr) { pop_back(); }
+                        else
+                        {
+                            prev.ptr()->next = it.next();
+                            delete it.ptr();
+                            --kq_size;
+                            return;
+                        }
                     }
+                    prev = it;
                 }
-                prev = it;
             }
         }
-
-        
     }
     
     template<typename T>
