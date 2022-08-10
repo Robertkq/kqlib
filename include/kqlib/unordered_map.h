@@ -17,6 +17,15 @@ namespace kq
         using mapped_type = T;
         using value_type = std::pair<key_type, mapped_type>;
 
+        typename single_list<value_type>::iterator begin() { return kq_data.begin(); }
+        typename single_list<value_type>::iterator end() { return kq_data.end(); }
+        typename single_list<value_type>::const_iterator begin() const { return kq_data.cbegin(); }
+        typename single_list<value_type>::const_iterator end() const { return kq_data.cend(); }
+        typename single_list<value_type>::const_iterator cbegin() const { return kq_data.cbegin(); }
+        typename single_list<value_type>::const_iterator cend() const { return kq_data.cend(); }
+
+        size_t size() const { return kq_data.size(); }
+
         void push_back(const value_type& value) { kq_data.push_back(value); }
         template<typename... Args>
         void emplace_back(Args&&... args) { kq_data.emplace_back(std::forward<Args>(args)...); }
@@ -34,6 +43,49 @@ namespace kq
 
     };
 
+    template<typename Key, typename T>
+    struct um_iterator
+    {
+    public:
+        using key_type = Key;
+        using mapped_type = T;
+
+        um_iterator() : kq_outer(), kq_inner() {}
+        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin())
+        {
+            std::cout << "it made: " << kq_outer.ptr() << '\n';
+        }
+
+        bool operator==(const um_iterator& other)
+        {
+            if (kq_outer == other.kq_outer)
+                return kq_inner == other.kq_inner;
+            return false;
+        }
+
+        bool operator!=(const um_iterator& other) { return !(*this == other); }
+
+        um_iterator& operator++()
+        {
+            std::cout << "here";
+            if (kq_outer->end() == kq_inner)
+            {
+                ++kq_outer;
+                kq_inner = kq_outer->begin();
+            }
+            else ++kq_inner;
+            return *this;
+        }
+
+        
+
+        std::pair<key_type, mapped_type>& operator*() { std::cout << kq_inner.ptr() << '\n'; return *kq_inner; }
+
+    private:
+        typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
+        typename single_list<std::pair<key_type, mapped_type>>::iterator kq_inner;
+    };
+
     template<typename Key, typename T, typename Hasher = std::hash<Key>>
     struct unordered_map
     {
@@ -46,6 +98,8 @@ namespace kq
         using reference = value_type&;
         using pointer = value_type*;
 
+        using iterator = um_iterator<key_type, mapped_type>;
+
 
         unordered_map();
         unordered_map(const unordered_map& other); // FIXME: implement
@@ -55,24 +109,30 @@ namespace kq
         unordered_map& operator=(unordered_map&& other); // FIXME: implement
 
         void insert(const value_type& pair) 
-        {
+        {  
             if (contains(pair.first) == 0)
             {
+                std::cout << pair.first << '\n';
                 if (load_factor() >= 0.9f)
                 {
+                    
                     rehash(kq_bucket_size * 2);
                 }
                 size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
                 kq_data[bucket_index].push_back(pair);
                 ++kq_size;
+                // if bucket was empty, add to iterator list
             }
         };
+
+        iterator begin()    { return kq_first_nonempty; }
+        iterator end()      { return kq_last_empty; }
 
         //FIXME: add const method
         value_type& at(const key_type& key)
         {
-            size_t bucket_to_search = kq_hasher(key);
-            for (auto& pair : kq_data[bucket_to_serach])
+            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+            for (auto& pair : kq_data[bucket_to_search])
             {
                 if (pair.first == key)
                     return pair;
@@ -82,8 +142,8 @@ namespace kq
 
         bool contains(const key_type& key) const
         {
-            size_t bucket_to_search = kq_hasher(key);
-            for (const auto& pair : kq_data[bucket_to_serach])
+            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+            for (const auto& pair : kq_data[bucket_to_search])
             {
                 if (pair.first == key)
                     return true;
@@ -95,6 +155,7 @@ namespace kq
 
         void rehash(size_t buckets) 
         {
+            
             size_t old_bucket_size = kq_bucket_size;
             kq_bucket_size = buckets;
             kq_data.resize(buckets);
@@ -108,12 +169,14 @@ namespace kq
                     for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
                         it != kq_data[old_bucket_index].kq_data.end(); ++it)
                     {
-                        std::cout << "Checking " << it->first;
-                        if (kq_hasher(it->first) != old_bucket_index)
+                        
+                        size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
+                        if (new_bucket_location != old_bucket_index)
                         {
-                            std::cout  << " has a different bucket index value now, CHECK\n";
+                            auto Tmp = std::move(*it);
+                            kq_data[old_bucket_index].erase(it);
+                            kq_data[new_bucket_location].emplace_back(std::move(Tmp));
                         }
-                        else std::cout  << " doesnt have a different bucket value\n";
                     }
                 }
             }
@@ -127,7 +190,7 @@ namespace kq
             {
                 if (bucket.empty() == 0)
                 {
-                    std::cout << "Bucket " << bid << "\n";
+                    std::cout << "Bucket " << bid << ": " << &bucket << "\n";
                     for (auto& pair : bucket.kq_data)
                     {
                         std::cout << pair.first << " " << pair.second << '\n';
@@ -139,17 +202,22 @@ namespace kq
         }
 
     private:
-        Hasher kq_hasher;
+        
         vector<bucket<key_type, mapped_type>> kq_data;
         size_t kq_size;
         size_t kq_bucket_size;
-        
+        Hasher kq_hasher;
+        typename vector<bucket<key_type, mapped_type>>::iterator kq_first_nonempty;
+        typename vector<bucket<key_type, mapped_type>>::iterator kq_last_empty;
     };
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map()
-        : kq_data(), kq_size(0), kq_bucket_size(8)
+        : kq_data(), kq_size(0), kq_bucket_size(8), 
+        kq_hasher(), kq_first_nonempty(nullptr), kq_last_empty(nullptr)
+                                            // copy constructor to make sure they have the same address
     {
+        // FIXME: fix vector's constructor with size OR LOOK AT IT SMTH WRONG WITH IT
         kq_data.resize(8);
     }
 

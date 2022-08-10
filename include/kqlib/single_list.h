@@ -77,7 +77,7 @@ namespace kq {
         iterator end() { return nullptr; }
         const_iterator begin() const { return kq_ptr; }
         iterator end() const { return nullptr; }
-        const_iterator cbegin() const { return kq_ptr; } 
+        const_iterator cbegin() const { return kq_ptr; }
         const_iterator cend() const { return nullptr; }
 
         single_list() : kq_ptr(nullptr), kq_size(0) {}
@@ -91,6 +91,7 @@ namespace kq {
         single_list& operator=(single_list&& other) noexcept;
 
         bool empty() const { return kq_size == 0; }
+        size_t size() const { return kq_size; }
 
         void push_back(const value_type& value);
         template<typename... Args>
@@ -219,6 +220,7 @@ namespace kq {
             {
                 delete kq_ptr;
                 --kq_size;
+                kq_ptr = nullptr;
             }
             else
             {
