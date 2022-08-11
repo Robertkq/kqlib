@@ -51,8 +51,9 @@ namespace kq {
         sl_iterator& operator++()                                       { kq_ptr = kq_ptr->next; return *this; }
         sl_iterator& operator++(int)                                    { element* tmp = kq_ptr; ++kq_ptr; return tmp; }
 
-        element* ptr() const                                            { return kq_ptr; }
-        element* next() const                                           { return kq_ptr->next; }
+        element* el_ptr() const                                            { return kq_ptr; }
+        element* el_next() const                                           { return kq_ptr->next; }
+        pointer ptr() const                                             { return &(kq_ptr->value); }
 
         reference operator*() const                                     { return kq_ptr->value; }
         pointer operator->() const                                      { return &(kq_ptr->value); }
@@ -109,12 +110,10 @@ namespace kq {
 
     template<typename T>
     single_list<T>::single_list(const single_list& other) 
-        : kq_ptr(), kq_size(other.kq_size)
+        : kq_ptr(nullptr), kq_size(0)
     {
         //FIXME: this method is pretty lazy.. 
-        for (auto it = other.cbegin();
-            it != other.cend();
-            ++it)
+        for (auto it = other.cbegin(); it != other.cend(); ++it)
         {
             push_back(*it);
         }
@@ -131,7 +130,7 @@ namespace kq {
     template<typename T>
     template<typename ilT>
     single_list<T>::single_list(const std::initializer_list<ilT>& il)
-        : kq_ptr(), kq_size(0)
+        : kq_ptr(nullptr), kq_size(0)
     {
         for (auto& element : il)
         {
@@ -178,6 +177,7 @@ namespace kq {
         if (kq_size == 0)
         {
             kq_ptr = new element(value);
+            kq_ptr->next = nullptr;
             ++kq_size;
         }
         else
@@ -188,6 +188,7 @@ namespace kq {
                 last = last->next;
             }
             last->next = new element(value);
+            last->next->next = nullptr;
             ++kq_size;
         }
     }
@@ -199,6 +200,7 @@ namespace kq {
         if (kq_size == 0)
         {
             kq_ptr = new element(std::forward<Args>(args)...);
+            kq_ptr->next = nullptr;
             ++kq_size;
         }
         else
@@ -209,6 +211,7 @@ namespace kq {
                 last = last->next;
             }
             last->next = new element(std::forward<Args>(args)...);
+            kq_ptr->next->next = nullptr;
             ++kq_size;
         }
     }
@@ -268,11 +271,11 @@ namespace kq {
                 {
                     if (it == pos)
                     {
-                        if (it.next() == nullptr) { pop_back(); }
+                        if (it.el_next() == nullptr) { pop_back(); }
                         else
                         {
-                            prev.ptr()->next = it.next();
-                            delete it.ptr();
+                            prev.el_ptr()->next = it.el_next();
+                            delete it.el_ptr();
                             --kq_size;
                             return;
                         }

@@ -17,6 +17,33 @@ namespace kq
         using mapped_type = T;
         using value_type = std::pair<key_type, mapped_type>;
 
+        bucket() : prev_nonempty(nullptr), kq_data(), next_nonempty() { 
+            //std::cout << "Bucket default constructed\n";
+        }
+        bucket(const bucket& other) : prev_nonempty(other.prev_nonempty), kq_data(other.kq_data), next_nonempty(other.next_nonempty) {
+            //std::cout << "Bucket copy constructed\n"; 
+        }
+        bucket(bucket&& other) noexcept : prev_nonempty(other.prev_nonempty), kq_data(std::move(other.kq_data)), next_nonempty(other.next_nonempty)
+        {
+            
+        }
+
+        bucket& operator=(const bucket& other)
+        {
+            kq_data = other.kq_data;
+            prev_nonempty = other.prev_nonempty;
+            next_nonempty = other.next_nonempty;
+            return *this;
+        }
+
+        bucket& operator=(bucket&& other) noexcept
+        {
+            kq_data = std::move(other.kq_data);
+            prev_nonempty = other.prev_nonempty;
+            next_nonempty = other.next_nonempty;
+            return *this;
+        }
+
         typename single_list<value_type>::iterator begin() { return kq_data.begin(); }
         typename single_list<value_type>::iterator end() { return kq_data.end(); }
         typename single_list<value_type>::const_iterator begin() const { return kq_data.cbegin(); }
@@ -43,18 +70,18 @@ namespace kq
 
     };
 
-    template<typename Key, typename T>
+    template<typename Key, typename T, bool constant>
     struct um_iterator
     {
     public:
         using key_type = Key;
         using mapped_type = T;
+        using value_type = std::pair<Key, T>;
+        using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using pointer = value_type*;
 
         um_iterator() : kq_outer(), kq_inner() {}
-        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin())
-        {
-            
-        }
+        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
 
         bool operator==(const um_iterator& other)
         {
@@ -80,9 +107,8 @@ namespace kq
 
         
 
-        std::pair<key_type, mapped_type>& operator*() {
-            
-            return *kq_inner; }
+        reference operator*() const { return *kq_inner; }
+        pointer operator->() const { return kq_inner.ptr(); }
 
     private:
         typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
@@ -101,14 +127,15 @@ namespace kq
         using reference = value_type&;
         using pointer = value_type*;
 
-        using iterator = um_iterator<key_type, mapped_type>;
+        using iterator = um_iterator<key_type, mapped_type, false>;
+        using const_iterator = um_iterator<key_type, mapped_type, true>;
 
 
         unordered_map();
-        unordered_map(const unordered_map& other); // FIXME: implement
-        unordered_map(unordered_map&& other); // FIXME: implement
+        unordered_map(const unordered_map& other);
+        unordered_map(unordered_map&& other);
 
-        unordered_map& operator=(const unordered_map& other); // FIXME: implement
+        unordered_map& operator=(const unordered_map& other);
         unordered_map& operator=(unordered_map&& other) noexcept;
 
         void insert(const value_type& pair) 
@@ -154,6 +181,7 @@ namespace kq
             }
         }
 
+        // Function takes care of setting up iterators for amortized O(1) iteration time
         void re_iterator_bucket()
         {
             kq_first_nonempty = kq_data.end();
@@ -227,36 +255,33 @@ namespace kq
 
         void rehash(size_t buckets) 
         {
-            //std::cout << "REHASHING\n";
+            std::cout << "REHASHING\n";
             size_t old_bucket_size = kq_bucket_size;
             kq_bucket_size = buckets;
-            kq_data.resize(buckets);
 
-            
+            vector<bucket<key_type, mapped_type>> new_data(buckets);
+
+            std::cout << "STARTED LOOPING\n";
             for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
             {
+
                 if (kq_data[old_bucket_index].empty() == 0)
                 {
                     for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
                         it != kq_data[old_bucket_index].kq_data.end(); ++it)
                     {
-                        
+                        //std::cout << it->first << '\n';
                         size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
-                        if (new_bucket_location != old_bucket_index)
-                        {
-                            auto Tmp = std::move(*it);
-                            kq_data[old_bucket_index].erase(it);
-
-                            kq_data[new_bucket_location].emplace_back(std::move(Tmp));
-
-                        }
+                            new_data[new_bucket_location].emplace_back(std::move(*it));
                     }
                 }
             }
-            print();
+            kq_data = std::move(new_data);
 
+
+
+            std::cout << "DONE LOOPING\n";
             re_iterator_bucket();
-
         }
 
         void print()
@@ -299,14 +324,38 @@ namespace kq
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map()
-        : kq_data(), kq_size(0), kq_bucket_size(8), 
+        : kq_data(8), kq_size(0), kq_bucket_size(8),
         kq_hasher(), kq_first_nonempty(), kq_last_nonempty()
-                                            // copy constructor to make sure they have the same address
     {
-        // FIXME: fix vector's constructor with size OR LOOK AT IT SMTH WRONG WITH IT
-        kq_data.resize(8);
         kq_first_nonempty = kq_data.end();
         kq_last_nonempty = kq_data.end();
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>::unordered_map(const unordered_map& other)
+        : kq_data(other.kq_data), kq_size(other.kq_size), kq_bucket_size(other.kq_bucket_size),
+        kq_hasher(), kq_first_nonempty(), kq_last_nonempty()
+    {
+        re_iterator_bucket();
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>::unordered_map(unordered_map&& other)
+        : kq_data(std::move(other.kq_data)), kq_size(other.kq_size), kq_bucket_size(other.kq_bucket_size),
+        kq_hasher(), kq_first_nonempty(other.kq_first_nonempty), kq_last_nonempty(other.kq_last_nonempty)
+    {
+        other.clear();
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(const unordered_map& other)
+    {
+        clear();
+        kq_data = other.kq_data;
+        kq_size = other.kq_size;
+        kq_bucket_size = other.kq_bucket_size;
+        re_iterator_bucket();
+        return *this;
     }
 
     template<typename Key, typename T, typename Hasher>
@@ -334,3 +383,47 @@ namespace kq
 } // namespace kq
 
 #endif
+
+
+/*
+void rehash(size_t buckets)
+        {
+            std::cout << "REHASHING\n";
+            size_t old_bucket_size = kq_bucket_size;
+            kq_bucket_size = buckets;
+            kq_data.resize(buckets);
+
+            print();
+
+            std::cout << "STARTED LOOPING\n";
+            size_t bid = 0;
+            size_t eid = 0;
+            for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
+            {
+
+                if (kq_data[old_bucket_index].empty() == 0)
+                {
+                    for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
+                        it != kq_data[old_bucket_index].kq_data.end(); ++it)
+                    {
+                        std::cout << bid << "." << eid << '\n';
+                        size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
+                        if (new_bucket_location != old_bucket_index)
+                        {
+                            auto Tmp = std::move(*it);
+                            kq_data[old_bucket_index].erase(it);
+
+                            kq_data[new_bucket_location].emplace_back(std::move(Tmp));
+
+                        }
+                        ++eid;
+                    }
+                }
+                ++bid;
+                eid = 0;
+            }
+            std::cout << "DONE LOOPING\n";
+            re_iterator_bucket();
+            std::cout << "DONE REHASHING\n";
+        }
+*/
