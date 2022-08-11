@@ -53,9 +53,9 @@ namespace kq
 
         size_t size() const { return kq_data.size(); }
 
-        void push_back(const value_type& value) { kq_data.push_back(value); }
+        value_type& push_back(const value_type& value) { return kq_data.push_back(value); }
         template<typename... Args>
-        void emplace_back(Args&&... args) { kq_data.emplace_back(std::forward<Args>(args)...); }
+        value_type& emplace_back(Args&&... args) { return kq_data.emplace_back(std::forward<Args>(args)...); }
 
         void pop_back() { kq_data.pop_back(); }
         void pop_front() { kq_data.pop_front(); }
@@ -138,107 +138,27 @@ namespace kq
         unordered_map& operator=(const unordered_map& other);
         unordered_map& operator=(unordered_map&& other) noexcept;
 
-        void insert(const value_type& pair) 
-        {  
-            if (contains(pair.first) == 0)
-            {
-                //std::cout << pair.first << '\n';
-                if (load_factor() >= 0.9f)
-                {
-                    
-                    rehash(kq_bucket_size * 2);
-                }
-                size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
-                kq_data[bucket_index].push_back(pair);
-                ++kq_size;
-                if (kq_data[bucket_index].size() == 1)
-                {
-                    add_iterator_bucket(kq_data.begin() + bucket_index);
-                }
-                // if bucket was empty, add to iterator list
-            }
-        };
-        
-        void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it)
-        {
-            if (it == kq_first_nonempty)
-            {
-                //std::cout << "Removed first bucket\n";
-                kq_first_nonempty = it->next_nonempty;
-            }
-            else if (it == kq_last_nonempty)
-            {
-                //std::cout << "Removed last bucket\n";
-                kq_last_nonempty = it->prev_nonempty;
-                kq_last_nonempty->next_nonempty = kq_data.end();
-
-            }
-            else
-            {
-                //std::cout << "Removed not first bucket\n";
-                it->prev_nonempty->next_nonempty = it->next_nonempty;
-                it->next_nonempty->prev_nonempty = it->prev_nonempty;
-            }
-        }
-
-        // Function takes care of setting up iterators for amortized O(1) iteration time
-        void re_iterator_bucket()
-        {
-            kq_first_nonempty = kq_data.end();
-            kq_last_nonempty = kq_data.end();
-            for (auto it = kq_data.begin(); it != kq_data.end(); ++it)
-            {
-                if (it->empty() == false)
-                    add_iterator_bucket(it);
-            }
-        }
-
-        void add_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it) 
-        {
-            if (kq_first_nonempty == kq_data.end())
-            {
-                //std::cout << "First bucket added to list\n";
-                kq_first_nonempty = it;
-                kq_last_nonempty = it;
-                it->prev_nonempty = nullptr;
-                it->next_nonempty = kq_data.end();
-                
-            }
-            else
-            {
-                //std::cout << "More bucket added to list\n";             
-                kq_last_nonempty->next_nonempty = it;
-                it->prev_nonempty = kq_last_nonempty;
-                kq_last_nonempty = it;
-                it->next_nonempty = kq_data.end();
-                
-            }
-        }
-
         iterator begin()    { return kq_first_nonempty; }
-        iterator end()      { return kq_data.end(); }
+        iterator end()  { return kq_data.end(); }
+        const_iterator begin() const { return kq_first_nonempty; }
+        const_iterator end() const { return kq_data.end(); }
+        const_iterator cbegin() const { return kq_first_nonempty; }
+        const_iterator cend() const { return kq_data.end(); }
 
-        mapped_type& at(const key_type& key)
-        {
-            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-            for (auto& pair : kq_data[bucket_to_search])
-            {
-                if (pair.first == key)
-                    return pair.second;
-            }
-            throw std::out_of_range("element with key not found");
-        }
+        size_t size() const { return kq_size; }
+        bool empty() const { return kq_size == 0; }
+        float load_factor() const { return static_cast<float>(kq_size) / static_cast<float>(kq_bucket_size); }
 
-        const mapped_type& at(const key_type& key) const
-        {
-            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-            for (auto& pair : kq_data[bucket_to_search])
-            {
-                if (pair.first == key)
-                    return pair.second;
-            }
-            throw std::out_of_range("element with key not found");
-        }
+
+        mapped_type& insert(const value_type& pair);
+        
+        
+
+        
+        mapped_type& operator[](const key_type& key);
+        const mapped_type& operator[](const key_type& key) const;
+        mapped_type& at(const key_type& key);
+        const mapped_type& at(const key_type& key) const;
 
         bool contains(const key_type& key) const
         {
@@ -251,38 +171,9 @@ namespace kq
             return false;
         }
 
-        float load_factor() const { return static_cast<float>(kq_size) / static_cast<float>(kq_bucket_size); }
+        
 
-        void rehash(size_t buckets) 
-        {
-            std::cout << "REHASHING\n";
-            size_t old_bucket_size = kq_bucket_size;
-            kq_bucket_size = buckets;
-
-            vector<bucket<key_type, mapped_type>> new_data(buckets);
-
-            std::cout << "STARTED LOOPING\n";
-            for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
-            {
-
-                if (kq_data[old_bucket_index].empty() == 0)
-                {
-                    for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
-                        it != kq_data[old_bucket_index].kq_data.end(); ++it)
-                    {
-                        //std::cout << it->first << '\n';
-                        size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
-                            new_data[new_bucket_location].emplace_back(std::move(*it));
-                    }
-                }
-            }
-            kq_data = std::move(new_data);
-
-
-
-            std::cout << "DONE LOOPING\n";
-            re_iterator_bucket();
-        }
+        
 
         void print()
         {
@@ -313,6 +204,14 @@ namespace kq
         }
 
     private:
+            void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
+            // Function takes care of setting up iterators for amortized O(1) iteration time
+            void re_iterator_bucket();
+            void add_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
+
+            void rehash(size_t buckets);
+
+    private:
         
         vector<bucket<key_type, mapped_type>> kq_data;
         size_t kq_size;
@@ -328,7 +227,7 @@ namespace kq
         kq_hasher(), kq_first_nonempty(), kq_last_nonempty()
     {
         kq_first_nonempty = kq_data.end();
-        kq_last_nonempty = kq_data.end();
+        kq_last_nonempty  = kq_data.end();
     }
 
     template<typename Key, typename T, typename Hasher>
@@ -351,9 +250,9 @@ namespace kq
     unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(const unordered_map& other)
     {
         clear();
-        kq_data = other.kq_data;
-        kq_size = other.kq_size;
-        kq_bucket_size = other.kq_bucket_size;
+        kq_data         = other.kq_data;
+        kq_size         = other.kq_size;
+        kq_bucket_size  = other.kq_bucket_size;
         re_iterator_bucket();
         return *this;
     }
@@ -362,20 +261,193 @@ namespace kq
     unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(unordered_map&& other) noexcept
     {
         clear();
-        kq_first_nonempty = other.kq_first_nonempty;
-        kq_last_nonempty = other.kq_last_nonempty;
-        kq_data = std::move(other.kq_data);
-        kq_size = other.kq_size;
-        kq_bucket_size = other.kq_bucket_size;
+        kq_first_nonempty   = other.kq_first_nonempty;
+        kq_last_nonempty    = other.kq_last_nonempty;
+        kq_data             = std::move(other.kq_data);
+        kq_size             = other.kq_size;
+        kq_bucket_size      = other.kq_bucket_size;
         // kq_hasher is probably the same since Key is the same
         
 
         other.kq_data.resize(8);
-        other.kq_bucket_size = 8;
-        other.kq_size = 0;
+        other.kq_bucket_size    = 8;
+        other.kq_size           = 0;
         other.kq_first_nonempty = other.kq_last_nonempty;
 
         return *this;
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::insert(const value_type& pair)
+    {
+        if (contains(pair.first) == 0)
+        {
+            //std::cout << pair.first << '\n';
+            if (load_factor() >= 0.9f)
+            {
+                rehash(kq_bucket_size * 2);
+            }
+            size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
+            value_type& ref = kq_data[bucket_index].push_back(pair);
+            ++kq_size;
+            // if bucket was empty, add to iterator list
+            if (kq_data[bucket_index].size() == 1)
+            {
+                add_iterator_bucket(kq_data.begin() + bucket_index);
+            }
+            return ref.second;
+        }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::operator[](const key_type& key)
+    {
+        if (contains(key) == false)
+        {
+            //FIXME: I think the standard requires this to be emplace instead of insert
+            return insert({ key, mapped_type{} });
+        }
+        else
+        {
+            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+            for (auto& pair : kq_data[bucket_to_search])
+            {
+                if (pair.first == key)
+                    return pair.second;
+            }
+        }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    const typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::operator[](const key_type& key) const
+    {
+        if (contains(key) == false)
+        {
+            //FIXME: I think the standard requires this to be emplace instead of insert
+            return insert({ key, mapped_type{} });
+        }
+        else
+        {
+            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+            for (auto& pair : kq_data[bucket_to_search])
+            {
+                if (pair.first == key)
+                    return pair.second;
+            }
+        }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::at(const key_type& key)
+    {
+        size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+        for (auto& pair : kq_data[bucket_to_search])
+        {
+            if (pair.first == key)
+                return pair.second;
+        }
+        throw std::out_of_range("element with key not found");
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    const typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::at(const key_type& key) const
+    {
+        size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+        for (auto& pair : kq_data[bucket_to_search])
+        {
+            if (pair.first == key)
+                return pair.second;
+        }
+        throw std::out_of_range("element with key not found");
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it)
+    {
+        if (it == kq_first_nonempty)
+        {
+            //std::cout << "Removed first bucket\n";
+            kq_first_nonempty = it->next_nonempty;
+        }
+        else if (it == kq_last_nonempty)
+        {
+            //std::cout << "Removed last bucket\n";
+            kq_last_nonempty = it->prev_nonempty;
+            kq_last_nonempty->next_nonempty = kq_data.end();
+
+        }
+        else
+        {
+            //std::cout << "Removed not first bucket\n";
+            it->prev_nonempty->next_nonempty = it->next_nonempty;
+            it->next_nonempty->prev_nonempty = it->prev_nonempty;
+        }
+    }
+
+    // Function takes care of setting up iterators for amortized O(1) iteration time
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::re_iterator_bucket()
+    {
+        kq_first_nonempty = kq_data.end();
+        kq_last_nonempty = kq_data.end();
+        for (auto it = kq_data.begin(); it != kq_data.end(); ++it)
+        {
+            if (it->empty() == false)
+                add_iterator_bucket(it);
+        }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::add_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it)
+    {
+        if (kq_first_nonempty == kq_data.end())
+        {
+            //std::cout << "First bucket added to list\n";
+            kq_first_nonempty = it;
+            kq_last_nonempty = it;
+            it->prev_nonempty = nullptr;
+            it->next_nonempty = kq_data.end();
+        }
+        else
+        {
+            //std::cout << "More bucket added to list\n";             
+            kq_last_nonempty->next_nonempty = it;
+            it->prev_nonempty = kq_last_nonempty;
+            kq_last_nonempty = it;
+            it->next_nonempty = kq_data.end();
+        }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::rehash(size_t buckets)
+    {
+        //std::cout << "REHASHING\n";
+        size_t old_bucket_size = kq_bucket_size;
+        kq_bucket_size = buckets;
+
+        vector<bucket<key_type, mapped_type>> new_data(buckets);
+
+        //std::cout << "STARTED LOOPING\n";
+        for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
+        {
+
+            if (kq_data[old_bucket_index].empty() == 0)
+            {
+                for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
+                    it != kq_data[old_bucket_index].kq_data.end(); ++it)
+                {
+                    //std::cout << it->first << '\n';
+                    size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
+                    new_data[new_bucket_location].emplace_back(std::move(*it));
+                }
+            }
+        }
+        kq_data = std::move(new_data);
+
+
+
+        //std::cout << "DONE LOOPING\n";
+        re_iterator_bucket();
     }
 
 

@@ -94,9 +94,9 @@ namespace kq {
         bool empty() const { return kq_size == 0; }
         size_t size() const { return kq_size; }
 
-        void push_back(const value_type& value);
+        value_type& push_back(const value_type& value);
         template<typename... Args>
-        void emplace_back(Args&&... args);
+        value_type& emplace_back(Args&&... args);
 
         void pop_back();
         void pop_front();
@@ -172,13 +172,14 @@ namespace kq {
     }
 
     template<typename T>
-    void single_list<T>::push_back(const value_type& value)
+    typename single_list<T>::value_type& single_list<T>::push_back(const value_type& value)
     {
         if (kq_size == 0)
         {
             kq_ptr = new element(value);
             kq_ptr->next = nullptr;
             ++kq_size;
+            return kq_ptr->value;
         }
         else
         {
@@ -190,18 +191,20 @@ namespace kq {
             last->next = new element(value);
             last->next->next = nullptr;
             ++kq_size;
+            return last->next->value;
         }
     }
 
     template<typename T>
     template<typename... Args>
-    void single_list<T>::emplace_back(Args&&... args)
+    typename single_list<T>::value_type& single_list<T>::emplace_back(Args&&... args)
     {
         if (kq_size == 0)
         {
             kq_ptr = new element(std::forward<Args>(args)...);
             kq_ptr->next = nullptr;
             ++kq_size;
+            return kq_ptr->value;
         }
         else
         {
@@ -211,8 +214,9 @@ namespace kq {
                 last = last->next;
             }
             last->next = new element(std::forward<Args>(args)...);
-            kq_ptr->next->next = nullptr;
+            last->next->next = nullptr;
             ++kq_size;
+            return last->next->value;
         }
     }
 
