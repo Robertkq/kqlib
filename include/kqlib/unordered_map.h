@@ -53,7 +53,7 @@ namespace kq
         um_iterator() : kq_outer(), kq_inner() {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin())
         {
-            std::cout << "it made: " << kq_outer.ptr() << '\n';
+            
         }
 
         bool operator==(const um_iterator& other)
@@ -67,19 +67,22 @@ namespace kq
 
         um_iterator& operator++()
         {
-            std::cout << "here";
+            ++kq_inner;
             if (kq_outer->end() == kq_inner)
             {
-                ++kq_outer;
+                kq_outer = kq_outer->next_nonempty;
                 kq_inner = kq_outer->begin();
             }
-            else ++kq_inner;
             return *this;
         }
 
+        bucket<key_type, mapped_type>* outer_ptr() { return kq_outer.ptr(); }
+
         
 
-        std::pair<key_type, mapped_type>& operator*() { std::cout << kq_inner.ptr() << '\n'; return *kq_inner; }
+        std::pair<key_type, mapped_type>& operator*() {
+            
+            return *kq_inner; }
 
     private:
         typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
@@ -106,13 +109,13 @@ namespace kq
         unordered_map(unordered_map&& other); // FIXME: implement
 
         unordered_map& operator=(const unordered_map& other); // FIXME: implement
-        unordered_map& operator=(unordered_map&& other); // FIXME: implement
+        unordered_map& operator=(unordered_map&& other) noexcept;
 
         void insert(const value_type& pair) 
         {  
             if (contains(pair.first) == 0)
             {
-                std::cout << pair.first << '\n';
+                //std::cout << pair.first << '\n';
                 if (load_factor() >= 0.9f)
                 {
                     
@@ -121,21 +124,90 @@ namespace kq
                 size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
                 kq_data[bucket_index].push_back(pair);
                 ++kq_size;
+                if (kq_data[bucket_index].size() == 1)
+                {
+                    add_iterator_bucket(kq_data.begin() + bucket_index);
+                }
                 // if bucket was empty, add to iterator list
             }
         };
+        
+        void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it)
+        {
+            if (it == kq_first_nonempty)
+            {
+                //std::cout << "Removed first bucket\n";
+                kq_first_nonempty = it->next_nonempty;
+            }
+            else if (it == kq_last_nonempty)
+            {
+                //std::cout << "Removed last bucket\n";
+                kq_last_nonempty = it->prev_nonempty;
+                kq_last_nonempty->next_nonempty = kq_data.end();
+
+            }
+            else
+            {
+                //std::cout << "Removed not first bucket\n";
+                it->prev_nonempty->next_nonempty = it->next_nonempty;
+                it->next_nonempty->prev_nonempty = it->prev_nonempty;
+            }
+        }
+
+        void re_iterator_bucket()
+        {
+            kq_first_nonempty = kq_data.end();
+            kq_last_nonempty = kq_data.end();
+            for (auto it = kq_data.begin(); it != kq_data.end(); ++it)
+            {
+                if (it->empty() == false)
+                    add_iterator_bucket(it);
+            }
+        }
+
+        void add_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it) 
+        {
+            if (kq_first_nonempty == kq_data.end())
+            {
+                //std::cout << "First bucket added to list\n";
+                kq_first_nonempty = it;
+                kq_last_nonempty = it;
+                it->prev_nonempty = nullptr;
+                it->next_nonempty = kq_data.end();
+                
+            }
+            else
+            {
+                //std::cout << "More bucket added to list\n";             
+                kq_last_nonempty->next_nonempty = it;
+                it->prev_nonempty = kq_last_nonempty;
+                kq_last_nonempty = it;
+                it->next_nonempty = kq_data.end();
+                
+            }
+        }
 
         iterator begin()    { return kq_first_nonempty; }
-        iterator end()      { return kq_last_empty; }
+        iterator end()      { return kq_data.end(); }
 
-        //FIXME: add const method
-        value_type& at(const key_type& key)
+        mapped_type& at(const key_type& key)
         {
             size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
             for (auto& pair : kq_data[bucket_to_search])
             {
                 if (pair.first == key)
-                    return pair;
+                    return pair.second;
+            }
+            throw std::out_of_range("element with key not found");
+        }
+
+        const mapped_type& at(const key_type& key) const
+        {
+            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+            for (auto& pair : kq_data[bucket_to_search])
+            {
+                if (pair.first == key)
+                    return pair.second;
             }
             throw std::out_of_range("element with key not found");
         }
@@ -155,13 +227,12 @@ namespace kq
 
         void rehash(size_t buckets) 
         {
-            
+            //std::cout << "REHASHING\n";
             size_t old_bucket_size = kq_bucket_size;
             kq_bucket_size = buckets;
             kq_data.resize(buckets);
 
-            print();
-
+            
             for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
             {
                 if (kq_data[old_bucket_index].empty() == 0)
@@ -175,11 +246,16 @@ namespace kq
                         {
                             auto Tmp = std::move(*it);
                             kq_data[old_bucket_index].erase(it);
+
                             kq_data[new_bucket_location].emplace_back(std::move(Tmp));
+
                         }
                     }
                 }
             }
+            print();
+
+            re_iterator_bucket();
 
         }
 
@@ -201,6 +277,16 @@ namespace kq
             std::cout << '\n';
         }
 
+        void clear()
+        {
+            kq_data.clear();
+            kq_size = 0;
+            kq_data.resize(8);
+            kq_bucket_size = 8;
+            kq_first_nonempty = kq_data.end();
+            kq_last_nonempty = kq_data.end();
+        }
+
     private:
         
         vector<bucket<key_type, mapped_type>> kq_data;
@@ -208,17 +294,39 @@ namespace kq
         size_t kq_bucket_size;
         Hasher kq_hasher;
         typename vector<bucket<key_type, mapped_type>>::iterator kq_first_nonempty;
-        typename vector<bucket<key_type, mapped_type>>::iterator kq_last_empty;
+        typename vector<bucket<key_type, mapped_type>>::iterator kq_last_nonempty;
     };
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map()
         : kq_data(), kq_size(0), kq_bucket_size(8), 
-        kq_hasher(), kq_first_nonempty(nullptr), kq_last_empty(nullptr)
+        kq_hasher(), kq_first_nonempty(), kq_last_nonempty()
                                             // copy constructor to make sure they have the same address
     {
         // FIXME: fix vector's constructor with size OR LOOK AT IT SMTH WRONG WITH IT
         kq_data.resize(8);
+        kq_first_nonempty = kq_data.end();
+        kq_last_nonempty = kq_data.end();
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(unordered_map&& other) noexcept
+    {
+        clear();
+        kq_first_nonempty = other.kq_first_nonempty;
+        kq_last_nonempty = other.kq_last_nonempty;
+        kq_data = std::move(other.kq_data);
+        kq_size = other.kq_size;
+        kq_bucket_size = other.kq_bucket_size;
+        // kq_hasher is probably the same since Key is the same
+        
+
+        other.kq_data.resize(8);
+        other.kq_bucket_size = 8;
+        other.kq_size = 0;
+        other.kq_first_nonempty = other.kq_last_nonempty;
+
+        return *this;
     }
 
 
