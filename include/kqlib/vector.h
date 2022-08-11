@@ -1,7 +1,7 @@
 #ifndef kqvector_
 #define kqvector_
 
-//#include <iostream>
+#include <iostream>
 
 #include "other.h"
 
@@ -222,7 +222,13 @@ namespace kq
 	}
 
 	template<typename T>
-	vector<T>::vector(size_t size) : kq_data((pointer)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size) {}
+	vector<T>::vector(size_t size) : kq_data((pointer)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size) 
+	{
+		for (size_t i = 0; i < kq_size; ++i)
+		{
+			new (kq_data + i) value_type();
+		}
+	}
 
 	template<typename T>
 	vector<T>::vector(size_t size, const value_type& objectToFill)
