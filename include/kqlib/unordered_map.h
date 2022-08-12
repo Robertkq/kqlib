@@ -17,32 +17,12 @@ namespace kq
         using mapped_type = T;
         using value_type = std::pair<key_type, mapped_type>;
 
-        bucket() : prev_nonempty(nullptr), kq_data(), next_nonempty() { 
-            //std::cout << "Bucket default constructed\n";
-        }
-        bucket(const bucket& other) : prev_nonempty(other.prev_nonempty), kq_data(other.kq_data), next_nonempty(other.next_nonempty) {
-            //std::cout << "Bucket copy constructed\n"; 
-        }
-        bucket(bucket&& other) noexcept : prev_nonempty(other.prev_nonempty), kq_data(std::move(other.kq_data)), next_nonempty(other.next_nonempty)
-        {
-            
-        }
+        bucket() : prev_nonempty(nullptr), kq_data(), next_nonempty() {}
+        bucket(const bucket& other) : prev_nonempty(other.prev_nonempty), kq_data(other.kq_data), next_nonempty(other.next_nonempty) {}
+        bucket(bucket&& other) noexcept : prev_nonempty(other.prev_nonempty), kq_data(std::move(other.kq_data)), next_nonempty(other.next_nonempty) {}
 
-        bucket& operator=(const bucket& other)
-        {
-            kq_data = other.kq_data;
-            prev_nonempty = other.prev_nonempty;
-            next_nonempty = other.next_nonempty;
-            return *this;
-        }
-
-        bucket& operator=(bucket&& other) noexcept
-        {
-            kq_data = std::move(other.kq_data);
-            prev_nonempty = other.prev_nonempty;
-            next_nonempty = other.next_nonempty;
-            return *this;
-        }
+        bucket& operator=(const bucket& other);
+        bucket& operator=(bucket&& other) noexcept;
 
         typename single_list<value_type>::iterator begin() { return kq_data.begin(); }
         typename single_list<value_type>::iterator end() { return kq_data.end(); }
@@ -70,6 +50,24 @@ namespace kq
 
     };
 
+    template<typename Key, typename T>
+    typename bucket<Key, T>::bucket& bucket<Key, T>::operator=(const bucket& other)
+    {
+        kq_data = other.kq_data;
+        prev_nonempty = other.prev_nonempty;
+        next_nonempty = other.next_nonempty;
+        return *this;
+    }
+
+    template<typename Key, typename T>
+    typename bucket<Key, T>::bucket& bucket<Key, T>::operator=(bucket&& other) noexcept
+    {
+        kq_data = std::move(other.kq_data);
+        prev_nonempty = other.prev_nonempty;
+        next_nonempty = other.next_nonempty;
+        return *this;
+    }
+
     template<typename Key, typename T, bool constant>
     struct um_iterator
     {
@@ -83,29 +81,14 @@ namespace kq
         um_iterator() : kq_outer(), kq_inner() {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
 
-        bool operator==(const um_iterator& other)
-        {
-            if (kq_outer == other.kq_outer)
-                return kq_inner == other.kq_inner;
-            return false;
-        }
+        bool operator==(const um_iterator& other) const;
+        bool operator!=(const um_iterator& other) const;
 
-        bool operator!=(const um_iterator& other) { return !(*this == other); }
+        um_iterator& operator++();
+        um_iterator& operator++(int);
 
-        um_iterator& operator++()
-        {
-            ++kq_inner;
-            if (kq_outer->end() == kq_inner)
-            {
-                kq_outer = kq_outer->next_nonempty;
-                kq_inner = kq_outer->begin();
-            }
-            return *this;
-        }
-
+        // for debug purposes only
         bucket<key_type, mapped_type>* outer_ptr() { return kq_outer.ptr(); }
-
-        
 
         reference operator*() const { return *kq_inner; }
         pointer operator->() const { return kq_inner.ptr(); }
@@ -114,6 +97,47 @@ namespace kq
         typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
         typename single_list<std::pair<key_type, mapped_type>>::iterator kq_inner;
     };
+
+    template<typename Key, typename T, bool constant>
+    bool um_iterator<Key, T, constant>::operator==(const um_iterator& other) const
+    {
+        if (kq_outer == other.kq_outer)
+            return kq_inner == other.kq_inner;
+        return false;
+    }
+
+    template<typename Key, typename T, bool constant>
+    bool um_iterator<Key, T, constant>::operator!=(const um_iterator& other) const
+    {
+        if (kq_outer == other.kq_outer)
+            return kq_inner != other.kq_inner;
+        return true;
+    }
+
+    template<typename Key, typename T, bool constant>
+    typename um_iterator<Key, T, constant>::um_iterator& um_iterator<Key, T, constant>::operator++()
+    {
+        ++kq_inner;
+        if (kq_outer->end() == kq_inner)
+        {
+            kq_outer = kq_outer->next_nonempty;
+            kq_inner = kq_outer->begin();
+        }
+        return *this;
+    }
+
+    template<typename Key, typename T, bool constant>
+    typename um_iterator<Key, T, constant>::um_iterator& um_iterator<Key, T, constant>::operator++(int)
+    {
+        auto Tmp = *this;
+        ++kq_inner;
+        if (kq_outer->end() == kq_inner)
+        {
+            kq_outer = kq_outer->next_nonempty;
+            kq_inner = kq_outer->begin();
+        }
+        return Tmp;
+    }
 
     template<typename Key, typename T, typename Hasher = std::hash<Key>>
     struct unordered_map
@@ -151,9 +175,11 @@ namespace kq
 
 
         mapped_type& insert(const value_type& pair);
+        template<typename... Args>
+        mapped_type& emplace(Args&&... args);
         
-        
-
+        void erase();
+        void clear();
         
         mapped_type& operator[](const key_type& key);
         const mapped_type& operator[](const key_type& key) const;
@@ -193,15 +219,7 @@ namespace kq
             std::cout << '\n';
         }
 
-        void clear()
-        {
-            kq_data.clear();
-            kq_size = 0;
-            kq_data.resize(8);
-            kq_bucket_size = 8;
-            kq_first_nonempty = kq_data.end();
-            kq_last_nonempty = kq_data.end();
-        }
+        
 
     private:
             void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
@@ -297,6 +315,17 @@ namespace kq
             }
             return ref.second;
         }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::clear()
+    {
+        kq_data.clear();
+        kq_size = 0;
+        kq_bucket_size = 8;
+        kq_data.resize(8);
+        kq_first_nonempty = kq_data.end();
+        kq_last_nonempty = kq_data.end();
     }
 
     template<typename Key, typename T, typename Hasher>
