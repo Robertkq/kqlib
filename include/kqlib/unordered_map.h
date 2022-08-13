@@ -83,6 +83,10 @@ namespace kq
 
         bool operator==(const um_iterator& other) const;
         bool operator!=(const um_iterator& other) const;
+        bool operator<(const um_iterator& rhs) const;
+        bool operator>(const um_iterator& rhs) const;
+        bool operator<=(const um_iterator& rhs) const;
+        bool operator>=(const um_iterator& rhs) const;
 
         um_iterator& operator++();
         um_iterator& operator++(int);
@@ -112,6 +116,30 @@ namespace kq
         if (kq_outer == other.kq_outer)
             return kq_inner != other.kq_inner;
         return true;
+    }
+
+    template<typename Key, typename T, bool constant>
+    bool um_iterator<Key, T, constant>::operator<(const um_iterator& rhs) const
+    {
+        return kq_outer < rhs.kq_outer;
+    }
+
+    template<typename Key, typename T, bool constant>
+    bool um_iterator<Key, T, constant>::operator>(const um_iterator& rhs) const
+    {
+        return kq_outer > rhs.kq_outer;
+    }
+
+    template<typename Key, typename T, bool constant>
+    bool um_iterator<Key, T, constant>::operator<=(const um_iterator& rhs) const
+    {
+        return kq_outer <= rhs.kq_outer;
+    }
+
+    template<typename Key, typename T, bool constant>
+    bool um_iterator<Key, T, constant>::operator>=(const um_iterator& rhs) const
+    {
+        return kq_outer >= rhs.kq_outer;
     }
 
     template<typename Key, typename T, bool constant>
@@ -178,7 +206,7 @@ namespace kq
         template<typename... Args>
         mapped_type& emplace(Args&&... args);
         
-        void erase();
+        void erase(iterator pos);
         void clear();
         
         mapped_type& operator[](const key_type& key);
@@ -186,16 +214,7 @@ namespace kq
         mapped_type& at(const key_type& key);
         const mapped_type& at(const key_type& key) const;
 
-        bool contains(const key_type& key) const
-        {
-            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-            for (const auto& pair : kq_data[bucket_to_search])
-            {
-                if (pair.first == key)
-                    return true;
-            }
-            return false;
-        }
+        bool contains(const key_type& key) const;
 
         
 
@@ -315,6 +334,43 @@ namespace kq
             }
             return ref.second;
         }
+        return (*this)[pair.first];
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    template<typename... Args>
+    typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::emplace(Args&&... args)
+    {
+        value_type pair{std::forward<Args>(args)...};
+        if (contains(pair.first) == 0)
+        {
+            //std::cout << pair.first << '\n';
+            if (load_factor() >= 0.9f)
+            {
+                rehash(kq_bucket_size * 2);
+            }
+            size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
+            value_type& ref = kq_data[bucket_index].emplace_back(std::move(pair));
+            ++kq_size;
+            // if bucket was empty, add to iterator list
+            if (kq_data[bucket_index].size() == 1)
+            {
+                add_iterator_bucket(kq_data.begin() + bucket_index);
+            }
+            return ref.second;
+        }
+        return (*this)[pair.first];
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::erase(iterator pos)
+    {
+        if (pos >= begin() && pos < end())
+        {
+            std::cout << "Valid\n";
+            return;
+        }
+        std::cout << "Not valid\n";
     }
 
     template<typename Key, typename T, typename Hasher>
@@ -388,6 +444,18 @@ namespace kq
                 return pair.second;
         }
         throw std::out_of_range("element with key not found");
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    bool unordered_map<Key, T, Hasher>::contains(const key_type& key) const
+    {
+        size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
+        for (const auto& pair : kq_data[bucket_to_search])
+        {
+            if (pair.first == key)
+                return true;
+        }
+        return false;
     }
 
     template<typename Key, typename T, typename Hasher>
