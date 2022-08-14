@@ -1,5 +1,5 @@
-#ifndef kqdeque_
-#define kqdeque_
+#ifndef KQDEQUE_
+#define KQDEQUE_
 
 #include "other.h"
 

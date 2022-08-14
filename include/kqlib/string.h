@@ -1,5 +1,5 @@
-#ifndef kqstring_
-#define kqstring_
+#ifndef KQSTRING_
+#define KQSTRING_
 
 #include <locale>
 

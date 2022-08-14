@@ -6,8 +6,8 @@
 */
 
 
-#ifndef kqlib_
-#define kqlib_
+#ifndef KQLIB_
+#define KQLIB_
 
 #include "kqlib\algorithm.h"
 #include "kqlib\deque.h"

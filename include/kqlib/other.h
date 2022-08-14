@@ -1,5 +1,5 @@
-#ifndef kqother_
-#define kqother_
+#ifndef KQOTHER_
+#define KQOTHER_
 
 #include <initializer_list>
 #include <utility>

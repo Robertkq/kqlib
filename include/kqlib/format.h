@@ -1,5 +1,5 @@
-#ifndef kqformat_
-#define kqformat_
+#ifndef KQFORMAT_
+#define KQFORMAT_
 
 #include "string.h"
 #include "vector.h"

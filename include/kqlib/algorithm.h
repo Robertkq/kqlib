@@ -1,5 +1,5 @@
-#ifndef kqalgorithm_
-#define kqalgorithm_
+#ifndef KQALGORITHM_
+#define KQALGORITHM_
 
 #include "other.h"
 

@@ -1,7 +1,7 @@
-#ifndef kqvector_
-#define kqvector_
+#ifndef KQVECTOR_
+#define KQVECTOR_
 
-#include <iostream>
+//#include <iostream>
 
 #include "other.h"
 

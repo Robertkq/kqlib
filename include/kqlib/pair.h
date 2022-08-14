@@ -1,5 +1,5 @@
-#ifndef kqpair_
-#define kqpair_
+#ifndef KQPAIR_
+#define KQPAIR_
 
 #include "other.h"
 

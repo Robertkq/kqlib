@@ -1,5 +1,5 @@
-#ifndef kqlinkedlist_
-#define kqlinkedlist_
+#ifndef KQLINKEDLIST_
+#define KQLINKEDLIST_
 
 #include "other.h"
 

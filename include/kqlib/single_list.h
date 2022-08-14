@@ -1,9 +1,9 @@
-#ifndef kqsingle_list_
-#define kqsingle_list_
+#ifndef KQSINGLE_LIST_
+#define KQSINGLE_LIST_
 
 #include "other.h"
 
-#include <iostream> // FIXME remove
+//#include <iostream>
 
 namespace kq {
 
