@@ -6,7 +6,7 @@
 namespace kq 
 {
 	template<typename T>
-	struct linkedlist_element;
+	struct ll_element;
 
 	template<typename T, bool constant>
 	struct ll_iterator
@@ -16,7 +16,7 @@ namespace kq
 		using pointer = value_type*;
 		using difference_type = size_t;
 		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
-		using element = linkedlist_element<value_type>;
+		using element = ll_element<value_type>;
 		using iterator_category = std::bidirectional_iterator_tag;
 
 		ll_iterator() : kq_ptr() {}
@@ -54,7 +54,7 @@ namespace kq
 		using pointer = value_type*;
 		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
 		using difference_type = size_t;
-		using element = linkedlist_element<value_type>;
+		using element = ll_element<value_type>;
 		using iterator_category = std::bidirectional_iterator_tag;
 
 		ll_reverse_iterator() : kq_ptr() {}
@@ -85,27 +85,27 @@ namespace kq
 	};
 	
 	template<typename T>
-	struct linkedlist_element
+	struct ll_element
 	{
 	public:
 		using value_type = T;
 		using pointer = value_type*;
 		using reference = value_type&;
 
-		linkedlist_element() : value(), next(nullptr), prev(nullptr) {}
-		linkedlist_element(const linkedlist_element& other) : value(other.value), next(other.next), prev(other.prev) {}
-		linkedlist_element(linkedlist_element&& other) noexcept : value(std::move(other.value)), next(other.next), prev(other.prev) {}
-		linkedlist_element(const value_type& elementToAdd) : value(elementToAdd), next(nullptr), prev(nullptr) {}
+		ll_element() : value(), next(nullptr), prev(nullptr) {}
+		ll_element(const ll_element& other) : value(other.value), next(other.next), prev(other.prev) {}
+		ll_element(ll_element&& other) noexcept : value(std::move(other.value)), next(other.next), prev(other.prev) {}
+		ll_element(const value_type& elementToAdd) : value(elementToAdd), next(nullptr), prev(nullptr) {}
 		template<typename... Args>
-		linkedlist_element(Args&&... args) : value(std::forward<Args>(args)...), next(nullptr), prev(nullptr) {}
-		~linkedlist_element() {}
+		ll_element(Args&&... args) : value(std::forward<Args>(args)...), next(nullptr), prev(nullptr) {}
+		~ll_element() {}
 
-		linkedlist_element& operator=(const linkedlist_element& other) { value = other.value; next = other.next; prev = other.prev; return *this; }
-		linkedlist_element& operator=(linkedlist_element&& other) noexcept { value = std::move(other.value); next = other.next; prev = other.prev; return *this; }
+		ll_element& operator=(const ll_element& other) { value = other.value; next = other.next; prev = other.prev; return *this; }
+		ll_element& operator=(ll_element&& other) noexcept { value = std::move(other.value); next = other.next; prev = other.prev; return *this; }
 
 		value_type value;
-		linkedlist_element* next;
-		linkedlist_element* prev;
+		ll_element* next;
+		ll_element* prev;
 	};
 
 	template<typename T>
@@ -115,7 +115,7 @@ namespace kq
 		using value_type = T;
 		using pointer = value_type*;
 		using reference = value_type&;
-		using element = linkedlist_element<value_type>;
+		using element = ll_element<value_type>;
 		using iterator = ll_iterator<value_type, false>;
 		using const_iterator = ll_iterator<value_type, true>;
 		using reverse_iterator = ll_reverse_iterator<value_type, false>;
