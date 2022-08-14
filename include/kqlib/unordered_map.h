@@ -1,10 +1,9 @@
-#ifndef kqunordered_map_
-#define kqunordered_map_
+#ifndef KQUNORDERED_MAP_
+#define KQUNORDERED_MAP_
 
 #include "other.h"
 #include "vector.h"
 #include "single_list.h"
-#include <vector>
 
 namespace kq
 {
@@ -365,12 +364,12 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::erase(iterator pos)
     {
-        if (pos >= begin() && pos < end())
+        if (pos >= begin() && pos < end() && kq_size != 0)
         {
-            std::cout << "Valid\n";
-            return;
+            bucket<key_type, mapped_type>& bucket = *(pos.outer_ptr);
+            bucket.erase(*pos);
+            --kq_size;
         }
-        std::cout << "Not valid\n";
     }
 
     template<typename Key, typename T, typename Hasher>
