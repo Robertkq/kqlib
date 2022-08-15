@@ -10,7 +10,7 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer = T*;
+		using pointer = value_type*;
 		using difference_type = size_t;
 		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
 		using iterator_category = std::random_access_iterator_tag;
@@ -53,7 +53,7 @@ namespace kq
 	{
 	public:
 		using value_type = T;
-		using pointer = T*;
+		using pointer = value_type*;
 		using difference_type = size_t;
 		using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
 		using iterator_category = std::random_access_iterator_tag;
