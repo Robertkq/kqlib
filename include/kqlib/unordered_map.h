@@ -215,30 +215,6 @@ namespace kq
 
         bool contains(const key_type& key) const;
 
-        
-
-        
-
-        void print()
-        {
-            uint32_t bid = 0;
-            for (auto& bucket : kq_data)
-            {
-                if (bucket.empty() == 0)
-                {
-                    std::cout << "Bucket " << bid << ": " << &bucket << "\n";
-                    for (auto& pair : bucket.kq_data)
-                    {
-                        std::cout << pair.first << " " << pair.second << '\n';
-                    }
-                }
-                ++bid;
-            }
-            std::cout << '\n';
-        }
-
-        
-
     private:
             void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
             // Function takes care of setting up iterators for amortized O(1) iteration time
