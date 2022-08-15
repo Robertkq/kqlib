@@ -182,6 +182,8 @@ namespace kq {
                 if (argid == int(-1)) {
                     argid = defargid++;
                     //std::cout << "\nnew argid=" << argid << "\n";
+                    if (argid >= f_list.size())
+                        throw std::out_of_range("Argument not found");
                 }
                 
 
