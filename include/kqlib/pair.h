@@ -21,6 +21,10 @@ namespace kq
 			pair(const first_type& f, second_type&& s) : first(f), second(std::move(s)) {}
 			pair(first_type&& f, const second_type& s) : first(std::move(f)), second(s) {}
 			pair(first_type&& f, second_type&& s) : first(std::move(f)), second(std::move(s)) {}
+			template<typename... Args>
+			pair(const first_type& f, Args&&... args) : first(f), second(std::forward<Args>(args)...) {}
+			template<typename... Args>
+			pair(first_type&& f, Args&&... args) : first(std::move(f)), second(std::forward<Args>(args)...) {}
 
 			pair& operator=(const pair& other) { first = other.first; second = other.second; }
 			pair& operator=(pair&& other) noexcept { first = std::move(other.first); second = std::move(other.second); }
