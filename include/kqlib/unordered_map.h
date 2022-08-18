@@ -5,6 +5,8 @@
 #include "vector.h"
 #include "single_list.h"
 
+#include <iostream>
+
 namespace kq
 {
    
@@ -91,14 +93,18 @@ namespace kq
         um_iterator& operator++(int);
 
         // for debug purposes only
-        bucket<key_type, mapped_type>* outer_ptr() { return kq_outer.ptr(); }
+        bucket<key_type, mapped_type>* outer_ptr() const { return kq_outer.ptr(); }
+        value_type* inner_ptr() const { return kq_inner.ptr(); }
+
+        const typename vector<bucket<key_type, mapped_type>>::iterator& get_outer() const { return kq_outer; }
+        const typename single_list<value_type>::iterator& get_inner() const { return kq_inner; }
 
         reference operator*() const { return *kq_inner; }
         pointer operator->() const { return kq_inner.ptr(); }
 
     private:
         typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
-        typename single_list<std::pair<key_type, mapped_type>>::iterator kq_inner;
+        typename single_list<value_type>::iterator kq_inner;
     };
 
     template<typename Key, typename T, bool constant>
@@ -206,6 +212,7 @@ namespace kq
         mapped_type& emplace(Args&&... args);
         
         void erase(iterator pos);
+        void erase(const key_type& key);
         void clear();
         
         mapped_type& operator[](const key_type& key);
@@ -342,9 +349,35 @@ namespace kq
     {
         if (pos >= begin() && pos < end() && kq_size != 0)
         {
-            bucket<key_type, mapped_type>& bucket = *(pos.outer_ptr);
-            bucket.erase(*pos);
+            bucket<key_type, mapped_type>& bucket = *(pos.get_outer());
+            bucket.erase(pos.get_inner());
+            if (bucket.empty() == true)
+            {
+                remove_iterator_bucket(pos.get_outer());
+            }
             --kq_size;
+        }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::erase(const key_type& key)
+    {
+        if (kq_size != 0 && contains(key) == true)
+        {
+            size_t bucket = kq_hasher(key) % kq_bucket_size;
+            for (auto it = kq_data[bucket].begin(); it != kq_data[bucket].end(); ++it)
+            {
+                if (it->first == key)
+                {
+                    kq_data[bucket].erase(it);
+                    if (kq_data[bucket].empty() == true)
+                    {
+                        remove_iterator_bucket(kq_data.begin() + bucket);
+                    }
+                    --kq_size;
+                    return;
+                }
+            }
         }
     }
 
