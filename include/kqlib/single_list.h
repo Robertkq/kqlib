@@ -77,7 +77,7 @@ namespace kq {
         iterator begin() { return kq_ptr; }
         iterator end() { return nullptr; }
         const_iterator begin() const { return kq_ptr; }
-        iterator end() const { return nullptr; }
+        const_iterator end() const { return nullptr; }
         const_iterator cbegin() const { return kq_ptr; }
         const_iterator cend() const { return nullptr; }
 
@@ -132,9 +132,9 @@ namespace kq {
     single_list<T>::single_list(const std::initializer_list<ilT>& il)
         : kq_ptr(nullptr), kq_size(0)
     {
-        for (auto& element : il)
+        for (auto it = il.begin(); it != il.end(); ++it)
         {
-            push_back(element);
+            push_back(*it);
         }
     }
 
@@ -154,21 +154,29 @@ namespace kq {
     template<typename T>
     single_list<T>& single_list<T>::operator=(const single_list& other)
     {
-        clear();
-        for (auto& element : other)
+        if (this != &other)
         {
-            push_back(element);
+            clear();
+            for (auto it = other.begin(); it != other.end(); ++it)
+            {
+                push_back(*it);
+            }
         }
+        return *this;
     }
 
     template<typename T>
     single_list<T>& single_list<T>::operator=(single_list&& other) noexcept
     {
-        clear();
-        kq_ptr = other.kq_ptr;
-        kq_size = other.kq_size;
-        other.kq_ptr = nullptr;
-        other.kq_size = 0;
+        if (this != &other)
+        {
+            clear();
+            kq_ptr = other.kq_ptr;
+            kq_size = other.kq_size;
+            other.kq_ptr = nullptr;
+            other.kq_size = 0;
+        }
+        return *this;
     }
 
     template<typename T>
