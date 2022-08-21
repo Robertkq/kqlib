@@ -16,7 +16,7 @@ namespace kq
     public:
         using key_type = Key;
         using mapped_type = T;
-        using value_type = std::pair<key_type, mapped_type>;
+        using value_type = kq::pair<key_type, mapped_type>;
 
         bucket() : prev_nonempty(nullptr), kq_data(), next_nonempty() {}
         bucket(const bucket& other) : prev_nonempty(other.prev_nonempty), kq_data(other.kq_data), next_nonempty(other.next_nonempty) {}
@@ -54,18 +54,24 @@ namespace kq
     template<typename Key, typename T>
     typename bucket<Key, T>::bucket& bucket<Key, T>::operator=(const bucket& other)
     {
-        kq_data = other.kq_data;
-        prev_nonempty = other.prev_nonempty;
-        next_nonempty = other.next_nonempty;
+        if (this != &other)
+        {
+            kq_data = other.kq_data;
+            prev_nonempty = other.prev_nonempty;
+            next_nonempty = other.next_nonempty;
+        }
         return *this;
     }
 
     template<typename Key, typename T>
     typename bucket<Key, T>::bucket& bucket<Key, T>::operator=(bucket&& other) noexcept
     {
-        kq_data = std::move(other.kq_data);
-        prev_nonempty = other.prev_nonempty;
-        next_nonempty = other.next_nonempty;
+        if (this != &other)
+        {
+            kq_data = std::move(other.kq_data);
+            prev_nonempty = other.prev_nonempty;
+            next_nonempty = other.next_nonempty;
+        }
         return *this;
     }
 
@@ -75,12 +81,33 @@ namespace kq
     public:
         using key_type = Key;
         using mapped_type = T;
-        using value_type = std::pair<Key, T>;
+        using value_type = kq::pair<Key, T>;
         using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
         using pointer = value_type*;
 
         um_iterator() : kq_outer(), kq_inner() {}
+        um_iterator(const um_iterator& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
+        um_iterator(um_iterator&& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
+
+        um_iterator& operator=(const um_iterator& other) 
+        { 
+            if (this != &other)
+            {
+                kq_outer = other.kq_outer;
+                kq_inner = other.kq_inner;
+            }
+            return*this; 
+        }
+        um_iterator& operator=(um_iterator&& other) 
+        { 
+            if (this != &other)
+            {
+                kq_outer = other.kq_outer;
+                kq_inner = other.kq_inner;
+            }
+            return *this; 
+        }
 
         bool operator==(const um_iterator& other) const;
         bool operator!=(const um_iterator& other) const;
@@ -92,7 +119,6 @@ namespace kq
         um_iterator& operator++();
         um_iterator& operator++(int);
 
-        // for debug purposes only
         bucket<key_type, mapped_type>* outer_ptr() const { return kq_outer.ptr(); }
         value_type* inner_ptr() const { return kq_inner.ptr(); }
 
@@ -179,7 +205,7 @@ namespace kq
 
         using key_type = Key;
         using mapped_type = T;
-        using value_type = std::pair<key_type, mapped_type>;
+        using value_type = kq::pair<key_type, mapped_type>;
         
         using reference = value_type&;
         using pointer = value_type*;
@@ -221,6 +247,29 @@ namespace kq
         const mapped_type& at(const key_type& key) const;
 
         bool contains(const key_type& key) const;
+
+        void print()
+        {
+            std::cout << "END: " << kq_data.end().ptr() << "\n";
+            size_t bid = 0;
+            for (auto& bucket : kq_data)
+            {
+                std::cout << bid++ << ", " << &bucket << ":\n";
+                for (auto& elem : bucket)
+                {
+                    std::cout << elem.first << " " << elem.second << '\n';
+                }
+                std::cout << '\n';
+            }
+
+            auto fn = kq_first_nonempty;
+            while (fn != kq_data.end())
+            {
+                std::cout << fn.ptr() << "->";
+                fn = fn->next_nonempty;
+            }
+            std::cout << fn.ptr() << ".\n";
+        }
 
     private:
             void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
@@ -547,6 +596,9 @@ namespace kq
                 }
             }
         }
+
+        
+
         kq_data = std::move(new_data);
 
 
