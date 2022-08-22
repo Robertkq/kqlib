@@ -227,6 +227,8 @@ namespace kq
         unordered_map& operator=(const unordered_map& other);
         unordered_map& operator=(unordered_map&& other) noexcept;
 
+        unordered_map& operator=(const std::initializer_list<value_type>& il); // FIXME: add me
+
         iterator begin()    { return kq_first_nonempty; }
         iterator end()  { return { kq_data.end(), nullptr }; }
         const_iterator begin() const { return kq_first_nonempty; }
@@ -242,6 +244,7 @@ namespace kq
         mapped_type& insert(const value_type& pair);
         template<typename... Args>
         mapped_type& emplace(Args&&... args);
+        mapped_type& emplace(value_type&& pair); // FIXME: add me
         
         void erase(iterator pos);
         void erase(const key_type& key);
