@@ -244,7 +244,6 @@ namespace kq
         mapped_type& insert(const value_type& pair);
         template<typename... Args>
         mapped_type& emplace(Args&&... args);
-        mapped_type& emplace(value_type&& pair); // FIXME: add me
         
         void erase(iterator pos);
         void erase(const key_type& key);
@@ -465,7 +464,8 @@ namespace kq
             size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
             for (auto& pair : kq_data[bucket_to_search])
             {
-                if (pair.first == key)
+                //if (pair.first == key)
+                if (equal_to<key_type>{}(pair.first, key))
                     return pair.second;
             }
         }
@@ -484,7 +484,8 @@ namespace kq
             size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
             for (auto& pair : kq_data[bucket_to_search])
             {
-                if (pair.first == key)
+                //if (pair.first == key)
+                if (equal_to<key_type>{}(pair.first, key))
                     return pair.second;
             }
         }
@@ -496,7 +497,8 @@ namespace kq
         size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
         for (auto& pair : kq_data[bucket_to_search])
         {
-            if (pair.first == key)
+            //if (pair.first == key)
+            if (equal_to<key_type>{}(pair.first, key))
                 return pair.second;
         }
         throw std::out_of_range("element with key not found");
@@ -508,7 +510,8 @@ namespace kq
         size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
         for (auto& pair : kq_data[bucket_to_search])
         {
-            if (pair.first == key)
+            //if (pair.first == key)
+            if (equal_to<key_type>{}(pair.first, key))
                 return pair.second;
         }
         throw std::out_of_range("element with key not found");
@@ -520,7 +523,8 @@ namespace kq
         size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
         for (const auto& pair : kq_data[bucket_to_search])
         {
-            if (pair.first == key)
+            //if (pair.first == key)
+            if (equal_to<key_type>{}(pair.first, key))
                 return true;
         }
         return false;
