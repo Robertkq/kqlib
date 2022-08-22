@@ -316,6 +316,15 @@ namespace kq
 	};
 
 	template<typename T>
+	struct not_equal_to
+	{
+		bool operator()(const T& lhs, const T& rhs) const
+		{
+			return details::not_equal_compare_impl(lhs, rhs, details::not_eql_operator_tag);
+		}
+	};
+
+	template<typename T>
 	struct less
 	{
 		bool operator()(const T& lhs, const T& rhs) const
