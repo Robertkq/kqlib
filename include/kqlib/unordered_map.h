@@ -89,6 +89,7 @@ namespace kq
         um_iterator(const um_iterator& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
         um_iterator(um_iterator&& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
+        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer, typename single_list<value_type>::iterator inner) : kq_outer(outer), kq_inner(inner) {}
 
         um_iterator& operator=(const um_iterator& other) 
         { 
@@ -137,7 +138,9 @@ namespace kq
     bool um_iterator<Key, T, constant>::operator==(const um_iterator& other) const
     {
         if (kq_outer == other.kq_outer)
-            return kq_inner == other.kq_inner;
+            if (kq_inner == nullptr || other.kq_inner == nullptr)
+                return true;
+            else return kq_inner == other.kq_inner;
         return false;
     }
 
@@ -145,7 +148,9 @@ namespace kq
     bool um_iterator<Key, T, constant>::operator!=(const um_iterator& other) const
     {
         if (kq_outer == other.kq_outer)
-            return kq_inner != other.kq_inner;
+            if (kq_inner == nullptr || other.kq_inner == nullptr)
+                return false;
+            else return kq_inner != other.kq_inner;
         return true;
     }
 
@@ -181,6 +186,7 @@ namespace kq
         {
             kq_outer = kq_outer->next_nonempty;
             kq_inner = kq_outer->begin();
+               
         }
         return *this;
     }
@@ -222,11 +228,11 @@ namespace kq
         unordered_map& operator=(unordered_map&& other) noexcept;
 
         iterator begin()    { return kq_first_nonempty; }
-        iterator end()  { return kq_data.end(); }
+        iterator end()  { return { kq_data.end(), nullptr }; }
         const_iterator begin() const { return kq_first_nonempty; }
-        const_iterator end() const { return kq_data.end(); }
+        const_iterator end() const { return { kq_data.end(), nullptr}; }
         const_iterator cbegin() const { return kq_first_nonempty; }
-        const_iterator cend() const { return kq_data.end(); }
+        const_iterator cend() const { return { kq_data.end(), nullptr }; }
 
         size_t size() const { return kq_size; }
         bool empty() const { return kq_size == 0; }
@@ -270,6 +276,8 @@ namespace kq
             }
             std::cout << fn.ptr() << ".\n";
         }
+
+        void test() { re_iterator_bucket(); }
 
     private:
             void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
