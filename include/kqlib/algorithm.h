@@ -23,7 +23,7 @@ namespace kq
 		}
 		template<typename T>
 		auto equal_compare_impl(const T& lhs, const T& rhs, eql_not_equal)
-			-> decltype(lhs == rhs)
+			-> decltype(lhs != rhs)
 		{
 			return !(lhs != rhs);
 		}
