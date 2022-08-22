@@ -27,10 +27,10 @@ namespace kq
 	void swap(T& first, T& second);
 
 	template<typename iterType>
-	iterType& next(iterType& iterator, size_t n);
+	iterType next(iterType iterator, size_t n);
 
 	template<typename iterType>
-	iterType& prev(iterType& iterator, size_t n);
+	iterType prev(iterType iterator, size_t n);
 
 
 	// FUNCTION IMPLEMENTATIONS //////////////////////////////////////////////////////////////////////////////////////
@@ -64,12 +64,6 @@ namespace kq
 	template<typename T>
 	void swap(T& first, T& second)
 	{
-		static_assert(
-		(std::is_move_constructible<T>::value && std::is_move_assignable<T>::value) ||
-		(std::is_move_constructible<T>::value && std::is_copy_assignable<T>::value) ||
-		(std::is_copy_constructible<T>::value && std::is_move_assignable<T>::value) ||
-		(std::is_copy_constructible<T>::value && std::is_copy_assignable<T>::value),
-		"type T is not move/copy constructible and assignable");
 		T aux(std::move(first));
 		first = std::move(second);
 		second = std::move(aux);
