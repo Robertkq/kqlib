@@ -55,6 +55,29 @@ namespace kq
 			return false; // so that we will not swap in the if statement of sort_partition
 		}
 
+		struct not_eql_no_operator {};
+		struct not_eql_equal : not_eql_no_operator {};
+		struct not_eql_not_equal : not_eql_equal{};
+		struct not_eql_operator_tag : not_eql_not_equal{};
+
+		template<typename T>
+		auto not_equal_compare_impl(const T& lhs, const T& rhs, not_eql_not_equal)
+			-> decltype(lhs != rhs)
+		{
+			return lhs != rhs;
+		}
+
+		template<typename T>
+		auto not_equal_compare_impl(const T& lhs, const T& rhs, not_eql_equal)
+			-> decltype(lhs == rhs)
+		{
+			return !(lhs == rhs);
+		}
+
+		template<typename T>
+		auto not_equal_compare_impl(const T& lhs, const T& rhs, not_eql_no_operator)
+			-> bool = delete;
+
 		//Tag dispatch for less_compare_impl fucntions to return TRUE if lhs < rhs or in bad cases lhs <= rhs
 		struct less_no_operator{};
 		struct less_has_greater_or_equal : less_no_operator {};
