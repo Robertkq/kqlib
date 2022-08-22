@@ -490,6 +490,7 @@ namespace kq
 	template<typename iterType, typename Compare>
 	iterType sort_partition(iterType first, iterType last, Compare comp)
 	{
+		
 		--last;
 		iterType pivot = last;
 		iterType smaller = first;
@@ -499,18 +500,12 @@ namespace kq
 			if (comp(*first, *pivot))
 			{
 				++smaller;
-				if (!(sort_partition_equal_to<typename iterType::value_type>{}(*smaller, *first)))
-				{
-					swap(*smaller, *first);
-				}
-
+				swap(*smaller, *first);
 			}
+			// Used to check `sort_partition_equal_to(*smaller, *first)` before swapping, it is most likely unefficient since comp should cover most general cases
 		}
 		++smaller;
-		if (!(sort_partition_equal_to<typename iterType::value_type>{}(*smaller, *first)))
-		{
-			swap(*smaller, *pivot);
-		}
+		swap(*smaller, *pivot);
 		return smaller;
 	}
 
