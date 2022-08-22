@@ -33,6 +33,16 @@ namespace kq {
             return ret;
         }
 
+        inline kq::string to_string(size_t i) {
+            kq::string ret;
+            while (i != 0) {
+                ret.insert(ret.begin(), char(48 + i % 10));
+                i /= 10;
+            }
+            ret.shrink_to_fit();
+            return ret;
+        }
+
         inline kq::string to_string(int i) {
             bool negative = i < 0;
             if (negative) { i = i * -1; }
