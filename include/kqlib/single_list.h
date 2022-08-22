@@ -49,7 +49,7 @@ namespace kq {
         bool operator==(const sl_iterator& other) const                 { return kq_ptr == other.kq_ptr; }
 
         sl_iterator& operator++()                                       { kq_ptr = kq_ptr->next; return *this; }
-        sl_iterator& operator++(int)                                    { element* tmp = kq_ptr; ++kq_ptr; return tmp; }
+        sl_iterator operator++(int)                                    { element* tmp = kq_ptr; ++kq_ptr; return tmp; }
 
         element* el_ptr() const                                            { return kq_ptr; }
         element* el_next() const                                           { return kq_ptr->next; }
