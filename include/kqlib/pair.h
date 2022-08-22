@@ -43,13 +43,13 @@ namespace kq
 		template<typename fT, typename sT>
 		bool pair<fT, sT>::operator==(const pair<fT, sT>& other) const
 		{
-			return (equal_compare_impl(first, other.first) && equal_compare_impl(second, other.second));
+			return (equal_to<fT>{}(first, other.first) && equal_to<sT>{}(second, other.second));
 		}
 
 		template<typename fT, typename sT>
 		bool pair<fT, sT>::operator!=(const pair<fT, sT>& other) const
 		{
-			return !(equal_compare_impl(first, other.first) && equal_compare_impl(second, other.second));
+			return (not_equal_to<fT>{}(first, other.first) && not_equal_to<sT>{}(second, other.second));
 		}
 
 }
