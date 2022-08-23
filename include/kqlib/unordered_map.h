@@ -239,6 +239,7 @@ namespace kq
         size_t size() const { return kq_size; }
         bool empty() const { return kq_size == 0; }
         float load_factor() const { return static_cast<float>(kq_size) / static_cast<float>(kq_bucket_size); }
+        size_t bucket_count() const { return kq_bucket_size; }
 
 
         mapped_type& insert(const value_type& pair);
@@ -255,6 +256,7 @@ namespace kq
         const mapped_type& at(const key_type& key) const;
 
         bool contains(const key_type& key) const;
+        void reserve(size_t buckets);
 
         void print()
         {
@@ -302,11 +304,8 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map()
         : kq_data(8), kq_size(0), kq_bucket_size(8),
-        kq_hasher(), kq_first_nonempty(), kq_last_nonempty()
-    {
-        kq_first_nonempty = kq_data.end();
-        kq_last_nonempty  = kq_data.end();
-    }
+        kq_hasher(), kq_first_nonempty(kq_data.end()), kq_last_nonempty(kq_data.end())
+    {}
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map(const unordered_map& other)
@@ -352,6 +351,16 @@ namespace kq
         other.kq_size           = 0;
         other.kq_first_nonempty = other.kq_last_nonempty;
 
+        return *this;
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(const std::initializer_list<value_type>& il)
+    {
+        clear();
+        reserve(il.size());
+        for (auto it = il.begin(); it != il.end(); ++it)
+            insert(*it);
         return *this;
     }
 
@@ -528,6 +537,15 @@ namespace kq
                 return true;
         }
         return false;
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::reserve(size_t buckets)
+    {
+        if (kq_bucket_size < buckets)
+        {
+            rehash(buckets);
+        }
     }
 
     template<typename Key, typename T, typename Hasher>
