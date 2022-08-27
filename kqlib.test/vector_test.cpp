@@ -160,5 +160,56 @@ TEST_CASE("inserting in a vector", "[vector]")
 
 TEST_CASE("erasing from vector", "[vector]")
 {
-    vector<int> v;
+    vector<int> v{ 7, 3, 2, 5, 10, 9, 1, 4, 6, 8 };
+    for (auto i = 1; i <= 10; ++i)
+    {
+        auto size = v.size();
+        v.erase(find(v.begin(), v.end(), i));
+        REQUIRE(v.size() == size - 1);
+        REQUIRE(find(v.begin(), v.end(), i) == v.end());
+    }
+    REQUIRE(v.size() == 0);
+}
+
+TEST_CASE("swap vectors", "[vector]")
+{
+    vector<int> v1{ 1,2,3 };
+    vector<int> v2{ 4,5,6,7 };
+
+    SECTION("kq::swap")
+    {
+        swap(v1, v2);
+        REQUIRE(v1.size() == 4);
+        REQUIRE(v2.size() == 3);
+        auto inc = 1;
+        for (auto& e : v2)
+            REQUIRE(e == inc++);
+        for (auto& e : v1)
+            REQUIRE(e == inc++);
+    }
+
+    SECTION("std::swap")
+    {
+        std::swap(v1, v2);
+        REQUIRE(v1.size() == 4);
+        REQUIRE(v2.size() == 3);
+        auto inc = 1;
+        for (auto& e : v2)
+            REQUIRE(e == inc++);
+        for (auto& e : v1)
+            REQUIRE(e == inc++);
+    }
+
+    SECTION("vector::swap")
+    {
+        v1.swap(v2);
+        REQUIRE(v1.size() == 4);
+        REQUIRE(v2.size() == 3);
+        auto inc = 1;
+        for (auto& e : v2)
+            REQUIRE(e == inc++);
+        for (auto& e : v1)
+            REQUIRE(e == inc++);
+    }
+
 }
