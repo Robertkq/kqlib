@@ -1,7 +1,15 @@
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 #include  "../include/kqlib.h"
 
+int main(int argc, char* const argv[]) {
+    int result = Catch::Session().run(argc, argv);
+
+    while (true);
+    return result;
+}
+
+/*
 namespace vector
 {
     TEST_CASE("vectors can be sized and resized", "[vector]") {
@@ -78,3 +86,4 @@ namespace list
 {
 
 }
+*/
