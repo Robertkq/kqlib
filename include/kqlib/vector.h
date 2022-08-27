@@ -348,7 +348,7 @@ namespace kq
 	typename vector<T>::value_type& vector<T>::insert(iterator position, const value_type& value)
 	{
 		// Note: iterator position will be invalid if we reallocate
-		if ((position > begin() && position < end()) || position == begin())
+		if (position >= begin() && position <= end())
 		{
 			size_t safePosition = abs(position - begin());
 			if (kq_size >= kq_cap)
@@ -363,10 +363,6 @@ namespace kq
 			*(begin() + safePosition) = value;
 			return *(begin() + safePosition);
 		}
-		else if (position == end())
-		{
-			push_back(value);
-		}
 
 	}
 
@@ -375,7 +371,7 @@ namespace kq
 	typename vector<T>::value_type& vector<T>::emplace(iterator position, Args&&... args)
 	{
 		// Note: iterator position will be invalid if we reallocate
-		if ((position > begin() && position < end()) || position == begin())
+		if (position >= begin() && position <= end())
 		{
 			value_type holder(std::forward<Args>(args)...);
 			size_t safePosition = 0;
