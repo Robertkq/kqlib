@@ -213,3 +213,37 @@ TEST_CASE("swap vectors", "[vector]")
     }
 
 }
+
+TEST_CASE("reserving memory & resizing", "[vector]")
+{
+    vector<int> v(5);
+
+    REQUIRE(v.size() == 5);
+    REQUIRE(v.capacity() == 5);
+
+    SECTION("reserving bigger cap & resizing")
+    {
+        v.reserve(10);
+        REQUIRE(v.size() == 5);
+        REQUIRE(v.capacity() == 10);
+        v.resize(7);
+        REQUIRE(v.size() == 7);
+        REQUIRE(v.capacity() == 10);
+    }
+
+    SECTION("resizing to lower")
+    {
+        v.resize(3);
+        REQUIRE(v.size() == 3);
+        for (auto& e : v)
+            REQUIRE(e == 0);
+    }
+
+    SECTION("reserving lower cap")
+    {
+        v.reserve(3);
+        REQUIRE(v.size() == 5);
+        REQUIRE(v.capacity() == 5);
+    }
+
+}
