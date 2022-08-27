@@ -363,6 +363,7 @@ namespace kq
 			*(begin() + safePosition) = value;
 			return *(begin() + safePosition);
 		}
+		throw std::out_of_range("bad iterator");
 
 	}
 
@@ -388,7 +389,7 @@ namespace kq
 			*(begin() + safePosition) = std::move(holder);
 			return *(begin() + safePosition);
 		}
-
+		throw std::out_of_range("bad iterator");
 	}
 	template<typename T>
 	void vector<T>::assign(size_t count, const value_type& objectToFill)
