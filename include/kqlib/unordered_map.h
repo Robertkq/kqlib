@@ -5,7 +5,7 @@
 #include "vector.h"
 #include "single_list.h"
 
-#include <iostream>
+//#include <iostream>
 
 namespace kq
 {
@@ -257,31 +257,6 @@ namespace kq
 
         bool contains(const key_type& key) const;
         void reserve(size_t buckets);
-
-        void print()
-        {
-            std::cout << "END: " << kq_data.end().ptr() << "\n";
-            size_t bid = 0;
-            for (auto& bucket : kq_data)
-            {
-                std::cout << bid++ << ", " << &bucket << ":\n";
-                for (auto& elem : bucket)
-                {
-                    std::cout << elem.first << " " << elem.second << '\n';
-                }
-                std::cout << '\n';
-            }
-
-            auto fn = kq_first_nonempty;
-            while (fn != kq_data.end())
-            {
-                std::cout << fn.ptr() << "->";
-                fn = fn->next_nonempty;
-            }
-            std::cout << fn.ptr() << ".\n";
-        }
-
-        void test() { re_iterator_bucket(); }
 
     private:
             void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
