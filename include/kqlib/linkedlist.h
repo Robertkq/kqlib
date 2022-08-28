@@ -204,8 +204,10 @@ namespace kq
 
 	template<typename T>
 	list<T>::list(const list& other) 
-		: kq_data((pointer)::operator new(sizeof(element))), kq_size(0)
+		: kq_data((element*)::operator new(sizeof(element))), kq_size(0)
 	{
+		kq_data->prev = kq_data;
+		kq_data->next = kq_data;
 		for (auto& element : other)
 		{
 			push_back(element);
@@ -216,7 +218,7 @@ namespace kq
 	list<T>::list(list&& other) noexcept 
 		: kq_data(other.kq_data), kq_size(other.kq_size)
 	{
-		other.kq_data = ::operator new(sizeof(element));
+		other.kq_data = (element*)::operator new(sizeof(element));
 		other.kq_data->prev = kq_data;
 		other.kq_data->next = kq_data;
 		other.kq_size = 0;
