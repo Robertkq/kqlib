@@ -963,7 +963,7 @@ namespace kq
         str.clear();
         char ch;
         is.get(ch);
-        while ((!isspace(ch) || ch == ' ') && ch != delim)
+        while (ch != delim)
         {
             str.push_back(ch);
             is.get(ch);
