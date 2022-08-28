@@ -58,6 +58,16 @@ TEST_CASE("list constructors", "[list]")
             REQUIRE(e == inc++);
     }
 
+    SECTION("list iterator constructor")
+    {
+        list<int> aux{ 1,2,3,4,5 };
+        list<int> l(++aux.begin(), --aux.end());
+        REQUIRE(l.size() == 3);
+        auto inc = 2;
+        for (auto& e : l)
+            REQUIRE(e == inc++);
+    }
+
     SECTION("list copy asignment")
     {
         list<int> aux{ 1,2,3,4,5 };
