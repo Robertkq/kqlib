@@ -213,7 +213,10 @@ namespace kq
 	template<typename T>
 	deque<T>::deque(size_t size)																		// kq_cap / 2 - 1
 		: kq_data((pointer)::operator new[](sizeof(value_type)* size)), kq_size(size), kq_cap(size), kq_margin(0)
-	{}
+	{
+		for (size_t i = 0; i < kq_size; ++i)
+			new (kq_data + i) value_type();
+	}
 
 	template<typename T>
 	deque<T>::deque(size_t size, const value_type& objectToFill) 
@@ -247,23 +250,29 @@ namespace kq
 	template<typename T>
 	typename deque<T>::deque& deque<T>::operator=(const deque& other)
 	{
-		clear();
-		assign(other.begin(), other.end());
+		if (this != &other)
+		{
+			clear();
+			assign(other.begin(), other.end());
+		}
 		return *this;
 	}
 
 	template<typename T>
 	typename deque<T>::deque& deque<T>::operator=(deque&& other) noexcept
 	{
-		clear();
-		kq_data = other.kq_data;
-		kq_size = other.kq_size;
-		kq_cap = other.kq_cap;
-		kq_margin = other.kq_margin;
-		other.kq_data = nullptr;
-		other.kq_size = 0;
-		other.kq_cap = 0;
-		other.kq_margin = 0;
+		if (this != &other)
+		{
+			clear();
+			kq_data = other.kq_data;
+			kq_size = other.kq_size;
+			kq_cap = other.kq_cap;
+			kq_margin = other.kq_margin;
+			other.kq_data = nullptr;
+			other.kq_size = 0;
+			other.kq_cap = 0;
+			other.kq_margin = 0;
+		}
 		return *this;
 	}
 
@@ -382,26 +391,8 @@ namespace kq
 		if (kq_size > 0)
 		{
 			(kq_data + kq_margin + --kq_size)->~value_type();
-			
-			/*
-			if (kq_size < kq_cap - kq_size)
-			{
-				realloc(kq_cap / 2);
-			}
-			*/
+			--kq_size;
 		}
-		/*
-		else
-		{
-			(kq_data + kq_margin + --kq_size)->~value_type();
-			::operator delete[] (kq_data);
-			kq_data = nullptr;
-			kq_size = 0;
-			kq_margin = 0;
-			kq_cap = 0;
-		}
-		*/
-
 	}
 
 	template<typename T>
@@ -412,21 +403,7 @@ namespace kq
 			(kq_data + kq_margin)->~value_type();
 			--kq_size;
 			++kq_margin;
-			/*
-			if (kq_margin >= kq_cap / 2)
-			{
-				realloc(kq_cap / 2);
-			}
-			*/
 		}
-		/*
-		else
-		{
-			(kq_data + kq_margin)->~value_type();
-			clear();
-		}
-		*/
-		
 	}
 
 	template<typename T>
