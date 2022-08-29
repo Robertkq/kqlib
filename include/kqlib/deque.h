@@ -41,6 +41,8 @@ namespace kq
 		size_t operator-(const dq_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 		friend dq_iterator operator+(int lhs, const dq_iterator& rhs) { return rhs.kq_ptr + lhs; }
 
+		pointer ptr() const { return kq_ptr; }
+
 		reference operator*() { return *kq_ptr; }
 		pointer operator->() const { return kq_ptr; }
 
@@ -83,6 +85,8 @@ namespace kq
 		dq_reverse_iterator& operator-=(int rhs) { kq_ptr += rhs; return *this; }
 		size_t operator-(const dq_reverse_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
 		friend dq_reverse_iterator operator+(int lhs, const dq_reverse_iterator& rhs) { return rhs.kq_ptr - lhs; }
+
+		pointer ptr() const { return kq_ptr; }
 
 		reference operator*() const { return *kq_ptr; }
 		pointer operator->() const { return kq_ptr; }
@@ -151,6 +155,9 @@ namespace kq
 		value_type& emplace_back(Args&&... args);
 		template<typename... Args>
 		value_type& emplace_front(Args&&... args);
+		value_type& insert(iterator position, const value_type&);
+		template<typename... Args>
+		value_type& emplace(iterator position, Args&&... args);
 
 		void assign(size_t, const value_type&);
 		template<typename iterType>
@@ -161,6 +168,7 @@ namespace kq
 
 		void pop_back();
 		void pop_front();
+		void erase(iterator position);
 		void clear();
 
 		void reserve(size_t);
@@ -312,19 +320,21 @@ namespace kq
 		{
 			realloc(kq_cap * 2);
 		}
-		new (kq_data + kq_margin + kq_size) value_type(std::move(toAdd));
+		new (kq_data + kq_margin + kq_size) value_type(toAdd);
 		return (*this)[kq_size++];
 	}
 
 	template<typename T>
 	typename deque<T>::value_type& deque<T>::push_front(const typename deque<T>::value_type& toAdd)
 	{
+		//FIXME: idk, fix this
 		if (kq_margin == 0)
 		{
+			std::cout << "realloc\n";
 			realloc(kq_cap * 2);
 		}
 		++kq_size;
-		new (kq_data + --kq_margin) value_type(std::move(toAdd));
+		new (kq_data + --kq_margin) value_type(toAdd);
 		return *(kq_data + kq_margin);
 	}
 
@@ -350,6 +360,51 @@ namespace kq
 		++kq_size;
 		new (kq_data + --kq_margin) value_type(std::forward<Args>(args)...);
 		return *(kq_data + kq_margin);
+	}
+
+	template<typename T>
+	typename deque<T>::value_type& deque<T>::insert(iterator position, const value_type& value)
+	{
+		if (begin() >= position && position <= end())
+		{
+			size_t safePosition = position - begin();
+					// back							//front
+			if ((kq_size >= kq_cap - kq_margin) || kq_margin == 0)
+			{
+				realloc(kq_cap * 2);
+			}
+			++kq_size;
+			for (auto it = end() - 2; it >= begin() + safePosition; ++it)
+			{
+				*(it + 1) = std::move(*it);
+			}
+			*(begin() + safePosition) = value;
+			return *(begin() + safePosition);
+		}
+		throw std::out_of_range("bad iterator");
+	}
+
+	template<typename T>
+	template<typename... Args>
+	typename deque<T>::value_type& deque<T>::emplace(iterator position, Args&&... args)
+	{
+		if (begin() >= position && position <= end())
+		{
+			size_t safePosition = position - begin();
+			// back							//front
+			if ((kq_size >= kq_cap - kq_margin) || kq_margin == 0)
+			{
+				realloc(kq_cap * 2);
+			}
+			++kq_size;
+			for (auto it = end() - 2; it >= begin() + safePosition; ++it)
+			{
+				*(it + 1) = std::move(*it);
+			}
+			new (begin().ptr() + safePosition) value_type(std::forward<Args>(args)...);
+			return *(begin() + safePosition);
+		}
+		throw std::out_of_range("bad iterator");
 	}
 
 	template<typename T>
@@ -403,6 +458,20 @@ namespace kq
 			(kq_data + kq_margin)->~value_type();
 			--kq_size;
 			++kq_margin;
+		}
+	}
+
+	template<typename T>
+	void deque<T>::erase(iterator position)
+	{
+		if (begin() >= position && position < end())
+		{
+			position.ptr()->~value_type();
+			for (position; position != end() - 1; ++position)
+			{
+				*position = *(position + 1);
+			}
+			--kq_size;
 		}
 	}
 

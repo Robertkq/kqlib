@@ -374,7 +374,7 @@ namespace kq
 		// Note: iterator position will be invalid if we reallocate
 		if (position >= begin() && position <= end())
 		{
-			value_type holder(std::forward<Args>(args)...);
+			//value_type holder(std::forward<Args>(args)...);
 			size_t safePosition = 0;
 			safePosition = abs(position - begin());
 			if (kq_size >= kq_cap)
@@ -386,7 +386,7 @@ namespace kq
 			{
 				*(it + 1) = std::move(*it);
 			}
-			*(begin() + safePosition) = std::move(holder);
+			new (begin().ptr() + safePosition) value_type(std::forward<Args>(args)...);
 			return *(begin() + safePosition);
 		}
 		throw std::out_of_range("bad iterator");
