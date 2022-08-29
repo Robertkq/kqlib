@@ -22,10 +22,10 @@ namespace kq
 			pair(first_type&& f, const second_type& s) : first(std::move(f)), second(s) {}
 			pair(first_type&& f, second_type&& s) : first(std::move(f)), second(std::move(s)) {}
 			//FIXME: implement 3 arg constructor
-			// kq::piecewise_construct, tuple<Args1>, tuple<Args2>
+			// kq/std ::piecewise_construct, tuple<Args1>, tuple<Args2>
 
-			pair& operator=(const pair& other) { first = other.first; second = other.second; }
-			pair& operator=(pair&& other) noexcept { first = std::move(other.first); second = std::move(other.second); }
+			pair& operator=(const pair& other);
+			pair& operator=(pair&& other) noexcept;
 
 			bool operator==(const pair& other) const;
 			bool operator!=(const pair& other) const;
@@ -34,10 +34,32 @@ namespace kq
 			second_type second;
 		};
 
-		template<typename first_type, typename second_type>
-		pair<first_type, second_type> make_pair(const first_type& f,const second_type& s)
+		template<typename fT, typename sT>
+		pair<fT, sT> make_pair(const fT& f,const sT& s)
 		{
-			return pair<first_type, second_type>(f, s);
+			return pair<fT, sT>(f, s);
+		}
+
+		template<typename fT, typename sT>
+		typename pair<fT, sT>::pair& pair<fT, sT>::operator=(const pair& other)
+		{ 
+			if (this != &other)
+			{
+				first = other.first;
+				second = other.second;
+			}
+			return *this;
+		}
+
+		template<typename fT, typename sT>
+		typename pair<fT, sT>::pair& pair<fT, sT>::operator=(pair&& other) noexcept 
+		{
+			if(this != &other)
+			{
+				first = std::move(other.first); 
+				second = std::move(other.second); 
+			}
+			return *this;
 		}
 
 		template<typename fT, typename sT>

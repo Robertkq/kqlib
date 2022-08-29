@@ -301,30 +301,36 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(const unordered_map& other)
     {
-        clear();
-        kq_data         = other.kq_data;
-        kq_size         = other.kq_size;
-        kq_bucket_size  = other.kq_bucket_size;
-        re_iterator_bucket();
+        if (this != &other)
+        {
+            clear();
+            kq_data = other.kq_data;
+            kq_size = other.kq_size;
+            kq_bucket_size = other.kq_bucket_size;
+            re_iterator_bucket();
+        }
         return *this;
     }
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(unordered_map&& other) noexcept
     {
-        clear();
-        kq_first_nonempty   = other.kq_first_nonempty;
-        kq_last_nonempty    = other.kq_last_nonempty;
-        kq_data             = std::move(other.kq_data);
-        kq_size             = other.kq_size;
-        kq_bucket_size      = other.kq_bucket_size;
-        // kq_hasher is probably the same since Key is the same
-        
+        if (this != &other)
+        {
+            clear();
+            kq_first_nonempty = other.kq_first_nonempty;
+            kq_last_nonempty = other.kq_last_nonempty;
+            kq_data = std::move(other.kq_data);
+            kq_size = other.kq_size;
+            kq_bucket_size = other.kq_bucket_size;
+            // kq_hasher is probably the same since Key is the same
 
-        other.kq_data.resize(8);
-        other.kq_bucket_size    = 8;
-        other.kq_size           = 0;
-        other.kq_first_nonempty = other.kq_last_nonempty;
+
+            other.kq_data.resize(8);
+            other.kq_bucket_size = 8;
+            other.kq_size = 0;
+            other.kq_first_nonempty = other.kq_last_nonempty;
+        }
 
         return *this;
     }

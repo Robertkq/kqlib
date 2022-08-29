@@ -43,7 +43,7 @@ namespace kq {
         sl_iterator(element* ptr) : kq_ptr(ptr)                         {}
 
         sl_iterator& operator=(const sl_iterator& other)                { kq_ptr = other.kq_ptr; return *this; }
-        sl_iterator& operator=(sl_iterator&& other) noexcept                   { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+        sl_iterator& operator=(sl_iterator&& other) noexcept                    { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
 
         bool operator!=(const sl_iterator& other) const                 { return kq_ptr != other.kq_ptr; }
         bool operator==(const sl_iterator& other) const                 { return kq_ptr == other.kq_ptr; }

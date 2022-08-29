@@ -345,13 +345,16 @@ namespace kq
     basic_string<T>& basic_string<T>::operator=(const basic_string<T>& other)
     {
         // perhaps we could make this more efficient to not allocate if we already have enough capacity ?
-        clear();
-        kq_data = new value_type[other.kq_size + 1];
-        kq_size = other.kq_size;
-        kq_cap = kq_size + 1;
-        for (size_t i = 0; i < kq_cap; ++i)
+        if (this != &other)
         {
-            *(kq_data + i) = *(other.kq_data + i);
+            clear();
+            kq_data = new value_type[other.kq_size + 1];
+            kq_size = other.kq_size;
+            kq_cap = kq_size + 1;
+            for (size_t i = 0; i < kq_cap; ++i)
+            {
+                *(kq_data + i) = *(other.kq_data + i);
+            }
         }
         return *this;
     }
@@ -359,14 +362,16 @@ namespace kq
     template<typename T>
     basic_string<T>& basic_string<T>::operator=(basic_string<T>&& other) noexcept
     {
-        clear();
-        kq_data = other.kq_data;
-        kq_size = other.kq_size;
-        kq_cap = other.kq_cap;
-        other.kq_data = nullptr;
-        other.kq_size = 0;
-        other.kq_cap = 0;
-        
+        if (this != &other)
+        {
+            clear();
+            kq_data = other.kq_data;
+            kq_size = other.kq_size;
+            kq_cap = other.kq_cap;
+            other.kq_data = nullptr;
+            other.kq_size = 0;
+            other.kq_cap = 0;
+        }
         return *this;
     }
 
