@@ -117,7 +117,7 @@ namespace kq
 		deque(iterType, iterType);
 		template<typename ilT>
 		deque(const std::initializer_list<ilT>&);
-		~deque(); 
+		~deque();
 
 		deque& operator=(const deque&);
 		deque& operator=(deque&&) noexcept;
@@ -146,7 +146,7 @@ namespace kq
 		const_reverse_iterator crbegin() const { return kq_data + kq_margin + kq_size - 1; }
 		const_reverse_iterator crend() const { return kq_data - 1; }
 
-		
+
 		bool empty() const { return kq_size == 0; }
 
 		value_type& push_back(const value_type&);
@@ -197,8 +197,8 @@ namespace kq
 	};
 
 	template<typename T>
-	deque<T>::deque() 
-		: kq_data(nullptr), kq_size(0), kq_cap(0), kq_margin(0) 
+	deque<T>::deque()
+		: kq_data(nullptr), kq_size(0), kq_cap(0), kq_margin(0)
 	{}
 
 	template<typename T>
@@ -227,7 +227,7 @@ namespace kq
 	}
 
 	template<typename T>
-	deque<T>::deque(size_t size, const value_type& objectToFill) 
+	deque<T>::deque(size_t size, const value_type& objectToFill)
 		: kq_data(nullptr), kq_size(0), kq_cap(0), kq_margin(0)
 	{
 		assign(size, objectToFill);
@@ -302,7 +302,7 @@ namespace kq
 		}
 		else
 		{
-			for(size_t i = 0; i < kq_size; ++i)
+			for (size_t i = 0; i < kq_size; ++i)
 			{
 				if ((*this)[i] != other[i])
 				{
@@ -330,7 +330,7 @@ namespace kq
 		//FIXME: idk, fix this
 		if (kq_margin == 0)
 		{
-			std::cout << "realloc\n";
+			//std::cout << "realloc\n";
 			realloc(kq_cap * 2);
 		}
 		++kq_size;
@@ -368,7 +368,7 @@ namespace kq
 		if (begin() >= position && position <= end())
 		{
 			size_t safePosition = position - begin();
-					// back							//front
+			// back							//front
 			if ((kq_size >= kq_cap - kq_margin) || kq_margin == 0)
 			{
 				realloc(kq_cap * 2);
@@ -464,7 +464,7 @@ namespace kq
 	template<typename T>
 	void deque<T>::erase(iterator position)
 	{
-		if (begin() >= position && position < end())
+		if (begin() <= position && position < end())
 		{
 			position.ptr()->~value_type();
 			for (position; position != end() - 1; ++position)
@@ -490,18 +490,12 @@ namespace kq
 	}
 
 	template<typename T>
-	void deque<T>::reserve(size_t size)
+	void deque<T>::reserve(size_t newCap)
 	{
-		if (size > kq_cap)
+		if (newCap > kq_cap)
 		{
-			if (size % 2 == 0)
-			{
-				realloc(size);
-			}
-			else
-			{
-				realloc(size + 1);
-			}
+			newCap = (newCap % 2 == 0) ? newCap : newCap + 1;
+			realloc(newCap);
 		}
 	}
 
@@ -515,7 +509,7 @@ namespace kq
 	}
 
 	template<typename T>
-	typename deque<T>::value_type& deque<T>::front() 
+	typename deque<T>::value_type& deque<T>::front()
 	{
 		if (kq_size == 0)
 		{
@@ -525,7 +519,7 @@ namespace kq
 	}
 
 	template<typename T>
-	const typename deque<T>::value_type& deque<T>::front() const 
+	const typename deque<T>::value_type& deque<T>::front() const
 	{
 		if (kq_size == 0)
 		{
@@ -535,7 +529,7 @@ namespace kq
 	}
 
 	template<typename T>
-	typename deque<T>::value_type& deque<T>::back() 
+	typename deque<T>::value_type& deque<T>::back()
 	{
 		if (kq_size == 0)
 		{
@@ -545,8 +539,8 @@ namespace kq
 	}
 
 	template<typename T>
-	const typename deque<T>::value_type& deque<T>::back() const 
-	{ 
+	const typename deque<T>::value_type& deque<T>::back() const
+	{
 		if (kq_size == 0)
 		{
 			throw std::out_of_range("back(), called on empty deque");
@@ -580,50 +574,30 @@ namespace kq
 	void deque<T>::realloc(size_t newCap)
 	{
 		//std::cout << "realloc";
-		if (newCap < 2)
+		if (newCap < 10)
 		{
-			newCap = 2;
+			newCap = 10;
 		}
-		pointer newBlock = (pointer)::operator new[](sizeof(value_type)*newCap);
-		size_t equalSides = 0;
-		size_t newMargin = 0;
-		if (newCap > kq_cap)
-		{
-			newMargin = newCap / 4;
-			if (kq_cap - kq_size > 2)
-			{
-				equalSides = (kq_cap - kq_size) / 2;
-			}
-		}
-		else
-		{
-			newMargin = 0;
-			equalSides = 0;
-		}
-		
+		pointer newBlock = (pointer)::operator new[](sizeof(value_type)* newCap);
+
+		size_t newMargin = newCap / 2 - kq_size / 2;
+
 		if (newBlock != nullptr && kq_data != nullptr)
 		{
 			for (size_t i = 0; i < kq_size; ++i)
 			{
-				new (newBlock + newMargin + i + equalSides) value_type(std::move((*this)[i]));
+				new (newBlock + newMargin + i) value_type(std::move((*this)[i]));
 			}
 		}
 
-		if (newCap < 2)
-		{
-			kq_margin = 1;
-		}
-		else
-		{
-			kq_margin = newMargin + equalSides;
-		}
-
 		destroy();
-		::operator delete[] (kq_data);
-		kq_cap = newCap;
+		::operator delete[](kq_data);
 		kq_data = newBlock;
-		
+		kq_cap = newCap;
+		kq_margin = newMargin;
+
 		//std::cout << "Details from realloc: cap = " << kq_cap << " margin = " << kq_margin << " size = " << kq_size << "\n";
+		//std::cout << "newMargin = " << newMargin << " equalSides = " << equalSides << '\n's
 	}
 
 	template<typename T>
@@ -646,7 +620,7 @@ namespace kq
 		delete[] kq_data;
 		kq_data = newBlock;
 		kq_cap = newCap;
-		kq_margin = 0; 
+		kq_margin = 0;
 	}
 
 	template<typename T>
