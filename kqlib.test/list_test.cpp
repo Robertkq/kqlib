@@ -91,6 +91,16 @@ TEST_CASE("list constructors", "[list]")
         for (auto& e : l)
             REQUIRE(e == inc++);
     }
+
+    SECTION("list initializer_list asignment")
+    {
+        list<int> l;
+        l = { 1,2,3,4,5 };
+        REQUIRE(l.size() == 5);
+        auto inc = 1;
+        for (auto& e : l)
+            REQUIRE(e == inc++);
+    }
 }
 
 TEST_CASE("inserting into list", "[list]")
