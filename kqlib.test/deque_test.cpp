@@ -234,3 +234,46 @@ TEST_CASE("erasing from deque", "[deque]")
     }
     REQUIRE(dq.size() == 0);
 }
+
+TEST_CASE("swap deques", "[deque]")
+{
+    deque<int> dq1{ 1,2,3 };
+    deque<int> dq2{ 4,5,6,7 };
+
+    SECTION("kq::swap")
+    {
+        swap(dq1, dq2);
+        REQUIRE(dq1.size() == 4);
+        REQUIRE(dq2.size() == 3);
+        auto inc = 1;
+        for (auto& e : dq2)
+            REQUIRE(e == inc++);
+        for (auto& e : dq1)
+            REQUIRE(e == inc++);
+    }
+
+    SECTION("std::swap")
+    {
+        std::swap(dq1, dq2);
+        REQUIRE(dq1.size() == 4);
+        REQUIRE(dq2.size() == 3);
+        auto inc = 1;
+        for (auto& e : dq2)
+            REQUIRE(e == inc++);
+        for (auto& e : dq1)
+            REQUIRE(e == inc++);
+    }
+
+    SECTION("deque::swap")
+    {
+        dq1.swap(dq2);
+        REQUIRE(dq1.size() == 4);
+        REQUIRE(dq2.size() == 3);
+        auto inc = 1;
+        for (auto& e : dq2)
+            REQUIRE(e == inc++);
+        for (auto& e : dq1)
+            REQUIRE(e == inc++);
+    }
+
+}
