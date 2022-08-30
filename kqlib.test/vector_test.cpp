@@ -33,7 +33,7 @@ TEST_CASE("vector constructors", "[vector]")
             REQUIRE(vec[i] == inc++);
     }
 
-    SECTION("vector copy asignment")
+    SECTION("vector copy assignment")
     {
         vector<int> aux{ 1,2,3,4,5 };
         vector<int> vec;
@@ -43,7 +43,7 @@ TEST_CASE("vector constructors", "[vector]")
             REQUIRE(vec[i] == aux[i]);
     }
 
-    SECTION("vector move asignment")
+    SECTION("vector move assignment")
     {
         vector<int> aux{ 1,2,3,4,5 };
         vector<int> vec;
@@ -93,7 +93,7 @@ TEST_CASE("vector constructors", "[vector]")
             REQUIRE(vec[i] == 0);
     }
 
-    SECTION("vector initializer_list asignment")
+    SECTION("vector initializer_list assignment")
     {
         vector<int> vec;
         vec = { 1,2,3,4,5 };
