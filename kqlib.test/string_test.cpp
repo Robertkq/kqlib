@@ -53,7 +53,7 @@ TEST_CASE("string constructors")
 
     SECTION("string assign constructor")
     {
-        string str('b', 5);
+        string str(5, 'b');
         REQUIRE(str.size() == 5);
         REQUIRE(str.capacity() >= 5);
         REQUIRE(str == "bbbbb");
@@ -139,10 +139,10 @@ TEST_CASE("erasing in string", "[string]")
     SECTION("erase(char)")
     {
         str = "0123456";
-        str.erase(find(str.begin(), str.end(), 0));
-        str.erase(find(str.begin(), str.end(), 2));
-        str.erase(find(str.begin(), str.end(), 4));
-        str.erase(find(str.begin(), str.end(), 6));
+        str.erase(find(str.begin(), str.end(), '0'));
+        str.erase(find(str.begin(), str.end(), '2'));
+        str.erase(find(str.begin(), str.end(), '4'));
+        str.erase(find(str.begin(), str.end(), '6'));
 
         REQUIRE(str == "135");
         REQUIRE(str.size() == 3);
@@ -189,5 +189,50 @@ TEST_CASE("swap strings", "[string]")
         REQUIRE(s2.size() == 3);
         REQUIRE(s1 == "defg");
         REQUIRE(s2 == "abc");
+    }
+}
+
+TEST_CASE("resizing & reserving string", "[string]")
+{
+    string str;
+
+    SECTION("reserving higher")
+    {
+        str.reserve(10);
+        str = "Testing";
+        REQUIRE(str.capacity() >= 10);
+        REQUIRE(str.size() == 7);
+    }
+
+    SECTION("reserving lower")
+    {
+        str = "Testing";
+        auto cap = str.capacity();
+        str.reserve(5);
+        REQUIRE(cap == str.capacity());
+    }
+
+    SECTION("resizing")
+    {
+        str = "0123456789";
+        str.resize(5);
+        
+        REQUIRE(str == "01234");
+        REQUIRE(str.size() == 5);
+        REQUIRE(str.capacity() >= 5);
+
+        str.resize(10, '5');
+
+        REQUIRE(str == "0123455555");
+        REQUIRE(str.size() == 10);
+        REQUIRE(str.capacity() >= 10);
+
+        auto cap = str.capacity();
+
+        str.resize(0);
+
+        REQUIRE(str == "");
+        REQUIRE(str.size() == 0);
+        REQUIRE(str.capacity() == cap);
     }
 }
