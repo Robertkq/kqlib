@@ -68,7 +68,7 @@ TEST_CASE("list constructors", "[list]")
             REQUIRE(e == inc++);
     }
 
-    SECTION("list copy asignment")
+    SECTION("list copy assignment")
     {
         list<int> aux{ 1,2,3,4,5 };
         list<int> l;
@@ -80,7 +80,7 @@ TEST_CASE("list constructors", "[list]")
             REQUIRE(e == inc++);
     }
 
-    SECTION("list move asignment")
+    SECTION("list move assignment")
     {
         list<int> aux{ 1,2,3,4,5 };
         list<int> l;
@@ -92,7 +92,7 @@ TEST_CASE("list constructors", "[list]")
             REQUIRE(e == inc++);
     }
 
-    SECTION("list initializer_list asignment")
+    SECTION("list initializer_list assignment")
     {
         list<int> l;
         l = { 1,2,3,4,5 };
