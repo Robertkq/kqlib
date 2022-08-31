@@ -226,16 +226,17 @@ TEST_CASE("inserting in deque", "[deque]")
         dq.insert(dq.begin() + 1, 4);
         dq.emplace(dq.begin() + 1, 3);
         dq.insert(dq.begin() + 1, 2);
-        dq.emplace(find(dq.begin(), dq.end(), 5) + 1, 6);
-        dq.insert(find(dq.begin(), dq.end(), 5) + 1, 7);
-        dq.emplace(find(dq.begin(), dq.end(), 5) + 1, 8);
-        dq.insert(find(dq.begin(), dq.end(), 5) + 1, 9);
+
+        dq.emplace(find(dq.begin(), dq.end(), 5) + 1, 9);
+        dq.insert(find(dq.begin(), dq.end(), 5) + 1, 8);
+        dq.emplace(find(dq.begin(), dq.end(), 5) + 1, 7);
+        dq.insert(find(dq.begin(), dq.end(), 5) + 1, 6);
 
         REQUIRE(dq.size() == 10);
         REQUIRE(dq.capacity() >= 10);
         auto inc = 1;
         for (auto& e : dq)
-            REQUIRE(e == inc++);
+           REQUIRE(e == inc++);
     }
 }
 
