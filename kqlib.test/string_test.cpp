@@ -131,3 +131,63 @@ TEST_CASE("inserting in string", "[string]")
         REQUIRE(str == "abcde");
     }
 }
+
+TEST_CASE("erasing in string", "[string]")
+{
+    string str;
+
+    SECTION("erase(char)")
+    {
+        str = "0123456";
+        str.erase(find(str.begin(), str.end(), 0));
+        str.erase(find(str.begin(), str.end(), 2));
+        str.erase(find(str.begin(), str.end(), 4));
+        str.erase(find(str.begin(), str.end(), 6));
+
+        REQUIRE(str == "135");
+        REQUIRE(str.size() == 3);
+        REQUIRE(str.capacity() >= 3);
+    }
+
+    SECTION("erase(basic_string)")
+    {
+        str = "I want apples";
+        str.erase("apples");
+        REQUIRE(str == "I want ");
+        REQUIRE(str.size() == 7);
+        REQUIRE(str.capacity() >= 7);
+    }
+}
+
+TEST_CASE("swap strings", "[string]")
+{
+    string s1{ "abc" };
+    string s2{ "defg"};
+
+    SECTION("kq::swap")
+    {
+        swap(s1, s2);
+        REQUIRE(s1.size() == 4);
+        REQUIRE(s2.size() == 3);
+        REQUIRE(s1 == "defg");
+        REQUIRE(s2 == "abc");
+    }
+
+    SECTION("std::swap")
+    {
+        std::swap(s1, s2);
+        REQUIRE(s1.size() == 4);
+        REQUIRE(s2.size() == 3);
+        REQUIRE(s1 == "defg");
+        REQUIRE(s2 == "abc");
+    }
+
+    SECTION("string::swap")
+    {
+        s1.swap(s2);
+        REQUIRE(s1.size() == 4);
+        REQUIRE(s2.size() == 3);
+        REQUIRE(s1 == "defg");
+        REQUIRE(s2 == "abc");
+    }
+}
