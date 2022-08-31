@@ -46,7 +46,7 @@ TEST_CASE("deque constructors", "[deque]")
             REQUIRE(e == 0);
     }
 
-    SECTION("deque asign constructor")
+    SECTION("deque assign constructor")
     {
         deque<int> dq(3, 10);
         REQUIRE(dq.size() == 3);
@@ -76,7 +76,7 @@ TEST_CASE("deque constructors", "[deque]")
             REQUIRE(e == inc++);
     }
 
-    SECTION("deque copy asignment")
+    SECTION("deque copy assignment")
     {
         deque<int> aux{ 1,2,3,4,5 };
         deque<int> dq;
@@ -88,7 +88,7 @@ TEST_CASE("deque constructors", "[deque]")
             REQUIRE(e == inc++);
     }
 
-    SECTION("deque move asignment")
+    SECTION("deque move assignment")
     {
         deque<int> aux{ 1,2,3,4,5 };
         deque<int> dq;
@@ -101,7 +101,7 @@ TEST_CASE("deque constructors", "[deque]")
             REQUIRE(e == inc++);
     }
 
-    SECTION("deque initializer_list asignment")
+    SECTION("deque initializer_list assignment")
     {
         deque<int> dq;
         dq = { 1,2,3,4,5 };
@@ -219,7 +219,24 @@ TEST_CASE("inserting in deque", "[deque]")
         for (auto& e : dq)
             REQUIRE(e == inc++);
     }
-    //FIXME: add insert/emplace tests
+    
+    SECTION("insert/emplace")
+    {
+        dq = { 1, 5, 10 };
+        dq.insert(dq.begin() + 1, 4);
+        dq.emplace(dq.begin() + 1, 3);
+        dq.insert(dq.begin() + 1, 2);
+        dq.emplace(find(dq.begin(), dq.end(), 5) + 1, 6);
+        dq.insert(find(dq.begin(), dq.end(), 5) + 1, 7);
+        dq.emplace(find(dq.begin(), dq.end(), 5) + 1, 8);
+        dq.insert(find(dq.begin(), dq.end(), 5) + 1, 9);
+
+        REQUIRE(dq.size() == 10);
+        REQUIRE(dq.capacity() >= 10);
+        auto inc = 1;
+        for (auto& e : dq)
+            REQUIRE(e == inc++);
+    }
 }
 
 TEST_CASE("erasing from deque", "[deque]")
