@@ -67,4 +67,67 @@ TEST_CASE("string constructors")
         REQUIRE(str.capacity() >= 5);
         REQUIRE(str == "12345");
     }
+
+    SECTION("string copy assignment")
+    {
+        string aux("12345");
+        string str;
+        str = aux;
+        REQUIRE(str.size() == 5);
+        REQUIRE(str.capacity() >= 5);
+        REQUIRE(str == "12345");
+        
+    }
+
+    SECTION("string move assignment")
+    {
+        string aux("12345");
+        string str;
+        str = std::move(aux);
+        REQUIRE(str.size() == 5);
+        REQUIRE(str.capacity() >= 5);
+        REQUIRE(str == "12345");
+        REQUIRE(aux.size() == 0);
+        REQUIRE(aux == "");
+    }
+
+    SECTION("string char* assignment")
+    {
+        string str;
+        str = "12345";
+        REQUIRE(str.size() == 5);
+        REQUIRE(str.capacity() >= 5);
+        REQUIRE(str == "12345");
+    }
+}
+
+TEST_CASE("inserting in string", "[string]")
+{
+    string str;
+
+    SECTION("push_back")
+    {
+        str.push_back('a');
+        str.push_back('b');
+        str.push_back('c');
+        str.push_back('d');
+        str.push_back('e');
+
+        REQUIRE(str.size() == 5);
+        REQUIRE(str.capacity() >= 5);
+        REQUIRE(str == "abcde");
+    }
+
+    SECTION("insert")
+    {
+        str.insert(str.begin(), 'e');
+        str.insert(str.begin(), 'd');
+        str.insert(str.begin(), 'c');
+        str.insert(str.begin(), 'b');
+        str.insert(str.begin(), 'a');
+
+        REQUIRE(str.size() == 5);
+        REQUIRE(str.capacity() >= 5);
+        REQUIRE(str == "abcde");
+    }
 }
