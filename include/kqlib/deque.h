@@ -365,16 +365,17 @@ namespace kq
 	template<typename T>
 	typename deque<T>::value_type& deque<T>::insert(iterator position, const value_type& value)
 	{
-		if (begin() >= position && position <= end())
+		if (position >= begin() && position <= end())
 		{
 			size_t safePosition = position - begin();
+
 			// back							//front
 			if ((kq_size >= kq_cap - kq_margin) || kq_margin == 0)
 			{
 				realloc(kq_cap * 2);
 			}
 			++kq_size;
-			for (auto it = end() - 2; it >= begin() + safePosition; ++it)
+			for (auto it = end() - 2; it >= begin() + safePosition; --it)
 			{
 				*(it + 1) = std::move(*it);
 			}
@@ -388,16 +389,17 @@ namespace kq
 	template<typename... Args>
 	typename deque<T>::value_type& deque<T>::emplace(iterator position, Args&&... args)
 	{
-		if (begin() >= position && position <= end())
+		if (position >= begin() && position <= end())
 		{
 			size_t safePosition = position - begin();
+
 			// back							//front
 			if ((kq_size >= kq_cap - kq_margin) || kq_margin == 0)
 			{
 				realloc(kq_cap * 2);
 			}
 			++kq_size;
-			for (auto it = end() - 2; it >= begin() + safePosition; ++it)
+			for (auto it = end() - 2; it >= begin() + safePosition; --it)
 			{
 				*(it + 1) = std::move(*it);
 			}
