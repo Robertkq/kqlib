@@ -195,6 +195,8 @@ namespace kq
 
         reference push_back(value_type);
         reference insert(iterator, value_type);
+        //FIXME: add insert(size_t index, value_type val)
+        // add insert(size_t index = 0, const char* ptr)
 
         void assign(size_t, value_type);
         void assign(const basic_string<T>&);
