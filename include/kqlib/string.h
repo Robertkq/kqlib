@@ -380,11 +380,11 @@ namespace kq
     template<typename T>
     basic_string<T>& basic_string<T>::operator=(const char* str)
     {
-        // perhaps we could make this more efficient to not allocate if we already have enough capacity ?
-        clear();
+        if (strlen(str) + 1 > kq_cap)
+        {
+            reserve(strlen(str) + 1);
+        }
         kq_size = strlen(str);
-        kq_cap = kq_size + 1;
-        kq_data = new value_type[kq_cap];
         for (size_t i = 0; i < kq_size; ++i)
         {
             *(kq_data + i) = *(str++);
@@ -724,13 +724,13 @@ namespace kq
     {
         if (kq_size >= toRemove.size())
         {
-            for (basic_string<T>::iterator it = begin(); it != end() - toRemove.size(); ++it)
+            for (auto it = begin(); it != end() - toRemove.size() + 1; ++it)
             {
                 auto copyIt = it;
                 bool found = true;
-                for (basic_string<T>::iterator it2 = toRemove.begin(); it2 != toRemove.end(); ++it2)
+                for (auto it2 = toRemove.begin(); it2 != toRemove.end(); ++it2)
                 {
-                    if ( (*it2) != (*(copyIt++)) )
+                    if ( *it2 != *(copyIt++) )
                     {
                         found = false;
                         break;
@@ -754,7 +754,7 @@ namespace kq
     template<typename T>
     void basic_string<T>::clear()
     {
-        if (kq_data)
+        if (kq_data != nullptr)
         {
             destroy();
             delete[] kq_data;
@@ -806,7 +806,7 @@ namespace kq
             }
             while (kq_size < count)
             {
-                emplace_back(value);
+                push_back(value);
             }
         }
     }
@@ -823,7 +823,9 @@ namespace kq
     template<typename T>
     void basic_string<T>::swap(basic_string<T>& other)
     {
-        swap(*this, other);
+        kq::swap(kq_data, other.kq_data);
+        kq::swap(kq_size, other.kq_size);
+        kq::swap(kq_cap, other.kq_cap);
     }
 
     template<typename T>
