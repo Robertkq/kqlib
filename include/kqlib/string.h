@@ -852,10 +852,10 @@ namespace kq
     {
         for (size_t i = pos; i < kq_size; ++i)
         {
-            size_t j;
-            for (j = 0; ptr[j] != 0; ++j)
+            size_t j = 0;
+            for (; ptr[j] != 0; ++j)
             {
-                if (ptr[j++] != *(kq_data + i + j))
+                if (ptr[j] != *(kq_data + i + j))
                 {
                     break;
                 }
