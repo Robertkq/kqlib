@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <iterator>
 #include <stdexcept>
+#include "compare.h"
 
 namespace kq
 {
