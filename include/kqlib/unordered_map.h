@@ -83,8 +83,10 @@ namespace kq
         using key_type = Key;
         using mapped_type = T;
         using value_type = kq::pair<Key, T>;
-        using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
         using pointer = value_type*;
+        using reference = typename std::conditional<constant, const value_type&, value_type&>::type;
+        using iterator_category = std::forward_iterator_tag;
+        
 
         um_iterator() : kq_outer(), kq_inner() {}
         um_iterator(const um_iterator& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
@@ -225,8 +227,8 @@ namespace kq
         unordered_map(const unordered_map& other);
         unordered_map(unordered_map&& other);
         unordered_map(size_t bucket_count);
-        template<typename IterType, typename std::enable_if<is_iterator<IterType>::value, int>::type = 0>
-        unordered_map(IterType first, IterType last);
+        template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type = 0>
+        unordered_map(iterType first, iterType last);
         unordered_map(const std::initializer_list<value_type>& ilist);
 
         unordered_map& operator=(const unordered_map& other);
@@ -310,8 +312,8 @@ namespace kq
     {}
     
     template<typename Key, typename T, typename Hasher>
-    template<typename IterType, typename std::enable_if<is_iterator<IterType>::value, int>::type>
-    unordered_map<Key, T, Hasher>::unordered_map(IterType first, IterType last)
+    template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type>
+    unordered_map<Key, T, Hasher>::unordered_map(iterType first, iterType last)
         : unordered_map()
     {
         for (; first != last; ++first)
@@ -320,8 +322,12 @@ namespace kq
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map(const std::initializer_list<value_type>& ilist)
-        : unordered_map(ilist.begin(), ilist.end()) 
-    {}
+        : kq_data(ilist.size() * 2), kq_size(0), kq_bucket_size(ilist.size() * 2),
+        kq_hasher(), kq_first_nonempty(kq_data.end()), kq_last_nonempty(kq_data.end())
+    {
+        for (auto it = ilist.begin(); it != ilist.end(); ++it)
+            insert(*it);
+    }
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(const unordered_map& other)
