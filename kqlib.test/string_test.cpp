@@ -236,3 +236,68 @@ TEST_CASE("resizing & reserving string", "[string]")
         REQUIRE(str.capacity() == cap);
     }
 }
+
+TEST_CASE("lexicographical comparasions & operator+/+=", "[string]")
+{
+    std::string s1, s2;
+
+    SECTION("same length comparasion")
+    {
+        s1 = "abc";
+        s2 = "abd";
+        REQUIRE(s1 < s2);
+        REQUIRE(s2 > s1);
+        REQUIRE(s1 <= s2);
+        REQUIRE(s2 >= s1);
+        REQUIRE(!(s1 == s2));
+        REQUIRE(s1 != s2);
+    }
+
+    SECTION("different lengths comparasion")
+    {
+        s1 = "abcdef";
+        s2 = "abc";
+        REQUIRE(s2 < s1);
+        REQUIRE(s1 > s2);
+        REQUIRE(s2 <= s1);
+        REQUIRE(s1 >= s2);
+        REQUIRE(s1 != s2);
+        REQUIRE(!(s1 == s2));
+    }
+
+    SECTION("adding sufixes (+)")
+    {
+        s1 = "My name is";
+        s2 = "Robert";
+        s1 = s1 + " ";
+        s1 = s1 + s2;
+        s1 = s1 + '!';
+        REQUIRE(s1 == "My name is Robert!");
+        
+    }
+
+    SECTION("adding sufixes (+=)")
+    {
+        s1 = "My name is";
+        s2 = "Robert";
+        s1 += " ";
+        s1 += s2;
+        s1 += '!';
+        REQUIRE(s1 == "My name is Robert!");
+
+    }
+}
+
+TEST_CASE("substrings", "[string]")
+{
+    string str("This is an example.");
+
+    REQUIRE(str.substr(str.find(str.substr(0, 4)), 4) == "This");
+    REQUIRE(str.substr(str.find("is"), 2) == "is");
+    REQUIRE(str.substr(str.find("an"), 2) == "an");
+    REQUIRE(str.substr(str.find("example"), 7) == "example");
+    REQUIRE(str.substr(str.find("."), 1) == ".");
+    
+    REQUIRE(str.substr(19, 10) == "");
+
+}
