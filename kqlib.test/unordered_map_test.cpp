@@ -90,4 +90,14 @@ TEST_CASE("unordered_map constructors")
         REQUIRE(map.at("Pizza") == 25);
         REQUIRE(aux.size() == 0);
     }
+
+    SECTION("initializer_list assignment")
+    {
+        unordered_map<std::string, int> map;
+        map = { {"Covrig", 100}, {"Mozarella", 50}, {"Pizza", 25} };
+        REQUIRE(map.size() == 3);
+        REQUIRE(map.at("Covrig") == 100);
+        REQUIRE(map.at("Mozarella") == 50);
+        REQUIRE(map.at("Pizza") == 25);
+    }
 }
