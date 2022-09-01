@@ -4,6 +4,7 @@
 #include "other.h"
 #include "vector.h"
 #include "single_list.h"
+#include "pair.h"
 
 //#include <iostream>
 
@@ -223,6 +224,10 @@ namespace kq
         unordered_map();
         unordered_map(const unordered_map& other);
         unordered_map(unordered_map&& other);
+        unordered_map(size_t bucket_count);
+        template<typename IterType, typename std::enable_if<is_iterator<IterType>::value, int>::type = 0>
+        unordered_map(IterType first, IterType last);
+        unordered_map(const std::initializer_list<value_type>& ilist);
 
         unordered_map& operator=(const unordered_map& other);
         unordered_map& operator=(unordered_map&& other) noexcept;
@@ -297,6 +302,26 @@ namespace kq
     {
         other.clear();
     }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>::unordered_map(size_t bucket_count)
+        : kq_data(bucket_count), kq_size(0), kq_bucket_size(bucket_count),
+        kq_hasher(), kq_first_nonempty(kq_data.end()), kq_last_nonempty(kq_data.end())
+    {}
+    
+    template<typename Key, typename T, typename Hasher>
+    template<typename IterType, typename std::enable_if<is_iterator<IterType>::value, int>::type>
+    unordered_map<Key, T, Hasher>::unordered_map(IterType first, IterType last)
+        : unordered_map()
+    {
+        for (; first != last; ++first)
+            insert(*first);
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    unordered_map<Key, T, Hasher>::unordered_map(const std::initializer_list<value_type>& ilist)
+        : unordered_map(ilist.begin(), ilist.end()) 
+    {}
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>& unordered_map<Key, T, Hasher>::operator=(const unordered_map& other)
