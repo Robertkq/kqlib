@@ -4,7 +4,7 @@
 
 using namespace kq;
 
-TEST_CASE("string constructors")
+TEST_CASE("string constructors", "[string]")
 {
     SECTION("string default constructor")
     {

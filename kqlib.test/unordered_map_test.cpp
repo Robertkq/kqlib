@@ -4,7 +4,7 @@
 
 using namespace kq;
 
-TEST_CASE("unordered_map constructors")
+TEST_CASE("unordered_map constructors", "[unordered_map]")
 {
     // Used std::string as the key because of the convinient hasher
     SECTION("default constructor")
@@ -95,6 +95,59 @@ TEST_CASE("unordered_map constructors")
     {
         unordered_map<std::string, int> map;
         map = { {"Covrig", 100}, {"Mozarella", 50}, {"Pizza", 25} };
+        REQUIRE(map.size() == 3);
+        REQUIRE(map.at("Covrig") == 100);
+        REQUIRE(map.at("Mozarella") == 50);
+        REQUIRE(map.at("Pizza") == 25);
+    }
+}
+
+TEST_CASE("inserting into unordered_map", "[unordered_map]")
+{
+    unordered_map<std::string, int> map;
+
+    SECTION("insert()")
+    {
+        map.insert({ "Covrig", 100 });
+        map.insert({ "Mozarella", 50 });
+        map.insert({ "Pizza", 25 });
+
+        //Duplicates should not be inserted
+        map.insert({ "Covrig", 75 });
+        map.insert({ "Mozarella", 25 });
+
+        REQUIRE(map.size() == 3);
+        REQUIRE(map.at("Covrig") == 100);
+        REQUIRE(map.at("Mozarella") == 50);
+        REQUIRE(map.at("Pizza") == 25);
+    }
+
+    SECTION("operator[]")
+    {
+        map["Covrig"] = 100;
+        map["Mozarella"] = 50;
+        map["Pizza"] = 25;
+
+        //Duplicates should not be inserted
+        map["Covrig"] = 75;
+        map["Mozarella"] = 25;
+
+        REQUIRE(map.size() == 3);
+        REQUIRE(map.at("Covrig") == 100);
+        REQUIRE(map.at("Mozarella") == 50);
+        REQUIRE(map.at("Pizza") == 25);
+    }
+
+    SECTION("emplace()")
+    {
+        map.emplace(pair<std::string, int>{ "Covrig", 100 });
+        map.emplace(pair<std::string, int>{ "Mozarella", 50 });
+        map.emplace(pair<std::string, int>{ "Pizza", 25 });
+
+        //Duplicates should not be emplaced
+        map.emplace(pair<std::string, int>{ "Covrig", 75 });
+        map.emplace(pair<std::string, int>{ "Mozarella", 25 });
+
         REQUIRE(map.size() == 3);
         REQUIRE(map.at("Covrig") == 100);
         REQUIRE(map.at("Mozarella") == 50);
