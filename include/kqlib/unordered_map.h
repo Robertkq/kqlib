@@ -271,6 +271,8 @@ namespace kq
             void re_iterator_bucket();
             void add_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
 
+            bool validIterator(iterator it);
+
             void rehash(size_t buckets);
 
     private:
@@ -427,7 +429,7 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::erase(iterator pos)
     {
-        if (pos >= begin() && pos < end() && kq_size != 0)
+        if (validIterator(pos) && kq_size != 0)
         {
             bucket<key_type, mapped_type>& bucket = *(pos.get_outer());
             bucket.erase(pos.get_inner());
@@ -594,6 +596,13 @@ namespace kq
             if (it->empty() == false)
                 add_iterator_bucket(it);
         }
+    }
+    template<typename Key, typename T, typename Hasher>
+    bool unordered_map<Key, T, Hasher>::validIterator(iterator it)
+    {
+        // Can't do it >= begin().
+        // begin() returns the first sequentually nonempty bucket, which is not garanteed to be the first nonempty bucket in memory.
+        return (it >= iterator{kq_data.begin(), nullptr} && it < iterator{kq_data.end(), nullptr});
     }
 
     template<typename Key, typename T, typename Hasher>
