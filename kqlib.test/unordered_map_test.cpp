@@ -128,10 +128,6 @@ TEST_CASE("inserting into unordered_map", "[unordered_map]")
         map["Mozarella"] = 50;
         map["Pizza"] = 25;
 
-        //Duplicates should not be inserted
-        map["Covrig"] = 75;
-        map["Mozarella"] = 25;
-
         REQUIRE(map.size() == 3);
         REQUIRE(map.at("Covrig") == 100);
         REQUIRE(map.at("Mozarella") == 50);
@@ -153,4 +149,27 @@ TEST_CASE("inserting into unordered_map", "[unordered_map]")
         REQUIRE(map.at("Mozarella") == 50);
         REQUIRE(map.at("Pizza") == 25);
     }
+}
+
+TEST_CASE("erasing from unordered_map", "[unordered_map]")
+{
+    unordered_map<int, std::string> dict{ 
+        {1, "one"}, {2, "two"}, {3, "three"},
+        {4, "four"}, {5, "five"}, {6, "six"},
+        {7, "seven"}, {8, "eight"}, {9, "nine"}
+    };
+
+    for (auto i = 1; i < 10; ++i)
+    {
+        auto size = dict.size();
+        dict.erase(kq::find_if(dict.begin(), dict.end(), 
+            [&i](const pair<int, std::string>& pair)
+            { return pair.first == i; }));
+        REQUIRE(dict.size() == size - 1);
+        REQUIRE(kq::find_if(dict.begin(), dict.end(), 
+            [&i](const pair<int, std::string>& pair)
+            { return pair.first == i; }) == dict.end());
+    }
+    REQUIRE(dict.size() == 0);
+
 }
