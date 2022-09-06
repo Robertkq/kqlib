@@ -42,14 +42,14 @@ namespace kq {
         sl_iterator(sl_iterator&& other) : kq_ptr(other.kq_ptr)         { other.kq_ptr = nullptr; }
         sl_iterator(element* ptr) : kq_ptr(ptr)                         {}
 
-        sl_iterator& operator=(const sl_iterator& other)                { kq_ptr = other.kq_ptr; return *this; }
-        sl_iterator& operator=(sl_iterator&& other) noexcept                    { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+        sl_iterator& operator=(const sl_iterator& other);
+        sl_iterator& operator=(sl_iterator&& other) noexcept;
 
         bool operator!=(const sl_iterator& other) const                 { return kq_ptr != other.kq_ptr; }
         bool operator==(const sl_iterator& other) const                 { return kq_ptr == other.kq_ptr; }
 
         sl_iterator& operator++()                                       { kq_ptr = kq_ptr->next; return *this; }
-        sl_iterator operator++(int)                                    { element* tmp = kq_ptr; ++kq_ptr; return tmp; }
+        sl_iterator operator++(int)                                    { element* tmp = kq_ptr; kq_ptr = kq_ptr->next; return tmp; }
 
         element* el_ptr() const                                            { return kq_ptr; }
         element* el_next() const                                           { return kq_ptr->next; }
@@ -61,6 +61,27 @@ namespace kq {
     private:
         element* kq_ptr;
     };
+
+    template<typename T, bool constant>
+    sl_iterator<T, constant>& sl_iterator<T, constant>::operator=(const sl_iterator& other)
+    {
+        if (this != &other)
+        {
+            kq_ptr = other.kq_ptr;
+        }
+        return *this;
+    }
+
+    template<typename T, bool constant>
+    sl_iterator<T, constant>& sl_iterator<T, constant>::operator=(sl_iterator&& other) noexcept
+    { 
+        if (this != &other)
+        {
+            kq_ptr = other.kq_ptr;
+            other.kq_ptr = nullptr;
+        }
+        return *this; 
+    }
 
     template<typename T>
     struct single_list

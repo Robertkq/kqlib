@@ -94,24 +94,8 @@ namespace kq
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer, typename single_list<value_type>::iterator inner) : kq_outer(outer), kq_inner(inner) {}
 
-        um_iterator& operator=(const um_iterator& other) 
-        { 
-            if (this != &other)
-            {
-                kq_outer = other.kq_outer;
-                kq_inner = other.kq_inner;
-            }
-            return*this; 
-        }
-        um_iterator& operator=(um_iterator&& other) 
-        { 
-            if (this != &other)
-            {
-                kq_outer = other.kq_outer;
-                kq_inner = other.kq_inner;
-            }
-            return *this; 
-        }
+        um_iterator& operator=(const um_iterator& other);
+        um_iterator& operator=(um_iterator&& other) noexcept;
 
         bool operator==(const um_iterator& other) const;
         bool operator!=(const um_iterator& other) const;
@@ -136,6 +120,30 @@ namespace kq
         typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
         typename single_list<value_type>::iterator kq_inner;
     };
+
+    template<typename Key, typename T, bool constant>
+    typename um_iterator<Key, T, constant>& um_iterator<Key, T, constant>::operator=(const um_iterator& other)
+    {
+        if (this != &other)
+        {
+            kq_outer = other.kq_outer;
+            kq_inner = other.kq_inner;
+        }
+        return *this;
+    }
+
+    template<typename Key, typename T, bool constant>
+    typename um_iterator<Key, T, constant>& um_iterator<Key, T, constant>::operator=(um_iterator&& other) noexcept
+    {
+        if (this != &other)
+        {
+            kq_outer = other.kq_outer;
+            kq_inner = other.kq_inner;
+            other.kq_outer = nullptr;
+            other.kq_inner = nullptr;
+        }
+        return *this;
+    }
 
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator==(const um_iterator& other) const

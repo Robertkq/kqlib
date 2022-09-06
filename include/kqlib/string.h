@@ -49,8 +49,8 @@ namespace kq
         str_iterator(pointer ptr) : kq_ptr(ptr) {}
         ~str_iterator() {}
 
-        str_iterator& operator=(const str_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-        str_iterator& operator=(str_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr;  return *this; }
+        str_iterator& operator=(const str_iterator& other);
+        str_iterator& operator=(str_iterator&& other) noexcept;
 
         bool operator==(const str_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
         bool operator!=(const str_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
@@ -78,6 +78,27 @@ namespace kq
     private:
         pointer kq_ptr;
     };
+    
+    template<typename T, bool constant>
+    str_iterator<T, constant>& str_iterator<T, constant>::operator=(const str_iterator& other) 
+    {
+        if (this != &other)
+        {
+            kq_ptr = other.kq_ptr;
+        }
+        return *this;
+    }
+
+    template<typename T, bool constant>
+    str_iterator<T, constant>& str_iterator<T, constant>::operator=(str_iterator&& other) noexcept
+    { 
+        if (this != &other)
+        {
+            kq_ptr = other.kq_ptr;
+            other.kq_ptr = nullptr;
+        }
+        return *this; 
+    }
 
     template<typename T, bool constant>
     struct str_reverse_iterator
@@ -95,8 +116,8 @@ namespace kq
         str_reverse_iterator(pointer ptr) : kq_ptr(ptr) {}
         ~str_reverse_iterator() {}
 
-        str_reverse_iterator& operator=(const str_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-        str_reverse_iterator& operator=(str_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr;  return *this; }
+        str_reverse_iterator& operator=(const str_reverse_iterator& other);
+        str_reverse_iterator& operator=(str_reverse_iterator&& other) noexcept;
 
         bool operator==(const str_reverse_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
         bool operator!=(const str_reverse_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
@@ -126,6 +147,27 @@ namespace kq
     private:
         pointer kq_ptr;
     };
+
+    template<typename T, bool constant>
+    str_reverse_iterator<T, constant>& str_reverse_iterator<T, constant>::operator=(const str_reverse_iterator& other)
+    {
+        if (this != &other)
+        {
+            kq_ptr = other.kq_ptr;
+        }
+        return *this;
+    }
+
+    template<typename T, bool constant>
+    str_reverse_iterator<T, constant>& str_reverse_iterator<T, constant>::operator=(str_reverse_iterator&& other) noexcept
+    {
+        if (this != &other)
+        {
+            kq_ptr = other.kq_ptr;
+            other.kq_ptr = nullptr;
+        }
+        return *this;
+    }
 
     template<typename T>
     struct basic_string

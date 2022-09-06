@@ -22,8 +22,8 @@ namespace kq
 		v_iterator(v_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
 		v_iterator(pointer ptr) : kq_ptr(ptr) {}
 
-		v_iterator& operator=(const v_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-		v_iterator& operator=(v_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+		v_iterator& operator=(const v_iterator& other);
+		v_iterator& operator=(v_iterator&& other) noexcept;
 
 		bool operator==(const v_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
 		bool operator!=(const v_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
@@ -53,6 +53,27 @@ namespace kq
 	};
 
 	template<typename T, bool constant>
+	typename v_iterator<T, constant>& v_iterator<T, constant>::operator=(const v_iterator& other)
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+		}
+		return *this;
+	}
+
+	template<typename T, bool constant>
+	typename v_iterator<T, constant>& v_iterator<T, constant>::operator=(v_iterator&& other) noexcept
+	{ 
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+			other.kq_ptr = nullptr;
+		}
+		return *this; 
+	}
+
+	template<typename T, bool constant>
 	struct v_reverse_iterator
 	{
 	public:
@@ -67,8 +88,8 @@ namespace kq
 		v_reverse_iterator(v_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
 		v_reverse_iterator(pointer ptr) : kq_ptr(ptr) {}
 
-		v_reverse_iterator& operator=(const v_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+		v_reverse_iterator& operator=(const v_reverse_iterator& other);
+		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept;
 
 		bool operator==(const v_reverse_iterator& other) const { return kq_ptr == other.kq_ptr; }
 		bool operator!=(const v_reverse_iterator& other) const { return kq_ptr != other.kq_ptr; }
@@ -98,6 +119,27 @@ namespace kq
 	private:
 		pointer kq_ptr;
 	};
+
+	template<typename T, bool constant>
+	typename v_reverse_iterator<T, constant>& v_reverse_iterator<T, constant>::operator=(const v_reverse_iterator& other)
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+		}
+		return *this;
+	}
+
+	template<typename T, bool constant>
+	typename v_reverse_iterator<T, constant>& v_reverse_iterator<T, constant>::operator=(v_reverse_iterator&& other) noexcept
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+			other.kq_ptr = nullptr;
+		}
+		return *this;
+	}
 
 	template<typename T>
 	struct vector
@@ -261,7 +303,7 @@ namespace kq
 	}
 
 	template<typename T>
-	typename vector<T>::vector& vector<T>::operator=(const vector& other)
+	typename vector<T>& vector<T>::operator=(const vector& other)
 	{
 		if (this != &other)
 		{
@@ -278,7 +320,7 @@ namespace kq
 	}
 
 	template<typename T>
-	typename vector<T>::vector& vector<T>::operator=(vector&& other) noexcept
+	typename vector<T>& vector<T>::operator=(vector&& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -295,7 +337,7 @@ namespace kq
 
 	template<typename T>
 	template<typename ilT>
-	typename vector<T>::vector& vector<T>::operator=(const std::initializer_list<ilT>& ilist)
+	typename vector<T>& vector<T>::operator=(const std::initializer_list<ilT>& ilist)
 	{
 		clear();
 		assign(ilist);

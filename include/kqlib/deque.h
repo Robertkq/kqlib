@@ -20,11 +20,11 @@ namespace kq
 		dq_iterator(dq_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
 		dq_iterator(pointer ptr_) : kq_ptr(ptr_) {};
 		
-		dq_iterator& operator=(const dq_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-		dq_iterator& operator=(dq_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+		dq_iterator& operator=(const dq_iterator& other);
+		dq_iterator& operator=(dq_iterator&& other) noexcept;
 
 		bool operator==(const dq_iterator& other) const { return kq_ptr == other.kq_ptr; }
-		bool operator!=(const dq_iterator& other) const { return !(*this == other.kq_ptr); }
+		bool operator!=(const dq_iterator& other) const { return kq_ptr != other.kq_ptr; }
 		bool operator>(const dq_iterator& other) const { return kq_ptr > other.kq_ptr; }
 		bool operator<(const dq_iterator& other) const { return kq_ptr < other.kq_ptr; }
 		bool operator>=(const dq_iterator& other) const { return kq_ptr >= other.kq_ptr; }
@@ -51,6 +51,27 @@ namespace kq
 	};
 
 	template<typename T, bool constant>
+	dq_iterator<T, constant>& dq_iterator<T, constant>::operator=(const dq_iterator& other) 
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+		}
+		return *this; 
+	}
+
+	template<typename T, bool constant>
+	dq_iterator<T, constant>& dq_iterator<T, constant>::operator=(dq_iterator&& other) noexcept 
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+			other.kq_ptr = nullptr;
+		}
+		return *this;
+	}
+
+	template<typename T, bool constant>
 	struct dq_reverse_iterator
 	{
 	public:
@@ -65,11 +86,11 @@ namespace kq
 		dq_reverse_iterator(dq_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
 		dq_reverse_iterator(pointer ptr_) : kq_ptr(ptr_) {};
 
-		dq_reverse_iterator& operator=(const dq_reverse_iterator& other) { kq_ptr = other.kq_ptr; return *this; }
-		dq_reverse_iterator& operator=(dq_reverse_iterator&& other) noexcept { kq_ptr = other.kq_ptr; other.kq_ptr = nullptr; return *this; }
+		dq_reverse_iterator& operator=(const dq_reverse_iterator& other);
+		dq_reverse_iterator& operator=(dq_reverse_iterator&& other) noexcept;
 
 		bool operator==(const dq_reverse_iterator& other) const { return kq_ptr == other.kq_ptr; }
-		bool operator!=(const dq_reverse_iterator& other) const { return !(*this == other.kq_ptr); }
+		bool operator!=(const dq_reverse_iterator& other) const { return kq_ptr != other.kq_ptr; }
 		bool operator>(const dq_reverse_iterator& other) const { return kq_ptr < other.kq_ptr; }
 		bool operator<(const dq_reverse_iterator& other) const { return kq_ptr > other.kq_ptr; }
 		bool operator>=(const dq_reverse_iterator& other) const { return kq_ptr <= other.kq_ptr; }
@@ -94,6 +115,27 @@ namespace kq
 	private:
 		pointer kq_ptr;
 	};
+
+	template<typename T, bool constant>
+	dq_reverse_iterator<T, constant>& dq_reverse_iterator<T, constant>::operator=(const dq_reverse_iterator& other)
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+		}
+		return *this;
+	}
+
+	template<typename T, bool constant>
+	dq_reverse_iterator<T, constant>& dq_reverse_iterator<T, constant>::operator=(dq_reverse_iterator&& other) noexcept
+	{
+		if (this != &other)
+		{
+			kq_ptr = other.kq_ptr;
+			other.kq_ptr = nullptr;
+		}
+		return *this;
+	}
 
 
 	template<typename T>
