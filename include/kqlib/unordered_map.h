@@ -90,7 +90,7 @@ namespace kq
 
         um_iterator() : kq_outer(), kq_inner() {}
         um_iterator(const um_iterator& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
-        um_iterator(um_iterator&& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
+        um_iterator(um_iterator&& other) noexcept : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
         um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer, typename single_list<value_type>::iterator inner) : kq_outer(outer), kq_inner(inner) {}
 
@@ -225,7 +225,7 @@ namespace kq
 
         unordered_map();
         unordered_map(const unordered_map& other);
-        unordered_map(unordered_map&& other);
+        unordered_map(unordered_map&& other) noexcept;
         unordered_map(size_t bucket_count);
         template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type = 0>
         unordered_map(iterType first, iterType last);
@@ -234,7 +234,7 @@ namespace kq
         unordered_map& operator=(const unordered_map& other);
         unordered_map& operator=(unordered_map&& other) noexcept;
 
-        unordered_map& operator=(const std::initializer_list<value_type>& il); // FIXME: add me
+        unordered_map& operator=(const std::initializer_list<value_type>& il);
 
         iterator begin()    { return kq_first_nonempty; }
         iterator end()  { return { kq_data.end(), nullptr }; }
@@ -264,6 +264,7 @@ namespace kq
 
         bool contains(const key_type& key) const;
         void reserve(size_t buckets);
+        void swap(unordered_map& other);
 
     private:
             void remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it);
@@ -300,7 +301,7 @@ namespace kq
     }
 
     template<typename Key, typename T, typename Hasher>
-    unordered_map<Key, T, Hasher>::unordered_map(unordered_map&& other)
+    unordered_map<Key, T, Hasher>::unordered_map(unordered_map&& other) noexcept
         : kq_data(std::move(other.kq_data)), kq_size(other.kq_size), kq_bucket_size(other.kq_bucket_size),
         kq_hasher(), kq_first_nonempty(other.kq_first_nonempty), kq_last_nonempty(other.kq_last_nonempty)
     {
@@ -560,6 +561,16 @@ namespace kq
         {
             rehash(buckets);
         }
+    }
+
+    template<typename Key, typename T, typename Hasher>
+    void unordered_map<Key, T, Hasher>::swap(unordered_map& other)
+    {
+        kq_data.swap(other.kq_data);
+        kq::swap(kq_size, other.kq_size);
+        kq::swap(kq_bucket_size, other.kq_bucket_size);
+        kq::swap(kq_first_nonempty, other.kq_first_nonempty);
+        kq::swap(kq_last_nonempty, other.kq_last_nonempty);
     }
 
     template<typename Key, typename T, typename Hasher>
