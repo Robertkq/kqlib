@@ -173,3 +173,55 @@ TEST_CASE("erasing from unordered_map", "[unordered_map]")
     REQUIRE(dict.size() == 0);
 
 }
+
+TEST_CASE("swap unordered_maps", "[unordered_map]")
+{
+    // Appriciate the key names, please
+    unordered_map<std::string, int> map1{ {"Covrig", 100}, {"Pizza", 50}, {"Spaghetti", 75}};
+    unordered_map<std::string, int> map2{ {"Haribo", 150}, {"PoE", 0}};
+
+    SECTION("kq::swap")
+    {
+        kq::swap(map1, map2);
+
+        REQUIRE(map1.size() == 2);
+        REQUIRE(map2.size() == 3);
+
+        REQUIRE(map1["Haribo"] == 150);
+        REQUIRE(map1["PoE"] == 0);
+
+        REQUIRE(map2["Covrig"] == 100);
+        REQUIRE(map2["Pizza"] == 50);
+        REQUIRE(map2["Spaghetti"] == 75);
+    }
+
+    SECTION("std::swap")
+    {
+        std::swap(map1, map2);
+
+        REQUIRE(map1.size() == 2);
+        REQUIRE(map2.size() == 3);
+
+        REQUIRE(map1["Haribo"] == 150);
+        REQUIRE(map1["PoE"] == 0);
+
+        REQUIRE(map2["Covrig"] == 100);
+        REQUIRE(map2["Pizza"] == 50);
+        REQUIRE(map2["Spaghetti"] == 75);
+    }
+
+    SECTION("unordered_map::swap")
+    {
+        map1.swap(map2);
+
+        REQUIRE(map1.size() == 2);
+        REQUIRE(map2.size() == 3);
+
+        REQUIRE(map1["Haribo"] == 150);
+        REQUIRE(map1["PoE"] == 0);
+
+        REQUIRE(map2["Covrig"] == 100);
+        REQUIRE(map2["Pizza"] == 50);
+        REQUIRE(map2["Spaghetti"] == 75);
+    }
+}
