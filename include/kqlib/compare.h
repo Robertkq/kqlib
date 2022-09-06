@@ -1,5 +1,5 @@
-#ifndef test
-#define test
+#ifndef KQCOMPARE_
+#define KQCOMPARE_
 
 namespace kq
 {
