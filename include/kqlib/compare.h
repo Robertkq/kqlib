@@ -60,7 +60,7 @@ namespace kq
 		struct less_greater : less_smaller_or_equal {};
 		struct less_greater_or_equal_NE : less_greater {};
 		struct less_greater_or_equal_E : less_greater_or_equal_NE {};
-		struct less_smaller_or_equal_NE : less_greater_or_equal_NE {};
+		struct less_smaller_or_equal_NE : less_greater_or_equal_E {};
 		struct less_smaller_or_equal_E : less_smaller_or_equal_NE {};
 		struct less_greater_NE : less_smaller_or_equal_E {};
 		struct less_greater_E : less_greater_NE {};
@@ -163,7 +163,7 @@ namespace kq
 		struct grt_smaller_or_equal : grt_no_operator {};
 		struct grt_greater_or_equal : grt_smaller_or_equal {};
 		struct grt_smaller : grt_greater_or_equal {};
-		struct grt_smaller_or_equal_NE : grt_greater_or_equal {};
+		struct grt_smaller_or_equal_NE : grt_smaller {};
 		struct grt_smaller_or_equal_E : grt_smaller_or_equal_NE {};
 		struct grt_greater_or_equal_NE : grt_smaller_or_equal_E {};
 		struct grt_greater_or_equal_E : grt_greater_or_equal_NE {};
