@@ -43,40 +43,40 @@ namespace kq
         using iterator_category = std::random_access_iterator_tag;
 
 
-        str_iterator() : kq_ptr() {}
-        str_iterator(const str_iterator& other) : kq_ptr(other.kq_ptr) {}
-        str_iterator(str_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-        str_iterator(pointer ptr) : kq_ptr(ptr) {}
+        str_iterator() : m_ptr() {}
+        str_iterator(const str_iterator& other) : m_ptr(other.m_ptr) {}
+        str_iterator(str_iterator&& other) noexcept : m_ptr(other.m_ptr) { other.m_ptr = nullptr; }
+        str_iterator(pointer ptr) : m_ptr(ptr) {}
         ~str_iterator() {}
 
         str_iterator& operator=(const str_iterator& other);
         str_iterator& operator=(str_iterator&& other) noexcept;
 
-        bool operator==(const str_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
-        bool operator!=(const str_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
-        bool operator<(const str_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
-        bool operator>(const str_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
-        bool operator<=(const str_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
-        bool operator>=(const str_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
+        bool operator==(const str_iterator& rhs) const { return m_ptr == rhs.m_ptr; }
+        bool operator!=(const str_iterator& rhs) const { return m_ptr != rhs.m_ptr; }
+        bool operator<(const str_iterator& rhs) const { return m_ptr < rhs.m_ptr; }
+        bool operator>(const str_iterator& rhs) const { return m_ptr > rhs.m_ptr; }
+        bool operator<=(const str_iterator& rhs) const { return m_ptr <= rhs.m_ptr; }
+        bool operator>=(const str_iterator& rhs) const { return m_ptr >= rhs.m_ptr; }
 
-        str_iterator operator++(int) { pointer Tmp = kq_ptr; ++kq_ptr; return Tmp; }
-        str_iterator& operator++() { ++kq_ptr; return *this; }
-        str_iterator operator--(int) { pointer Tmp = kq_ptr; --kq_ptr; return Tmp; }
-        str_iterator& operator--() { --kq_ptr; return *this; }
-        str_iterator operator+(int rhs) const { return kq_ptr + rhs; }
-        str_iterator operator-(int rhs) const { return kq_ptr - rhs; }
-        str_iterator& operator+=(int rhs) { kq_ptr += rhs; return *this; }
-        str_iterator& operator-=(int rhs) { kq_ptr -= rhs; return *this; }
+        str_iterator operator++(int) { pointer Tmp = m_ptr; ++m_ptr; return Tmp; }
+        str_iterator& operator++() { ++m_ptr; return *this; }
+        str_iterator operator--(int) { pointer Tmp = m_ptr; --m_ptr; return Tmp; }
+        str_iterator& operator--() { --m_ptr; return *this; }
+        str_iterator operator+(int rhs) const { return m_ptr + rhs; }
+        str_iterator operator-(int rhs) const { return m_ptr - rhs; }
+        str_iterator& operator+=(int rhs) { m_ptr += rhs; return *this; }
+        str_iterator& operator-=(int rhs) { m_ptr -= rhs; return *this; }
 
-        friend str_iterator operator+(int lhs, const str_iterator& rhs) { return rhs.kq_ptr + lhs; }
-        difference_type operator-(const str_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+        friend str_iterator operator+(int lhs, const str_iterator& rhs) { return rhs.m_ptr + lhs; }
+        difference_type operator-(const str_iterator& rhs) const { return abs(m_ptr - rhs.m_ptr); }
 
-        pointer ptr() const { return kq_ptr; }
+        pointer ptr() const { return m_ptr; }
 
-        reference operator*() const { return *kq_ptr; }
-        pointer operator->() const { return kq_ptr; }
+        reference operator*() const { return *m_ptr; }
+        pointer operator->() const { return m_ptr; }
     private:
-        pointer kq_ptr;
+        pointer m_ptr;
     };
     
     template<typename T, bool constant>
@@ -84,7 +84,7 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_ptr = other.kq_ptr;
+            m_ptr = other.m_ptr;
         }
         return *this;
     }
@@ -94,8 +94,8 @@ namespace kq
     { 
         if (this != &other)
         {
-            kq_ptr = other.kq_ptr;
-            other.kq_ptr = nullptr;
+            m_ptr = other.m_ptr;
+            other.m_ptr = nullptr;
         }
         return *this; 
     }
@@ -110,42 +110,42 @@ namespace kq
         using difference_type = size_t;
         using iterator_category = std::random_access_iterator_tag;
 
-        str_reverse_iterator() : kq_ptr() {}
-        str_reverse_iterator(const str_reverse_iterator& other) : kq_ptr(other.kq_ptr) {}
-        str_reverse_iterator(str_reverse_iterator&& other) noexcept : kq_ptr(other.kq_ptr) { other.kq_ptr = nullptr; }
-        str_reverse_iterator(pointer ptr) : kq_ptr(ptr) {}
+        str_reverse_iterator() : m_ptr() {}
+        str_reverse_iterator(const str_reverse_iterator& other) : m_ptr(other.m_ptr) {}
+        str_reverse_iterator(str_reverse_iterator&& other) noexcept : m_ptr(other.m_ptr) { other.m_ptr = nullptr; }
+        str_reverse_iterator(pointer ptr) : m_ptr(ptr) {}
         ~str_reverse_iterator() {}
 
         str_reverse_iterator& operator=(const str_reverse_iterator& other);
         str_reverse_iterator& operator=(str_reverse_iterator&& other) noexcept;
 
-        bool operator==(const str_reverse_iterator& rhs) const { return kq_ptr == rhs.kq_ptr; }
-        bool operator!=(const str_reverse_iterator& rhs) const { return kq_ptr != rhs.kq_ptr; }
-        bool operator<(const str_reverse_iterator& rhs) const { return kq_ptr < rhs.kq_ptr; }
-        bool operator>(const str_reverse_iterator& rhs) const { return kq_ptr > rhs.kq_ptr; }
-        bool operator <=(const str_reverse_iterator& rhs) const { return kq_ptr <= rhs.kq_ptr; }
-        bool operator >=(const str_reverse_iterator& rhs) const { return kq_ptr >= rhs.kq_ptr; }
+        bool operator==(const str_reverse_iterator& rhs) const { return m_ptr == rhs.m_ptr; }
+        bool operator!=(const str_reverse_iterator& rhs) const { return m_ptr != rhs.m_ptr; }
+        bool operator<(const str_reverse_iterator& rhs) const { return m_ptr < rhs.m_ptr; }
+        bool operator>(const str_reverse_iterator& rhs) const { return m_ptr > rhs.m_ptr; }
+        bool operator <=(const str_reverse_iterator& rhs) const { return m_ptr <= rhs.m_ptr; }
+        bool operator >=(const str_reverse_iterator& rhs) const { return m_ptr >= rhs.m_ptr; }
 
-        str_reverse_iterator operator++(int) { pointer Tmp = kq_ptr; --kq_ptr; return Tmp; }
-        str_reverse_iterator& operator++() { --kq_ptr; return *this; }
-        str_reverse_iterator operator--(int) { pointer Tmp = kq_ptr; ++kq_ptr; return Tmp; }
-        str_reverse_iterator& operator--() { ++kq_ptr; return *this; }
-        str_reverse_iterator operator+(int rhs) const { return kq_ptr - rhs; }
-        str_reverse_iterator operator-(int rhs) const { return kq_ptr + rhs; }
-        str_reverse_iterator& operator+=(int rhs) { kq_ptr -= rhs; return *this; }
-        str_reverse_iterator& operator-=(int rhs) { kq_ptr += rhs; return *this; }
+        str_reverse_iterator operator++(int) { pointer Tmp = m_ptr; --m_ptr; return Tmp; }
+        str_reverse_iterator& operator++() { --m_ptr; return *this; }
+        str_reverse_iterator operator--(int) { pointer Tmp = m_ptr; ++m_ptr; return Tmp; }
+        str_reverse_iterator& operator--() { ++m_ptr; return *this; }
+        str_reverse_iterator operator+(int rhs) const { return m_ptr - rhs; }
+        str_reverse_iterator operator-(int rhs) const { return m_ptr + rhs; }
+        str_reverse_iterator& operator+=(int rhs) { m_ptr -= rhs; return *this; }
+        str_reverse_iterator& operator-=(int rhs) { m_ptr += rhs; return *this; }
 
-        friend str_reverse_iterator operator+(int lhs, const str_reverse_iterator& rhs) { return rhs.kq_ptr + lhs; }
-        difference_type operator-(const str_reverse_iterator& rhs) const { return abs(kq_ptr - rhs.kq_ptr); }
+        friend str_reverse_iterator operator+(int lhs, const str_reverse_iterator& rhs) { return rhs.m_ptr + lhs; }
+        difference_type operator-(const str_reverse_iterator& rhs) const { return abs(m_ptr - rhs.m_ptr); }
 
-        pointer ptr() const { return kq_ptr; }
+        pointer ptr() const { return m_ptr; }
 
-        reference operator*() const { return *kq_ptr; }
-        pointer operator->() const { return kq_ptr; }
+        reference operator*() const { return *m_ptr; }
+        pointer operator->() const { return m_ptr; }
 
 
     private:
-        pointer kq_ptr;
+        pointer m_ptr;
     };
 
     template<typename T, bool constant>
@@ -153,7 +153,7 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_ptr = other.kq_ptr;
+            m_ptr = other.m_ptr;
         }
         return *this;
     }
@@ -163,8 +163,8 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_ptr = other.kq_ptr;
-            other.kq_ptr = nullptr;
+            m_ptr = other.m_ptr;
+            other.m_ptr = nullptr;
         }
         return *this;
     }
@@ -212,28 +212,28 @@ namespace kq
         basic_string<T>& operator+=(const char*);
         basic_string<T>& operator+=(const basic_string<T>&);
 
-        size_t size() const     { return kq_size; }
-        size_t length() const   { return kq_size; }
-        size_t capacity() const { return kq_cap; }
-        pointer data()     { return kq_data; }
-        const pointer data() const { return kq_data; }
-        pointer c_str()            { return kq_data; }
-        const pointer c_str() const{ return kq_data; }
+        size_t size() const     { return m_size; }
+        size_t length() const   { return m_size; }
+        size_t capacity() const { return m_cap; }
+        pointer data()     { return m_data; }
+        const pointer data() const { return m_data; }
+        pointer c_str()            { return m_data; }
+        const pointer c_str() const{ return m_data; }
 
-        iterator begin()    { return kq_data; }
-        iterator end()      { return (kq_data + kq_size); }
-        const_iterator begin() const    { return kq_data; }
-        const_iterator end() const      { return (kq_data + kq_size); }
-        const_iterator cbegin() const   { return kq_data; }
-        const_iterator cend() const { return (kq_data + kq_size); }
-        reverse_iterator rbegin()   { return (kq_data + kq_size - 1); }
-        reverse_iterator rend()     { return kq_data - 1; }
-        const_reverse_iterator rbegin() const   { return (kq_data + kq_size - 1); }
-        const_reverse_iterator rend() const     { return (kq_data - 1); }
-        const_reverse_iterator crbegin() const  { return (kq_data + kq_size - 1); }
-        const_reverse_iterator crend() const    { return kq_data - 1; }
+        iterator begin()    { return m_data; }
+        iterator end()      { return (m_data + m_size); }
+        const_iterator begin() const    { return m_data; }
+        const_iterator end() const      { return (m_data + m_size); }
+        const_iterator cbegin() const   { return m_data; }
+        const_iterator cend() const { return (m_data + m_size); }
+        reverse_iterator rbegin()   { return (m_data + m_size - 1); }
+        reverse_iterator rend()     { return m_data - 1; }
+        const_reverse_iterator rbegin() const   { return (m_data + m_size - 1); }
+        const_reverse_iterator rend() const     { return (m_data - 1); }
+        const_reverse_iterator crbegin() const  { return (m_data + m_size - 1); }
+        const_reverse_iterator crend() const    { return m_data - 1; }
 
-        bool empty() const { return kq_size == 0; }
+        bool empty() const { return m_size == 0; }
 
         reference push_back(value_type);
         reference insert(iterator, value_type);
@@ -267,8 +267,8 @@ namespace kq
         value_type& back();
         const value_type& back() const;
 
-        value_type& operator[](size_t index) { return kq_data[index]; }
-        const value_type& operator[](size_t index) const { return kq_data[index]; }
+        value_type& operator[](size_t index) { return m_data[index]; }
+        const value_type& operator[](size_t index) const { return m_data[index]; }
         value_type& at(size_t);
         const value_type& at(size_t) const;
         
@@ -287,44 +287,44 @@ namespace kq
         void realloc(size_t);
         void destroy();
     private:
-        pointer kq_data;
-        size_t kq_size;
-        size_t kq_cap;
+        pointer m_data;
+        size_t m_size;
+        size_t m_cap;
 
     };
 
     template<typename T>
-    basic_string<T>::basic_string() : kq_data(nullptr), kq_size(0), kq_cap(0) {}
+    basic_string<T>::basic_string() : m_data(nullptr), m_size(0), m_cap(0) {}
 
     template<typename T>
     basic_string<T>::basic_string(const char* ptr) : basic_string(ptr, strlen(ptr)) {};
 
     template<typename T>
     basic_string<T>::basic_string(const char* str, size_t amount)
-        : kq_data(new T[amount + 1]), kq_size(amount), kq_cap(kq_size + 1)
+        : m_data(new T[amount + 1]), m_size(amount), m_cap(m_size + 1)
     {
         for (size_t i = 0; i < amount; ++i)
         {
-            *(kq_data + i) = *(str++);
+            *(m_data + i) = *(str++);
         }
-        *(kq_data + kq_size) = '\0';
+        *(m_data + m_size) = '\0';
     }
 
     template<typename T>
     basic_string<T>::basic_string(size_t size, value_type ch)
-        : kq_data(new value_type[size+1]), kq_size(size), kq_cap(size+1)
+        : m_data(new value_type[size+1]), m_size(size), m_cap(size+1)
     {
         for (size_t i = 0; i < size; ++i)
         {
-            *(kq_data + i) = ch;
+            *(m_data + i) = ch;
         }
-        *(kq_data + kq_size) = '\0';
+        *(m_data + m_size) = '\0';
     }
 
     template<typename T>
     template<typename iterType, typename std::enable_if<is_iterator<iterType>::value, int>::type>
     basic_string<T>::basic_string(iterType begin, iterType end)
-        : kq_data(nullptr), kq_size(0), kq_cap(0)
+        : m_data(nullptr), m_size(0), m_cap(0)
     {
         for (; begin != end; ++begin)
         {
@@ -334,7 +334,7 @@ namespace kq
 
     template<typename T>
     basic_string<T>::basic_string(const basic_string<T>& str, size_t pos, size_t len)
-        : kq_data(nullptr), kq_size(0), kq_cap(0)
+        : m_data(nullptr), m_size(0), m_cap(0)
     {
         if (pos < str.size())
         {
@@ -357,31 +357,31 @@ namespace kq
 
     template<typename T>
     basic_string<T>::basic_string(const basic_string<T>& other)
-        : kq_data(new T[other.kq_size + 1]), kq_size(other.kq_size), kq_cap(kq_size + 1)
+        : m_data(new T[other.m_size + 1]), m_size(other.m_size), m_cap(m_size + 1)
     {
-        for (size_t i = 0; i < kq_cap; ++i)
+        for (size_t i = 0; i < m_cap; ++i)
         {
-            *(kq_data + i) = *(other.kq_data + i);
+            *(m_data + i) = *(other.m_data + i);
         }
   
     }
 
     template<typename T>
     basic_string<T>::basic_string(basic_string<T>&& other) noexcept
-        : kq_data(other.kq_data), kq_size(other.kq_size), kq_cap(other.kq_cap)
+        : m_data(other.m_data), m_size(other.m_size), m_cap(other.m_cap)
     {
-        other.kq_data = nullptr;
-        other.kq_size = 0;
-        other.kq_cap = 0;
+        other.m_data = nullptr;
+        other.m_size = 0;
+        other.m_cap = 0;
     }
 
     template<typename T>
     basic_string<T>::~basic_string()
     {
-        if (kq_data)
+        if (m_data)
         {
             destroy();
-            delete[] kq_data;
+            delete[] m_data;
         }
     }
 
@@ -392,12 +392,12 @@ namespace kq
         if (this != &other)
         {
             clear();
-            kq_data = new value_type[other.kq_size + 1];
-            kq_size = other.kq_size;
-            kq_cap = kq_size + 1;
-            for (size_t i = 0; i < kq_cap; ++i)
+            m_data = new value_type[other.m_size + 1];
+            m_size = other.m_size;
+            m_cap = m_size + 1;
+            for (size_t i = 0; i < m_cap; ++i)
             {
-                *(kq_data + i) = *(other.kq_data + i);
+                *(m_data + i) = *(other.m_data + i);
             }
         }
         return *this;
@@ -409,12 +409,12 @@ namespace kq
         if (this != &other)
         {
             clear();
-            kq_data = other.kq_data;
-            kq_size = other.kq_size;
-            kq_cap = other.kq_cap;
-            other.kq_data = nullptr;
-            other.kq_size = 0;
-            other.kq_cap = 0;
+            m_data = other.m_data;
+            m_size = other.m_size;
+            m_cap = other.m_cap;
+            other.m_data = nullptr;
+            other.m_size = 0;
+            other.m_cap = 0;
         }
         return *this;
     }
@@ -422,31 +422,31 @@ namespace kq
     template<typename T>
     basic_string<T>& basic_string<T>::operator=(const char* str)
     {
-        if (strlen(str) + 1 > kq_cap)
+        if (strlen(str) + 1 > m_cap)
         {
             reserve(strlen(str) + 1);
         }
-        kq_size = strlen(str);
-        for (size_t i = 0; i < kq_size; ++i)
+        m_size = strlen(str);
+        for (size_t i = 0; i < m_size; ++i)
         {
-            *(kq_data + i) = *(str++);
+            *(m_data + i) = *(str++);
         }
-        kq_data[kq_size] = '\0';
+        m_data[m_size] = '\0';
         return *this;
     }
 
     template<typename T>
     bool basic_string<T>::operator==(const basic_string<T>& rhs) const
     {
-        if (kq_size != rhs.kq_size)
+        if (m_size != rhs.m_size)
         {
             return false;
         }
         else
         {
-            for (size_t i = 0; i < kq_size; ++i)
+            for (size_t i = 0; i < m_size; ++i)
             {
-                if (*(kq_data + i) != *(rhs.kq_data + i))
+                if (*(m_data + i) != *(rhs.m_data + i))
                 {
                     return false;
                 }
@@ -458,7 +458,7 @@ namespace kq
     template<typename T>
     bool basic_string<T>::operator>(const basic_string<T>& rhs) const
     {
-        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        size_t size = m_size < rhs.m_size ? m_size : rhs.m_size;
         for (size_t i = 0; i < size; i++)
         {
             if ((*this)[i] != rhs[i])
@@ -466,11 +466,11 @@ namespace kq
                 return (*this)[i] > rhs[i];
             }
         }
-        if (kq_size == rhs.kq_size)
+        if (m_size == rhs.m_size)
         {
             return false;
         }
-        else if (kq_size > size)
+        else if (m_size > size)
         {
             return true;
         }
@@ -483,7 +483,7 @@ namespace kq
     template<typename T>
     bool basic_string<T>::operator<(const basic_string<T>& rhs) const
     {
-        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        size_t size = m_size < rhs.m_size ? m_size : rhs.m_size;
         for (size_t i = 0; i < size; i++)
         {
             if ((*this)[i] != rhs[i])
@@ -491,11 +491,11 @@ namespace kq
                 return (*this)[i] < rhs[i];
             }
         }
-        if (kq_size == rhs.kq_size)
+        if (m_size == rhs.m_size)
         {
             return false;
         }
-        else if (kq_size > size)
+        else if (m_size > size)
         {
             return false;
         }
@@ -508,7 +508,7 @@ namespace kq
     template<typename T>
     bool basic_string<T>::operator>=(const basic_string<T>& rhs) const
     {
-        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        size_t size = m_size < rhs.m_size ? m_size : rhs.m_size;
         for (size_t i = 0; i < size; i++)
         {
             if ((*this)[i] != rhs[i])
@@ -516,7 +516,7 @@ namespace kq
                 return (*this)[i] >= rhs[i];
             }
         }
-        if (kq_size >= rhs.kq_size)
+        if (m_size >= rhs.m_size)
         {
             return true;
         }
@@ -529,7 +529,7 @@ namespace kq
     template<typename T>
     bool basic_string<T>::operator<=(const basic_string<T>& rhs) const
     {
-        size_t size = kq_size < rhs.kq_size ? kq_size : rhs.kq_size;
+        size_t size = m_size < rhs.m_size ? m_size : rhs.m_size;
         for (size_t i = 0; i < size; i++)
         {
             if ((*this)[i] != rhs[i])
@@ -537,7 +537,7 @@ namespace kq
                 return (*this)[i] <= rhs[i];
             }
         }
-        if (kq_size >= rhs.kq_size)
+        if (m_size >= rhs.m_size)
         {
             return false;
         }
@@ -551,15 +551,15 @@ namespace kq
     basic_string<T> basic_string<T>::operator+(value_type ch) const
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_size + 2];
-        for (size_t i = 0; i < kq_size; ++i)
+        aux.m_data = new value_type[m_size + 2];
+        for (size_t i = 0; i < m_size; ++i)
         {
             aux[i] = (*this)[i];
         }
-        aux[kq_size] = ch;
-        aux[kq_size + 1] = '\0';
-        aux.kq_size = kq_size + 1;
-        aux.kq_cap = aux.kq_size + 1;
+        aux[m_size] = ch;
+        aux[m_size + 1] = '\0';
+        aux.m_size = m_size + 1;
+        aux.m_cap = aux.m_size + 1;
         return aux;
     }
 
@@ -567,18 +567,18 @@ namespace kq
     basic_string<T> basic_string<T>::operator+(const char* ptr) const
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_size + strlen(ptr) + 1];
-        for (size_t i = 0; i < kq_size; ++i)
+        aux.m_data = new value_type[m_size + strlen(ptr) + 1];
+        for (size_t i = 0; i < m_size; ++i)
         {
             aux[i] = (*this)[i];
         }
         for (size_t i = 0; ptr[i] != 0; ++i)
         {
-            aux[kq_size + i] = ptr[i];
+            aux[m_size + i] = ptr[i];
         }
-        aux.kq_size = kq_size + strlen(ptr);
-        aux[aux.kq_size] = '\0';
-        aux.kq_cap = aux.kq_size + 1;
+        aux.m_size = m_size + strlen(ptr);
+        aux[aux.m_size] = '\0';
+        aux.m_cap = aux.m_size + 1;
         return aux;
     }
 
@@ -586,19 +586,19 @@ namespace kq
     basic_string<T> basic_string<T>::operator+(const basic_string<T>& other) const
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_size + other.kq_size + 1];
-        // aux kq_size = kq_size + other.kq_size
-        for (size_t i = 0; i < kq_size; ++i)
+        aux.m_data = new value_type[m_size + other.m_size + 1];
+        // aux m_size = m_size + other.m_size
+        for (size_t i = 0; i < m_size; ++i)
         {
             aux[i] = (*this)[i];
         }
-        for (size_t i = 0; i < other.kq_size; ++i)
+        for (size_t i = 0; i < other.m_size; ++i)
         {
-            aux[kq_size + i] = other[i];
+            aux[m_size + i] = other[i];
         }
-        aux.kq_size = kq_size + other.kq_size;
-        aux[aux.kq_size] = '\0';
-        aux.kq_cap = aux.kq_size + 1;
+        aux.m_size = m_size + other.m_size;
+        aux[aux.m_size] = '\0';
+        aux.m_cap = aux.m_size + 1;
         return aux;
     }
 
@@ -606,15 +606,15 @@ namespace kq
     basic_string<T>& basic_string<T>::operator+=(value_type ch)
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_size + 2];
-        for (size_t i = 0; i < kq_size; ++i)
+        aux.m_data = new value_type[m_size + 2];
+        for (size_t i = 0; i < m_size; ++i)
         {
             aux[i] = (*this)[i];
         }
-        aux[kq_size] = ch;
-        aux[kq_size + 1] = '\0';
-        aux.kq_size = kq_size + 1;
-        aux.kq_cap = aux.kq_size + 1;
+        aux[m_size] = ch;
+        aux[m_size + 1] = '\0';
+        aux.m_size = m_size + 1;
+        aux.m_cap = aux.m_size + 1;
         *this = std::move(aux);
         return *this;
     }
@@ -623,18 +623,18 @@ namespace kq
     basic_string<T>& basic_string<T>::operator+=(const char* ptr)
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_size + strlen(ptr) + 1];
-        for (size_t i = 0; i < kq_size; ++i)
+        aux.m_data = new value_type[m_size + strlen(ptr) + 1];
+        for (size_t i = 0; i < m_size; ++i)
         {
             aux[i] = (*this)[i];
         }
         for (size_t i = 0; i < strlen(ptr); ++i)
         {
-            aux[kq_size + i] = ptr[i];
+            aux[m_size + i] = ptr[i];
         }
-        aux.kq_size = kq_size + strlen(ptr);
-        aux[aux.kq_size] = '\0';
-        aux.kq_cap = aux.kq_size + 1;
+        aux.m_size = m_size + strlen(ptr);
+        aux[aux.m_size] = '\0';
+        aux.m_cap = aux.m_size + 1;
         *this = std::move(aux);
         return *this;
     }
@@ -643,18 +643,18 @@ namespace kq
     basic_string<T>& basic_string<T>::operator+=(const basic_string<T>& other)
     {
         basic_string<T> aux;
-        aux.kq_data = new value_type[kq_size + other.kq_size + 1];
-        for (size_t i = 0; i < kq_size; ++i)
+        aux.m_data = new value_type[m_size + other.m_size + 1];
+        for (size_t i = 0; i < m_size; ++i)
         {
             aux[i] = (*this)[i];
         }
-        for (size_t i = 0; i < other.kq_size; ++i)
+        for (size_t i = 0; i < other.m_size; ++i)
         {
-            aux[kq_size + i] = other[i];
+            aux[m_size + i] = other[i];
         }
-        aux.kq_size = kq_size + other.kq_size;
-        aux[aux.kq_size] = '\0';
-        aux.kq_cap = aux.kq_size + 1;
+        aux.m_size = m_size + other.m_size;
+        aux[aux.m_size] = '\0';
+        aux.m_cap = aux.m_size + 1;
         *this = std::move(aux);
         return *this;
     }
@@ -663,7 +663,7 @@ namespace kq
     template<typename T>
     void basic_string<T>::reserve(size_t newCapacity)
     {
-        if (newCapacity > kq_cap)
+        if (newCapacity > m_cap)
         {
             realloc(newCapacity);
         }
@@ -672,15 +672,15 @@ namespace kq
     template<typename T>
     typename basic_string<T>::reference basic_string<T>::push_back(value_type elementToAdd)
     {
-        // Don't do `kq_cap - 1` because cap might be 0
-        if (kq_size + 1 >= kq_cap)
+        // Don't do `m_cap - 1` because cap might be 0
+        if (m_size + 1 >= m_cap)
         {
             // std::cout << "Realloc\n";
-            realloc(kq_cap + kq_cap / 2);
+            realloc(m_cap + m_cap / 2);
         }
-        *(kq_data + kq_size++) = elementToAdd;
-        *(kq_data + kq_size) = '\0';
-        return kq_data[kq_size - 1];
+        *(m_data + m_size++) = elementToAdd;
+        *(m_data + m_size) = '\0';
+        return m_data[m_size - 1];
     }
     
     template<typename T>
@@ -690,11 +690,11 @@ namespace kq
         if ((position > begin() && position < end()) || position == begin())
         {
             size_t safePosition = abs(position - begin());
-            if (kq_size+1 >= kq_cap)
+            if (m_size+1 >= m_cap)
             {
-                realloc(kq_cap + kq_cap / 2);
+                realloc(m_cap + m_cap / 2);
             }
-            ++kq_size;
+            ++m_size;
             for (iterator it = end() - 1; it >= begin() + safePosition; --it)
             {
                 *(it + 1) = *it;
@@ -735,17 +735,17 @@ namespace kq
     template<typename T>
     void basic_string<T>::pop_back()
     {
-        if (kq_size > 0)
+        if (m_size > 0)
         {
-            --kq_size;
-            (kq_data + kq_size)->~T();
+            --m_size;
+            (m_data + m_size)->~T();
         }
     }
 
     template<typename T>
     void basic_string<T>::erase(iterator pos)
     {
-        if (kq_size > 0)
+        if (m_size > 0)
         {
             if (pos >= begin() && pos < end())
             {
@@ -755,8 +755,8 @@ namespace kq
                     *pos = *(pos + 1);
                     // again, not using std::move, because && will be 8 bytes, which should usually be > T
                 }
-                --kq_size;
-                kq_data[kq_size] = '\0';
+                --m_size;
+                m_data[m_size] = '\0';
             }
         }
     }
@@ -764,7 +764,7 @@ namespace kq
     template<typename T>
     void basic_string<T>::erase(const basic_string<T>& toRemove)
     {
-        if (kq_size >= toRemove.size())
+        if (m_size >= toRemove.size())
         {
             for (auto it = begin(); it != end() - toRemove.size() + 1; ++it)
             {
@@ -785,8 +785,8 @@ namespace kq
                         it.ptr()->~T();
                         *it = *(it + toRemove.size());
                     }
-                    kq_size -= toRemove.size();
-                    kq_data[kq_size] = '\0';
+                    m_size -= toRemove.size();
+                    m_data[m_size] = '\0';
                     return;
                 }
             }
@@ -796,33 +796,33 @@ namespace kq
     template<typename T>
     void basic_string<T>::clear()
     {
-        if (kq_data != nullptr)
+        if (m_data != nullptr)
         {
             destroy();
-            delete[] kq_data;
-            kq_data = nullptr;
-            kq_size = 0;
-            kq_cap = 0;
+            delete[] m_data;
+            m_data = nullptr;
+            m_size = 0;
+            m_cap = 0;
         }
     }
 
     template<typename T>
     void basic_string<T>::resize(size_t count)
     {
-        if (count < kq_size)
+        if (count < m_size)
         {
-            while (kq_size > count)
+            while (m_size > count)
             {
                 pop_back();
             }
         }
-        else if (count > kq_size)
+        else if (count > m_size)
         {
-            if (count > kq_cap)
+            if (count > m_cap)
             {
                 reserve(count);
             }
-            while (kq_size < count)
+            while (m_size < count)
             {
                 push_back(T());
             }
@@ -833,20 +833,20 @@ namespace kq
     void basic_string<T>::resize(size_t count, value_type value)
         // not taking const& as param because value_type should be < 8 bytes
     {
-        if (count < kq_size)
+        if (count < m_size)
         {
-            while (kq_size > count)
+            while (m_size > count)
             {
                 pop_back();
             }
         }
-        else if (count > kq_size)
+        else if (count > m_size)
         {
-            if (count > kq_cap)
+            if (count > m_cap)
             {
                 reserve(count);
             }
-            while (kq_size < count)
+            while (m_size < count)
             {
                 push_back(value);
             }
@@ -856,18 +856,18 @@ namespace kq
     template<typename T>
     void basic_string<T>::shrink_to_fit()
     {
-        if (kq_size + 1 != kq_cap)
+        if (m_size + 1 != m_cap)
         {
-            realloc(kq_size + 1);
+            realloc(m_size + 1);
         }
     }
 
     template<typename T>
     void basic_string<T>::swap(basic_string<T>& other)
     {
-        kq::swap(kq_data, other.kq_data);
-        kq::swap(kq_size, other.kq_size);
-        kq::swap(kq_cap, other.kq_cap);
+        kq::swap(m_data, other.m_data);
+        kq::swap(m_size, other.m_size);
+        kq::swap(m_cap, other.m_cap);
     }
 
     template<typename T>
@@ -879,25 +879,25 @@ namespace kq
     template<typename T>
     size_t basic_string<T>::find(value_type ch, size_t pos) const
     {
-        for (size_t i = pos; i < kq_size; ++i)
+        for (size_t i = pos; i < m_size; ++i)
         {
-            if (*(kq_data + i) == ch)
+            if (*(m_data + i) == ch)
             {
                 return i;
             }
         }
-        return kq_size;
+        return m_size;
     }
 
     template<typename T>
     size_t basic_string<T>::find(const char* ptr, size_t pos) const
     {
-        for (size_t i = pos; i < kq_size; ++i)
+        for (size_t i = pos; i < m_size; ++i)
         {
             size_t j = 0;
             for (; ptr[j] != 0; ++j)
             {
-                if (ptr[j] != *(kq_data + i + j))
+                if (ptr[j] != *(m_data + i + j))
                 {
                     break;
                 }
@@ -907,87 +907,87 @@ namespace kq
                 return i;
             }
         }
-        return kq_size;
+        return m_size;
     }
 
     template<typename T>
     size_t basic_string<T>::find(const basic_string<T>& str, size_t pos) const
     {
-        for (size_t i = pos; i < kq_size; ++i)
+        for (size_t i = pos; i < m_size; ++i)
         {
             if (substr(i, str.size()) == str)
             {
                 return i;
             }
         }
-        return kq_size;
+        return m_size;
     }
 
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::front()
     {
-        if (kq_size == 0)
+        if (m_size == 0)
         {
             throw std::out_of_range("front(), called on empty string");
         }
-        return *kq_data;
+        return *m_data;
     }
 
     template<typename T>
     const typename basic_string<T>::value_type& basic_string<T>::front() const
     {
-        if (kq_size == 0)
+        if (m_size == 0)
         {
             throw std::out_of_range("front(), called on empty string");
         }
-        return *kq_data;
+        return *m_data;
     }
 
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::back()
     {
-        if (kq_size == 0)
+        if (m_size == 0)
         {
             throw std::out_of_range("back(), called on empty string");
         }
-        return *(kq_data + kq_size - 1);
+        return *(m_data + m_size - 1);
     }
 
     template<typename T>
     const typename basic_string<T>::value_type& basic_string<T>::back() const
     {
-        if (kq_size == 0)
+        if (m_size == 0)
         {
             throw std::out_of_range("back(), called on empty string");
         }
-        return *(kq_data + kq_size - 1);
+        return *(m_data + m_size - 1);
     }
 
     template<typename T>
     typename basic_string<T>::value_type& basic_string<T>::at(size_t index)
     {
-        if (index >= kq_size || kq_size == 0)
+        if (index >= m_size || m_size == 0)
         {
             throw std::out_of_range("at(), trying to access element out of range on string");
         }
-        return kq_data[index];
+        return m_data[index];
     }
 
     template<typename T>
     const typename basic_string<T>::value_type& basic_string<T>::at(size_t index) const
     {
-        if (index >= kq_size || kq_size == 0)
+        if (index >= m_size || m_size == 0)
         {
             throw std::out_of_range("at(), trying to access element out of range on string");
         }
-        return kq_data[index];
+        return m_data[index];
     }
 
     template<typename CharT, typename Traits>
     std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const kq::basic_string<CharT>& str)
     {
-        if(str.kq_data)
-        os << (str.kq_data);
+        if(str.m_data)
+        os << (str.m_data);
         return os;
     }
 
@@ -1036,30 +1036,30 @@ namespace kq
 
         pointer newBlock = new value_type[newCapacity];
 
-        if (kq_data && newBlock)
+        if (m_data && newBlock)
         {
-            for (size_t i = 0; i < kq_size; ++i)
+            for (size_t i = 0; i < m_size; ++i)
             {
-                *(newBlock + i) = std::move(*(kq_data + i));
+                *(newBlock + i) = std::move(*(m_data + i));
             }
         }
-        newBlock[kq_size] = '\0';
+        newBlock[m_size] = '\0';
 
         destroy();
-        delete[] kq_data;
-        kq_data = newBlock;
-        kq_cap = newCapacity;
+        delete[] m_data;
+        m_data = newBlock;
+        m_cap = newCapacity;
         
     }
 
     template<typename T>
     void basic_string<T>::destroy()
     {
-        if (kq_data)
+        if (m_data)
         {
-            for (size_t i = 0; i < kq_size; ++i)
+            for (size_t i = 0; i < m_size; ++i)
             {
-                (kq_data + i)->~value_type();
+                (m_data + i)->~value_type();
             }
         }
     }

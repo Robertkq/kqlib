@@ -37,29 +37,29 @@ namespace kq {
         using element = sl_element<value_type>;
         using iterator_category = std::forward_iterator_tag;
 
-        sl_iterator() : kq_ptr()                                        {}
-        sl_iterator(const sl_iterator& other) : kq_ptr(other.kq_ptr)    {}
-        sl_iterator(sl_iterator&& other) : kq_ptr(other.kq_ptr)         { other.kq_ptr = nullptr; }
-        sl_iterator(element* ptr) : kq_ptr(ptr)                         {}
+        sl_iterator() : m_ptr()                                        {}
+        sl_iterator(const sl_iterator& other) : m_ptr(other.m_ptr)    {}
+        sl_iterator(sl_iterator&& other) : m_ptr(other.m_ptr)         { other.m_ptr = nullptr; }
+        sl_iterator(element* ptr) : m_ptr(ptr)                         {}
 
         sl_iterator& operator=(const sl_iterator& other);
         sl_iterator& operator=(sl_iterator&& other) noexcept;
 
-        bool operator!=(const sl_iterator& other) const                 { return kq_ptr != other.kq_ptr; }
-        bool operator==(const sl_iterator& other) const                 { return kq_ptr == other.kq_ptr; }
+        bool operator!=(const sl_iterator& other) const                 { return m_ptr != other.m_ptr; }
+        bool operator==(const sl_iterator& other) const                 { return m_ptr == other.m_ptr; }
 
-        sl_iterator& operator++()                                       { kq_ptr = kq_ptr->next; return *this; }
-        sl_iterator operator++(int)                                    { element* tmp = kq_ptr; kq_ptr = kq_ptr->next; return tmp; }
+        sl_iterator& operator++()                                       { m_ptr = m_ptr->next; return *this; }
+        sl_iterator operator++(int)                                    { element* tmp = m_ptr; m_ptr = m_ptr->next; return tmp; }
 
-        element* el_ptr() const                                            { return kq_ptr; }
-        element* el_next() const                                           { return kq_ptr->next; }
-        pointer ptr() const                                             { return &(kq_ptr->value); }
+        element* el_ptr() const                                            { return m_ptr; }
+        element* el_next() const                                           { return m_ptr->next; }
+        pointer ptr() const                                             { return &(m_ptr->value); }
 
-        reference operator*() const                                     { return kq_ptr->value; }
-        pointer operator->() const                                      { return &(kq_ptr->value); }
+        reference operator*() const                                     { return m_ptr->value; }
+        pointer operator->() const                                      { return &(m_ptr->value); }
 
     private:
-        element* kq_ptr;
+        element* m_ptr;
     };
 
     template<typename T, bool constant>
@@ -67,7 +67,7 @@ namespace kq {
     {
         if (this != &other)
         {
-            kq_ptr = other.kq_ptr;
+            m_ptr = other.m_ptr;
         }
         return *this;
     }
@@ -77,8 +77,8 @@ namespace kq {
     { 
         if (this != &other)
         {
-            kq_ptr = other.kq_ptr;
-            other.kq_ptr = nullptr;
+            m_ptr = other.m_ptr;
+            other.m_ptr = nullptr;
         }
         return *this; 
     }
@@ -95,14 +95,14 @@ namespace kq {
         using iterator = sl_iterator<value_type, false>;
         using const_iterator = sl_iterator<value_type, true>;
 
-        iterator begin() { return kq_ptr; }
+        iterator begin() { return m_ptr; }
         iterator end() { return nullptr; }
-        const_iterator begin() const { return kq_ptr; }
+        const_iterator begin() const { return m_ptr; }
         const_iterator end() const { return nullptr; }
-        const_iterator cbegin() const { return kq_ptr; }
+        const_iterator cbegin() const { return m_ptr; }
         const_iterator cend() const { return nullptr; }
 
-        single_list() : kq_ptr(nullptr), kq_size(0) {}
+        single_list() : m_ptr(nullptr), m_size(0) {}
         single_list(const single_list& other);
         single_list(single_list&& other) noexcept;
         template<typename ilT>
@@ -112,8 +112,8 @@ namespace kq {
         single_list& operator=(const single_list& other);
         single_list& operator=(single_list&& other) noexcept;
 
-        bool empty() const { return kq_size == 0; }
-        size_t size() const { return kq_size; }
+        bool empty() const { return m_size == 0; }
+        size_t size() const { return m_size; }
 
         value_type& push_back(const value_type& value);
         template<typename... Args>
@@ -125,13 +125,13 @@ namespace kq {
         void clear();
 
     private:
-        element* kq_ptr;
-        size_t kq_size;
+        element* m_ptr;
+        size_t m_size;
     };
 
     template<typename T>
     single_list<T>::single_list(const single_list& other) 
-        : kq_ptr(nullptr), kq_size(0)
+        : m_ptr(nullptr), m_size(0)
     {
         //FIXME: this method is pretty lazy.. 
         for (auto it = other.cbegin(); it != other.cend(); ++it)
@@ -142,16 +142,16 @@ namespace kq {
 
     template<typename T>
     single_list<T>::single_list(single_list&& other) noexcept
-        : kq_ptr(other.kq_ptr), kq_size(other.kq_size)
+        : m_ptr(other.m_ptr), m_size(other.m_size)
     {
-        other.kq_ptr = nullptr;
-        other.kq_size = 0;
+        other.m_ptr = nullptr;
+        other.m_size = 0;
     }
 
     template<typename T>
     template<typename ilT>
     single_list<T>::single_list(const std::initializer_list<ilT>& il)
-        : kq_ptr(nullptr), kq_size(0)
+        : m_ptr(nullptr), m_size(0)
     {
         for (auto it = il.begin(); it != il.end(); ++it)
         {
@@ -162,9 +162,9 @@ namespace kq {
     template<typename T>
     single_list<T>::~single_list()
     {
-        element* current = kq_ptr;
+        element* current = m_ptr;
         element* next;
-        for (int i = 0; i < kq_size; ++i)
+        for (int i = 0; i < m_size; ++i)
         {
             next = current->next;
             delete current;
@@ -192,10 +192,10 @@ namespace kq {
         if (this != &other)
         {
             clear();
-            kq_ptr = other.kq_ptr;
-            kq_size = other.kq_size;
-            other.kq_ptr = nullptr;
-            other.kq_size = 0;
+            m_ptr = other.m_ptr;
+            m_size = other.m_size;
+            other.m_ptr = nullptr;
+            other.m_size = 0;
         }
         return *this;
     }
@@ -203,23 +203,23 @@ namespace kq {
     template<typename T>
     typename single_list<T>::value_type& single_list<T>::push_back(const value_type& value)
     {
-        if (kq_size == 0)
+        if (m_size == 0)
         {
-            kq_ptr = new element(value);
-            kq_ptr->next = nullptr;
-            ++kq_size;
-            return kq_ptr->value;
+            m_ptr = new element(value);
+            m_ptr->next = nullptr;
+            ++m_size;
+            return m_ptr->value;
         }
         else
         {
-            element* last = kq_ptr;
+            element* last = m_ptr;
             while (last->next != nullptr)
             {
                 last = last->next;
             }
             last->next = new element(value);
             last->next->next = nullptr;
-            ++kq_size;
+            ++m_size;
             return last->next->value;
         }
     }
@@ -228,23 +228,23 @@ namespace kq {
     template<typename... Args>
     typename single_list<T>::value_type& single_list<T>::emplace_back(Args&&... args)
     {
-        if (kq_size == 0)
+        if (m_size == 0)
         {
-            kq_ptr = new element(std::forward<Args>(args)...);
-            kq_ptr->next = nullptr;
-            ++kq_size;
-            return kq_ptr->value;
+            m_ptr = new element(std::forward<Args>(args)...);
+            m_ptr->next = nullptr;
+            ++m_size;
+            return m_ptr->value;
         }
         else
         {
-            element* last = kq_ptr;
+            element* last = m_ptr;
             while (last->next != nullptr)
             {
                 last = last->next;
             }
             last->next = new element(std::forward<Args>(args)...);
             last->next->next = nullptr;
-            ++kq_size;
+            ++m_size;
             return last->next->value;
         }
     }
@@ -252,18 +252,18 @@ namespace kq {
     template<typename T>
     void single_list<T>::pop_back()
     {
-        if (kq_size != 0)
+        if (m_size != 0)
         {
-            if (kq_size == 1)
+            if (m_size == 1)
             {
-                delete kq_ptr;
-                --kq_size;
-                kq_ptr = nullptr;
+                delete m_ptr;
+                --m_size;
+                m_ptr = nullptr;
             }
             else
             {
-                element* prev = kq_ptr;
-                element* last = kq_ptr->next;
+                element* prev = m_ptr;
+                element* last = m_ptr->next;
                 while (last->next != nullptr)
                 {
                     prev = last;
@@ -271,7 +271,7 @@ namespace kq {
                 }
                 delete last;
                 prev->next = nullptr;
-                --kq_size;
+                --m_size;
 
             }
         }
@@ -280,19 +280,19 @@ namespace kq {
     template<typename T>
     void single_list<T>::pop_front()
     {
-        if (kq_size != 0)
+        if (m_size != 0)
         {
-            element* dell = kq_ptr;
-            kq_ptr = kq_ptr->next;
+            element* dell = m_ptr;
+            m_ptr = m_ptr->next;
             delete dell;
-            --kq_size;
+            --m_size;
         }
     }
 
     template<typename T>
     void single_list<T>::erase(iterator pos)
     {
-        if (kq_size != 0)
+        if (m_size != 0)
         {
             // check to see if iterator is from this list
             iterator it = begin();
@@ -309,7 +309,7 @@ namespace kq {
                         {
                             prev.el_ptr()->next = it.el_next();
                             delete it.el_ptr();
-                            --kq_size;
+                            --m_size;
                             return;
                         }
                     }
@@ -322,13 +322,13 @@ namespace kq {
     template<typename T>
     void single_list<T>::clear()
     {
-        if (kq_size != 0)
+        if (m_size != 0)
         {
             element* current;
-            while (kq_ptr != nullptr)
+            while (m_ptr != nullptr)
             {
-                current = kq_ptr;
-                kq_ptr = kq_ptr->next;
+                current = m_ptr;
+                m_ptr = m_ptr->next;
                 delete current;
             }
         }

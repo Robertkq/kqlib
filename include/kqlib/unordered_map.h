@@ -19,35 +19,35 @@ namespace kq
         using mapped_type = T;
         using value_type = kq::pair<key_type, mapped_type>;
 
-        bucket() : prev_nonempty(nullptr), kq_data(), next_nonempty() {}
-        bucket(const bucket& other) : prev_nonempty(other.prev_nonempty), kq_data(other.kq_data), next_nonempty(other.next_nonempty) {}
-        bucket(bucket&& other) noexcept : prev_nonempty(other.prev_nonempty), kq_data(std::move(other.kq_data)), next_nonempty(other.next_nonempty) {}
+        bucket() : prev_nonempty(nullptr), m_data(), next_nonempty() {}
+        bucket(const bucket& other) : prev_nonempty(other.prev_nonempty), m_data(other.m_data), next_nonempty(other.next_nonempty) {}
+        bucket(bucket&& other) noexcept : prev_nonempty(other.prev_nonempty), m_data(std::move(other.m_data)), next_nonempty(other.next_nonempty) {}
 
         bucket& operator=(const bucket& other);
         bucket& operator=(bucket&& other) noexcept;
 
-        typename single_list<value_type>::iterator begin() { return kq_data.begin(); }
-        typename single_list<value_type>::iterator end() { return kq_data.end(); }
-        typename single_list<value_type>::const_iterator begin() const { return kq_data.cbegin(); }
-        typename single_list<value_type>::const_iterator end() const { return kq_data.cend(); }
-        typename single_list<value_type>::const_iterator cbegin() const { return kq_data.cbegin(); }
-        typename single_list<value_type>::const_iterator cend() const { return kq_data.cend(); }
+        typename single_list<value_type>::iterator begin() { return m_data.begin(); }
+        typename single_list<value_type>::iterator end() { return m_data.end(); }
+        typename single_list<value_type>::const_iterator begin() const { return m_data.cbegin(); }
+        typename single_list<value_type>::const_iterator end() const { return m_data.cend(); }
+        typename single_list<value_type>::const_iterator cbegin() const { return m_data.cbegin(); }
+        typename single_list<value_type>::const_iterator cend() const { return m_data.cend(); }
 
-        size_t size() const { return kq_data.size(); }
+        size_t size() const { return m_data.size(); }
 
-        value_type& push_back(const value_type& value) { return kq_data.push_back(value); }
+        value_type& push_back(const value_type& value) { return m_data.push_back(value); }
         template<typename... Args>
-        value_type& emplace_back(Args&&... args) { return kq_data.emplace_back(std::forward<Args>(args)...); }
+        value_type& emplace_back(Args&&... args) { return m_data.emplace_back(std::forward<Args>(args)...); }
 
-        void pop_back() { kq_data.pop_back(); }
-        void pop_front() { kq_data.pop_front(); }
-        void erase(typename single_list<value_type>::iterator pos) { kq_data.erase(pos); }
-        void clear() { kq_data.clear(); }
+        void pop_back() { m_data.pop_back(); }
+        void pop_front() { m_data.pop_front(); }
+        void erase(typename single_list<value_type>::iterator pos) { m_data.erase(pos); }
+        void clear() { m_data.clear(); }
 
-        bool empty() { return kq_data.empty(); }
+        bool empty() { return m_data.empty(); }
 
         typename kq::vector<bucket<Key, T>>::iterator prev_nonempty;
-        single_list<value_type> kq_data;
+        single_list<value_type> m_data;
         typename kq::vector<bucket<Key, T>>::iterator next_nonempty;
 
     };
@@ -57,7 +57,7 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_data = other.kq_data;
+            m_data = other.m_data;
             prev_nonempty = other.prev_nonempty;
             next_nonempty = other.next_nonempty;
         }
@@ -69,7 +69,7 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_data = std::move(other.kq_data);
+            m_data = std::move(other.m_data);
             prev_nonempty = other.prev_nonempty;
             next_nonempty = other.next_nonempty;
         }
@@ -88,11 +88,11 @@ namespace kq
         using iterator_category = std::forward_iterator_tag;
         
 
-        um_iterator() : kq_outer(), kq_inner() {}
-        um_iterator(const um_iterator& other) : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
-        um_iterator(um_iterator&& other) noexcept : kq_outer(other.kq_outer), kq_inner(other.kq_inner) {}
-        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : kq_outer(outer), kq_inner(kq_outer->begin()) {}
-        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer, typename single_list<value_type>::iterator inner) : kq_outer(outer), kq_inner(inner) {}
+        um_iterator() : m_outer(), m_inner() {}
+        um_iterator(const um_iterator& other) : m_outer(other.m_outer), m_inner(other.m_inner) {}
+        um_iterator(um_iterator&& other) noexcept : m_outer(other.m_outer), m_inner(other.m_inner) {}
+        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer) : m_outer(outer), m_inner(m_outer->begin()) {}
+        um_iterator(typename vector<bucket<key_type, mapped_type>>::iterator outer, typename single_list<value_type>::iterator inner) : m_outer(outer), m_inner(inner) {}
 
         um_iterator& operator=(const um_iterator& other);
         um_iterator& operator=(um_iterator&& other) noexcept;
@@ -107,18 +107,18 @@ namespace kq
         um_iterator& operator++();
         um_iterator& operator++(int);
 
-        bucket<key_type, mapped_type>* outer_ptr() const { return kq_outer.ptr(); }
-        value_type* inner_ptr() const { return kq_inner.ptr(); }
+        bucket<key_type, mapped_type>* outer_ptr() const { return m_outer.ptr(); }
+        value_type* inner_ptr() const { return m_inner.ptr(); }
 
-        const typename vector<bucket<key_type, mapped_type>>::iterator& get_outer() const { return kq_outer; }
-        const typename single_list<value_type>::iterator& get_inner() const { return kq_inner; }
+        const typename vector<bucket<key_type, mapped_type>>::iterator& get_outer() const { return m_outer; }
+        const typename single_list<value_type>::iterator& get_inner() const { return m_inner; }
 
-        reference operator*() const { return *kq_inner; }
-        pointer operator->() const { return kq_inner.ptr(); }
+        reference operator*() const { return *m_inner; }
+        pointer operator->() const { return m_inner.ptr(); }
 
     private:
-        typename vector<bucket<key_type, mapped_type>>::iterator kq_outer;
-        typename single_list<value_type>::iterator kq_inner;
+        typename vector<bucket<key_type, mapped_type>>::iterator m_outer;
+        typename single_list<value_type>::iterator m_inner;
     };
 
     template<typename Key, typename T, bool constant>
@@ -126,8 +126,8 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_outer = other.kq_outer;
-            kq_inner = other.kq_inner;
+            m_outer = other.m_outer;
+            m_inner = other.m_inner;
         }
         return *this;
     }
@@ -137,10 +137,10 @@ namespace kq
     {
         if (this != &other)
         {
-            kq_outer = other.kq_outer;
-            kq_inner = other.kq_inner;
-            other.kq_outer = nullptr;
-            other.kq_inner = nullptr;
+            m_outer = other.m_outer;
+            m_inner = other.m_inner;
+            other.m_outer = nullptr;
+            other.m_inner = nullptr;
         }
         return *this;
     }
@@ -148,55 +148,55 @@ namespace kq
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator==(const um_iterator& other) const
     {
-        if (kq_outer == other.kq_outer)
-            if (kq_inner == nullptr || other.kq_inner == nullptr)
+        if (m_outer == other.m_outer)
+            if (m_inner == nullptr || other.m_inner == nullptr)
                 return true;
-            else return kq_inner == other.kq_inner;
+            else return m_inner == other.m_inner;
         return false;
     }
 
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator!=(const um_iterator& other) const
     {
-        if (kq_outer == other.kq_outer)
-            if (kq_inner == nullptr || other.kq_inner == nullptr)
+        if (m_outer == other.m_outer)
+            if (m_inner == nullptr || other.m_inner == nullptr)
                 return false;
-            else return kq_inner != other.kq_inner;
+            else return m_inner != other.m_inner;
         return true;
     }
 
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator<(const um_iterator& rhs) const
     {
-        return kq_outer < rhs.kq_outer;
+        return m_outer < rhs.m_outer;
     }
 
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator>(const um_iterator& rhs) const
     {
-        return kq_outer > rhs.kq_outer;
+        return m_outer > rhs.m_outer;
     }
 
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator<=(const um_iterator& rhs) const
     {
-        return kq_outer <= rhs.kq_outer;
+        return m_outer <= rhs.m_outer;
     }
 
     template<typename Key, typename T, bool constant>
     bool um_iterator<Key, T, constant>::operator>=(const um_iterator& rhs) const
     {
-        return kq_outer >= rhs.kq_outer;
+        return m_outer >= rhs.m_outer;
     }
 
     template<typename Key, typename T, bool constant>
     typename um_iterator<Key, T, constant>::um_iterator& um_iterator<Key, T, constant>::operator++()
     {
-        ++kq_inner;
-        if (kq_outer->end() == kq_inner)
+        ++m_inner;
+        if (m_outer->end() == m_inner)
         {
-            kq_outer = kq_outer->next_nonempty;
-            kq_inner = kq_outer->begin();
+            m_outer = m_outer->next_nonempty;
+            m_inner = m_outer->begin();
                
         }
         return *this;
@@ -206,11 +206,11 @@ namespace kq
     typename um_iterator<Key, T, constant>::um_iterator& um_iterator<Key, T, constant>::operator++(int)
     {
         auto Tmp = *this;
-        ++kq_inner;
-        if (kq_outer->end() == kq_inner)
+        ++m_inner;
+        if (m_outer->end() == m_inner)
         {
-            kq_outer = kq_outer->next_nonempty;
-            kq_inner = kq_outer->begin();
+            m_outer = m_outer->next_nonempty;
+            m_inner = m_outer->begin();
         }
         return Tmp;
     }
@@ -244,17 +244,17 @@ namespace kq
 
         unordered_map& operator=(const std::initializer_list<value_type>& il);
 
-        iterator begin()    { return kq_first_nonempty; }
-        iterator end()  { return { kq_data.end(), nullptr }; }
-        const_iterator begin() const { return kq_first_nonempty; }
-        const_iterator end() const { return { kq_data.end(), nullptr}; }
-        const_iterator cbegin() const { return kq_first_nonempty; }
-        const_iterator cend() const { return { kq_data.end(), nullptr }; }
+        iterator begin()    { return m_first_nonempty; }
+        iterator end()  { return { m_data.end(), nullptr }; }
+        const_iterator begin() const { return m_first_nonempty; }
+        const_iterator end() const { return { m_data.end(), nullptr}; }
+        const_iterator cbegin() const { return m_first_nonempty; }
+        const_iterator cend() const { return { m_data.end(), nullptr }; }
 
-        size_t size() const { return kq_size; }
-        bool empty() const { return kq_size == 0; }
-        float load_factor() const { return static_cast<float>(kq_size) / static_cast<float>(kq_bucket_size); }
-        size_t bucket_count() const { return kq_bucket_size; }
+        size_t size() const { return m_size; }
+        bool empty() const { return m_size == 0; }
+        float load_factor() const { return static_cast<float>(m_size) / static_cast<float>(m_bucket_size); }
+        size_t bucket_count() const { return m_bucket_size; }
 
 
         mapped_type& insert(const value_type& pair);
@@ -286,40 +286,40 @@ namespace kq
 
     private:
         
-        vector<bucket<key_type, mapped_type>> kq_data;
-        size_t kq_size;
-        size_t kq_bucket_size;
-        Hasher kq_hasher;
-        typename vector<bucket<key_type, mapped_type>>::iterator kq_first_nonempty;
-        typename vector<bucket<key_type, mapped_type>>::iterator kq_last_nonempty;
+        vector<bucket<key_type, mapped_type>> m_data;
+        size_t m_size;
+        size_t m_bucket_size;
+        Hasher m_hasher;
+        typename vector<bucket<key_type, mapped_type>>::iterator m_first_nonempty;
+        typename vector<bucket<key_type, mapped_type>>::iterator m_last_nonempty;
     };
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map()
-        : kq_data(8), kq_size(0), kq_bucket_size(8),
-        kq_hasher(), kq_first_nonempty(kq_data.end()), kq_last_nonempty(kq_data.end())
+        : m_data(8), m_size(0), m_bucket_size(8),
+        m_hasher(), m_first_nonempty(m_data.end()), m_last_nonempty(m_data.end())
     {}
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map(const unordered_map& other)
-        : kq_data(other.kq_data), kq_size(other.kq_size), kq_bucket_size(other.kq_bucket_size),
-        kq_hasher(), kq_first_nonempty(), kq_last_nonempty()
+        : m_data(other.m_data), m_size(other.m_size), m_bucket_size(other.m_bucket_size),
+        m_hasher(), m_first_nonempty(), m_last_nonempty()
     {
         re_iterator_bucket();
     }
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map(unordered_map&& other) noexcept
-        : kq_data(std::move(other.kq_data)), kq_size(other.kq_size), kq_bucket_size(other.kq_bucket_size),
-        kq_hasher(), kq_first_nonempty(other.kq_first_nonempty), kq_last_nonempty(other.kq_last_nonempty)
+        : m_data(std::move(other.m_data)), m_size(other.m_size), m_bucket_size(other.m_bucket_size),
+        m_hasher(), m_first_nonempty(other.m_first_nonempty), m_last_nonempty(other.m_last_nonempty)
     {
         other.clear();
     }
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map(size_t bucket_count)
-        : kq_data(bucket_count), kq_size(0), kq_bucket_size(bucket_count),
-        kq_hasher(), kq_first_nonempty(kq_data.end()), kq_last_nonempty(kq_data.end())
+        : m_data(bucket_count), m_size(0), m_bucket_size(bucket_count),
+        m_hasher(), m_first_nonempty(m_data.end()), m_last_nonempty(m_data.end())
     {}
     
     template<typename Key, typename T, typename Hasher>
@@ -333,8 +333,8 @@ namespace kq
 
     template<typename Key, typename T, typename Hasher>
     unordered_map<Key, T, Hasher>::unordered_map(const std::initializer_list<value_type>& ilist)
-        : kq_data(ilist.size() * 2), kq_size(0), kq_bucket_size(ilist.size() * 2),
-        kq_hasher(), kq_first_nonempty(kq_data.end()), kq_last_nonempty(kq_data.end())
+        : m_data(ilist.size() * 2), m_size(0), m_bucket_size(ilist.size() * 2),
+        m_hasher(), m_first_nonempty(m_data.end()), m_last_nonempty(m_data.end())
     {
         for (auto it = ilist.begin(); it != ilist.end(); ++it)
             insert(*it);
@@ -346,9 +346,9 @@ namespace kq
         if (this != &other)
         {
             clear();
-            kq_data = other.kq_data;
-            kq_size = other.kq_size;
-            kq_bucket_size = other.kq_bucket_size;
+            m_data = other.m_data;
+            m_size = other.m_size;
+            m_bucket_size = other.m_bucket_size;
             re_iterator_bucket();
         }
         return *this;
@@ -360,18 +360,18 @@ namespace kq
         if (this != &other)
         {
             clear();
-            kq_first_nonempty = other.kq_first_nonempty;
-            kq_last_nonempty = other.kq_last_nonempty;
-            kq_data = std::move(other.kq_data);
-            kq_size = other.kq_size;
-            kq_bucket_size = other.kq_bucket_size;
-            // kq_hasher is probably the same since Key is the same
+            m_first_nonempty = other.m_first_nonempty;
+            m_last_nonempty = other.m_last_nonempty;
+            m_data = std::move(other.m_data);
+            m_size = other.m_size;
+            m_bucket_size = other.m_bucket_size;
+            // m_hasher is probably the same since Key is the same
 
 
-            other.kq_data.resize(8);
-            other.kq_bucket_size = 8;
-            other.kq_size = 0;
-            other.kq_first_nonempty = other.kq_last_nonempty;
+            other.m_data.resize(8);
+            other.m_bucket_size = 8;
+            other.m_size = 0;
+            other.m_first_nonempty = other.m_last_nonempty;
         }
 
         return *this;
@@ -395,15 +395,15 @@ namespace kq
             //std::cout << pair.first << '\n';
             if (load_factor() >= 0.9f)
             {
-                rehash(kq_bucket_size * 2);
+                rehash(m_bucket_size * 2);
             }
-            size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
-            value_type& ref = kq_data[bucket_index].push_back(pair);
-            ++kq_size;
+            size_t bucket_index = m_hasher(pair.first) % m_bucket_size;
+            value_type& ref = m_data[bucket_index].push_back(pair);
+            ++m_size;
             // if bucket was empty, add to iterator list
-            if (kq_data[bucket_index].size() == 1)
+            if (m_data[bucket_index].size() == 1)
             {
-                add_iterator_bucket(kq_data.begin() + bucket_index);
+                add_iterator_bucket(m_data.begin() + bucket_index);
             }
             return ref.second;
         }
@@ -420,15 +420,15 @@ namespace kq
             //std::cout << pair.first << '\n';
             if (load_factor() >= 0.9f)
             {
-                rehash(kq_bucket_size * 2);
+                rehash(m_bucket_size * 2);
             }
-            size_t bucket_index = kq_hasher(pair.first) % kq_bucket_size;
-            value_type& ref = kq_data[bucket_index].emplace_back(std::move(pair));
-            ++kq_size;
+            size_t bucket_index = m_hasher(pair.first) % m_bucket_size;
+            value_type& ref = m_data[bucket_index].emplace_back(std::move(pair));
+            ++m_size;
             // if bucket was empty, add to iterator list
-            if (kq_data[bucket_index].size() == 1)
+            if (m_data[bucket_index].size() == 1)
             {
-                add_iterator_bucket(kq_data.begin() + bucket_index);
+                add_iterator_bucket(m_data.begin() + bucket_index);
             }
             return ref.second;
         }
@@ -438,7 +438,7 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::erase(iterator pos)
     {
-        if (validIterator(pos) && kq_size != 0)
+        if (validIterator(pos) && m_size != 0)
         {
             bucket<key_type, mapped_type>& bucket = *(pos.get_outer());
             bucket.erase(pos.get_inner());
@@ -446,26 +446,26 @@ namespace kq
             {
                 remove_iterator_bucket(pos.get_outer());
             }
-            --kq_size;
+            --m_size;
         }
     }
 
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::erase(const key_type& key)
     {
-        if (kq_size != 0 && contains(key) == true)
+        if (m_size != 0 && contains(key) == true)
         {
-            size_t bucket = kq_hasher(key) % kq_bucket_size;
-            for (auto it = kq_data[bucket].begin(); it != kq_data[bucket].end(); ++it)
+            size_t bucket = m_hasher(key) % m_bucket_size;
+            for (auto it = m_data[bucket].begin(); it != m_data[bucket].end(); ++it)
             {
                 if (it->first == key)
                 {
-                    kq_data[bucket].erase(it);
-                    if (kq_data[bucket].empty() == true)
+                    m_data[bucket].erase(it);
+                    if (m_data[bucket].empty() == true)
                     {
-                        remove_iterator_bucket(kq_data.begin() + bucket);
+                        remove_iterator_bucket(m_data.begin() + bucket);
                     }
-                    --kq_size;
+                    --m_size;
                     return;
                 }
             }
@@ -475,12 +475,12 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::clear()
     {
-        kq_data.clear();
-        kq_size = 0;
-        kq_bucket_size = 8;
-        kq_data.resize(8);
-        kq_first_nonempty = kq_data.end();
-        kq_last_nonempty = kq_data.end();
+        m_data.clear();
+        m_size = 0;
+        m_bucket_size = 8;
+        m_data.resize(8);
+        m_first_nonempty = m_data.end();
+        m_last_nonempty = m_data.end();
     }
 
     template<typename Key, typename T, typename Hasher>
@@ -493,8 +493,8 @@ namespace kq
         }
         else
         {
-            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-            for (auto& pair : kq_data[bucket_to_search])
+            size_t bucket_to_search = m_hasher(key) % m_bucket_size;
+            for (auto& pair : m_data[bucket_to_search])
             {
                 //if (pair.first == key)
                 if (equal_to<key_type>{}(pair.first, key))
@@ -513,8 +513,8 @@ namespace kq
         }
         else
         {
-            size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-            for (auto& pair : kq_data[bucket_to_search])
+            size_t bucket_to_search = m_hasher(key) % m_bucket_size;
+            for (auto& pair : m_data[bucket_to_search])
             {
                 //if (pair.first == key)
                 if (equal_to<key_type>{}(pair.first, key))
@@ -526,8 +526,8 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::at(const key_type& key)
     {
-        size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-        for (auto& pair : kq_data[bucket_to_search])
+        size_t bucket_to_search = m_hasher(key) % m_bucket_size;
+        for (auto& pair : m_data[bucket_to_search])
         {
             //if (pair.first == key)
             if (equal_to<key_type>{}(pair.first, key))
@@ -539,8 +539,8 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     const typename unordered_map<Key, T, Hasher>::mapped_type& unordered_map<Key, T, Hasher>::at(const key_type& key) const
     {
-        size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-        for (auto& pair : kq_data[bucket_to_search])
+        size_t bucket_to_search = m_hasher(key) % m_bucket_size;
+        for (auto& pair : m_data[bucket_to_search])
         {
             //if (pair.first == key)
             if (equal_to<key_type>{}(pair.first, key))
@@ -552,8 +552,8 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     bool unordered_map<Key, T, Hasher>::contains(const key_type& key) const
     {
-        size_t bucket_to_search = kq_hasher(key) % kq_bucket_size;
-        for (const auto& pair : kq_data[bucket_to_search])
+        size_t bucket_to_search = m_hasher(key) % m_bucket_size;
+        for (const auto& pair : m_data[bucket_to_search])
         {
             //if (pair.first == key)
             if (equal_to<key_type>{}(pair.first, key))
@@ -565,7 +565,7 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::reserve(size_t buckets)
     {
-        if (kq_bucket_size < buckets)
+        if (m_bucket_size < buckets)
         {
             rehash(buckets);
         }
@@ -574,26 +574,26 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::swap(unordered_map& other)
     {
-        kq_data.swap(other.kq_data);
-        kq::swap(kq_size, other.kq_size);
-        kq::swap(kq_bucket_size, other.kq_bucket_size);
-        kq::swap(kq_first_nonempty, other.kq_first_nonempty);
-        kq::swap(kq_last_nonempty, other.kq_last_nonempty);
+        m_data.swap(other.m_data);
+        kq::swap(m_size, other.m_size);
+        kq::swap(m_bucket_size, other.m_bucket_size);
+        kq::swap(m_first_nonempty, other.m_first_nonempty);
+        kq::swap(m_last_nonempty, other.m_last_nonempty);
     }
 
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::remove_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it)
     {
-        if (it == kq_first_nonempty)
+        if (it == m_first_nonempty)
         {
             //std::cout << "Removed first bucket\n";
-            kq_first_nonempty = it->next_nonempty;
+            m_first_nonempty = it->next_nonempty;
         }
-        else if (it == kq_last_nonempty)
+        else if (it == m_last_nonempty)
         {
             //std::cout << "Removed last bucket\n";
-            kq_last_nonempty = it->prev_nonempty;
-            kq_last_nonempty->next_nonempty = kq_data.end();
+            m_last_nonempty = it->prev_nonempty;
+            m_last_nonempty->next_nonempty = m_data.end();
 
         }
         else
@@ -608,9 +608,9 @@ namespace kq
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::re_iterator_bucket()
     {
-        kq_first_nonempty = kq_data.end();
-        kq_last_nonempty = kq_data.end();
-        for (auto it = kq_data.begin(); it != kq_data.end(); ++it)
+        m_first_nonempty = m_data.end();
+        m_last_nonempty = m_data.end();
+        for (auto it = m_data.begin(); it != m_data.end(); ++it)
         {
             if (it->empty() == false)
                 add_iterator_bucket(it);
@@ -621,27 +621,27 @@ namespace kq
     {
         // Can't do it >= begin().
         // begin() returns the first sequentually nonempty bucket, which is not garanteed to be the first nonempty bucket in memory.
-        return (it >= iterator{kq_data.begin(), nullptr} && it < iterator{kq_data.end(), nullptr});
+        return (it >= iterator{m_data.begin(), nullptr} && it < iterator{m_data.end(), nullptr});
     }
 
     template<typename Key, typename T, typename Hasher>
     void unordered_map<Key, T, Hasher>::add_iterator_bucket(typename vector<bucket<key_type, mapped_type>>::iterator it)
     {
-        if (kq_first_nonempty == kq_data.end())
+        if (m_first_nonempty == m_data.end())
         {
             //std::cout << "First bucket added to list\n";
-            kq_first_nonempty = it;
-            kq_last_nonempty = it;
+            m_first_nonempty = it;
+            m_last_nonempty = it;
             it->prev_nonempty = nullptr;
-            it->next_nonempty = kq_data.end();
+            it->next_nonempty = m_data.end();
         }
         else
         {
             //std::cout << "More bucket added to list\n";             
-            kq_last_nonempty->next_nonempty = it;
-            it->prev_nonempty = kq_last_nonempty;
-            kq_last_nonempty = it;
-            it->next_nonempty = kq_data.end();
+            m_last_nonempty->next_nonempty = it;
+            it->prev_nonempty = m_last_nonempty;
+            m_last_nonempty = it;
+            it->next_nonempty = m_data.end();
         }
     }
 
@@ -649,8 +649,8 @@ namespace kq
     void unordered_map<Key, T, Hasher>::rehash(size_t buckets)
     {
         //std::cout << "REHASHING\n";
-        size_t old_bucket_size = kq_bucket_size;
-        kq_bucket_size = buckets;
+        size_t old_bucket_size = m_bucket_size;
+        m_bucket_size = buckets;
 
         vector<bucket<key_type, mapped_type>> new_data(buckets);
 
@@ -658,13 +658,13 @@ namespace kq
         for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
         {
 
-            if (kq_data[old_bucket_index].empty() == 0)
+            if (m_data[old_bucket_index].empty() == 0)
             {
-                for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
-                    it != kq_data[old_bucket_index].kq_data.end(); ++it)
+                for (typename single_list<value_type>::iterator it = m_data[old_bucket_index].m_data.begin();
+                    it != m_data[old_bucket_index].m_data.end(); ++it)
                 {
                     //std::cout << it->first << '\n';
-                    size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
+                    size_t new_bucket_location = m_hasher(it->first) % m_bucket_size;
                     new_data[new_bucket_location].emplace_back(std::move(*it));
                 }
             }
@@ -672,7 +672,7 @@ namespace kq
 
         
 
-        kq_data = std::move(new_data);
+        m_data = std::move(new_data);
 
 
 
@@ -685,47 +685,3 @@ namespace kq
 } // namespace kq
 
 #endif
-
-
-/*
-void rehash(size_t buckets)
-        {
-            std::cout << "REHASHING\n";
-            size_t old_bucket_size = kq_bucket_size;
-            kq_bucket_size = buckets;
-            kq_data.resize(buckets);
-
-            print();
-
-            std::cout << "STARTED LOOPING\n";
-            size_t bid = 0;
-            size_t eid = 0;
-            for (size_t old_bucket_index = 0; old_bucket_index < old_bucket_size; ++old_bucket_index)
-            {
-
-                if (kq_data[old_bucket_index].empty() == 0)
-                {
-                    for (typename single_list<value_type>::iterator it = kq_data[old_bucket_index].kq_data.begin();
-                        it != kq_data[old_bucket_index].kq_data.end(); ++it)
-                    {
-                        std::cout << bid << "." << eid << '\n';
-                        size_t new_bucket_location = kq_hasher(it->first) % kq_bucket_size;
-                        if (new_bucket_location != old_bucket_index)
-                        {
-                            auto Tmp = std::move(*it);
-                            kq_data[old_bucket_index].erase(it);
-
-                            kq_data[new_bucket_location].emplace_back(std::move(Tmp));
-
-                        }
-                        ++eid;
-                    }
-                }
-                ++bid;
-                eid = 0;
-            }
-            std::cout << "DONE LOOPING\n";
-            re_iterator_bucket();
-            std::cout << "DONE REHASHING\n";
-        }
-*/
