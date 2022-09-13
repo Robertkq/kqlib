@@ -6,18 +6,23 @@
 namespace kq
 {
     template<typename>
-    struct is_array : std::false_type {};
+    struct is_array_v : std::false_type {};
 
     template<typename T>
-    struct is_array<T[]> : std::true_type{};
+    struct is_array_v<T[]> : std::true_type{};
     
     template<typename T, size_t N>
-    struct is_array<T[N]> : std::true_type{};
+    struct is_array_v<T[N]> : std::true_type{};
 
 
     template<typename T>
     struct default_deleter
     {
+        default_deleter() = default;
+
+        template<typename U, typename std::enable_if<std::is_convertible<U*, T*>::value, int>::type = 0>
+        default_deleter(const default_deleter<U>& other) {}
+
         void operator()(T* ptr) const noexcept
         {
             delete ptr;
@@ -27,6 +32,11 @@ namespace kq
     template<typename T> // default deletor for array types
     struct default_deleter<T[]>
     {
+        default_deleter() = default;
+
+        template<typename U, typename std::enable_if<std::is_convertible<U (*)[], T(*)[]>::value, int>::type = 0>
+        default_deleter(const default_deleter<U>& other) {}
+
         void operator()(T* ptr) const noexcept
         {
             delete[] ptr;
@@ -46,14 +56,13 @@ namespace kq
         unique_ptr(const unique_ptr&) = delete;
         unique_ptr(unique_ptr&&) noexcept;
         unique_ptr(pointer ptr);
-        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible<T2*, T*>::type, std::is_assignable<Dx, Dx2>::type), int>::type = 0>
+        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type = 0>
         unique_ptr(unique_ptr<T2, Dx2>&& other) noexcept;
         ~unique_ptr();
 
         unique_ptr& operator=(const unique_ptr&) = delete;
-        unique_ptr& operator=(unique_ptr&&) noexcept;
         unique_ptr& operator=(pointer ptr);
-        template<typename T2, typename Dx2, typename std::enable_if<std::is_convertible_v<T2*, T*>, int>::type = 0>
+        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type = 0>
         unique_ptr& operator=(unique_ptr<T2, Dx2>&& other) noexcept;
 
         void reset(pointer ptr = nullptr);
@@ -89,24 +98,15 @@ namespace kq
     {}
 
     template<typename T, typename Dx>
-    template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible<T2*, T*>::type, std::is_assignable<Dx, Dx2>::type), int>::type>
+    template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type>
     unique_ptr<T, Dx>::unique_ptr(unique_ptr<T2, Dx2>&& other) noexcept
-        : m_pointer(other.release()), m_deleter(other.m_deleter)
+        : m_pointer(other.release()), m_deleter(other.get_deleter())
     {}
 
     template<typename T, typename Dx>
     unique_ptr<T, Dx>::~unique_ptr()
     {
         reset();
-    }
-
-
-    template<typename T, typename Dx>
-    unique_ptr<T, Dx>& unique_ptr<T, Dx>::operator=(unique_ptr&& other) noexcept
-    {
-        reset(other.release());
-        m_deleter = other.m_deleter;
-        return *this;
     }
 
     template<typename T, typename Dx>
@@ -117,11 +117,11 @@ namespace kq
     }
 
     template<typename T, typename Dx>
-    template<typename T2, typename Dx2, typename std::enable_if<std::is_convertible_v<T2*, T*>, int>::type>
+    template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type>
     unique_ptr<T, Dx>& unique_ptr<T, Dx>::operator=(unique_ptr<T2, Dx2>&& other) noexcept
     {
         reset(other.release());
-        //m_deleter = other.m_deleter;
+        m_deleter = std::move(other.get_deleter());
         return *this;
     }
 
@@ -140,7 +140,7 @@ namespace kq
         return ret;
     }
 
-    template<typename T, typename... Args, typename std::enable_if < !is_array<T>{}, int > ::type = 0 >
+    template<typename T, typename... Args, typename std::enable_if < !is_array_v<T>{}, int > ::type = 0 >
     unique_ptr<T> make_unique(Args&&... args)
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
