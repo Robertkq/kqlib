@@ -54,9 +54,8 @@ namespace kq
 
         unique_ptr();
         unique_ptr(const unique_ptr&) = delete;
-        unique_ptr(unique_ptr&&) noexcept;
         unique_ptr(pointer ptr);
-        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type = 0>
+        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_constructible_v<Dx, Dx2>), int>::type = 0>
         unique_ptr(unique_ptr<T2, Dx2>&& other) noexcept;
         ~unique_ptr();
 
@@ -88,17 +87,12 @@ namespace kq
     {}
 
     template<typename T, typename Dx>
-    unique_ptr<T, Dx>::unique_ptr(unique_ptr&& other) noexcept
-        : m_pointer(other.release()), m_deleter(other.m_deleter)
-    {}
-
-    template<typename T, typename Dx>
     unique_ptr<T, Dx>::unique_ptr(pointer ptr)
         : m_pointer(ptr), m_deleter()
     {}
 
     template<typename T, typename Dx>
-    template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type>
+    template<typename T2, typename Dx2, typename std::enable_if <(std::is_convertible_v<T2*, T*>, std::is_constructible_v<Dx, Dx2>), int>::type>
     unique_ptr<T, Dx>::unique_ptr(unique_ptr<T2, Dx2>&& other) noexcept
         : m_pointer(other.release()), m_deleter(other.get_deleter())
     {}
@@ -140,10 +134,36 @@ namespace kq
         return ret;
     }
 
-    template<typename T, typename... Args, typename std::enable_if < !is_array_v<T>{}, int > ::type = 0 >
+    template<typename T, typename... Args, typename std::enable_if<!is_array_v<T>{}, int>::type = 0>
     unique_ptr<T> make_unique(Args&&... args)
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+
+    template<typename T, typename Dx>
+    struct unique_ptr<T[], Dx> // specialization of unique_ptr
+    {
+        using pointer = T*;
+        using element_type = T;
+        using deleter_type = Dx;
+
+        unique_ptr();
+        unique_ptr(const unique_ptr&) = delete;
+        unique_ptr(unique_ptr&&);
+
+        unique_ptr& operator=(const unique_ptr&) = delete;
+        unique_ptr& operator=(unique_ptr&&);
+
+    private:
+        pointer m_ptr;
+        deleter_type m_deleter;
+    };
+
+    template<typename T, typename Dx>
+    unique_ptr<T[], Dx>::unique_ptr()
+        : m_ptr(nullptr), m_deleter()
+    {
+        std::cout << "yey";
     }
 }
 
