@@ -50,7 +50,7 @@ value_type& operator[](size_t index) const { return m_pointer[index]; }
     {
     public:
         
-        using value_type = std::remove_all_extents<T>::type;
+        using value_type = typename std::remove_all_extents<T>::type;
         using pointer = value_type*;
         using deleter_type = Dx;
 
@@ -140,47 +140,19 @@ value_type& operator[](size_t index) const { return m_pointer[index]; }
         return ret;
     }
 
-    /*
+    
     template<typename T, typename... Args, typename std::enable_if<!std::is_array_v<T>, int>::type = 0>
     unique_ptr<T> make_unique(Args&&... args)
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
-    */
+
+    template<typename T, typename std::enable_if<std::is_array_v<T>, int>::type = 0>
+    unique_ptr<T> make_unique(size_t count)
+    {
+        return unique_ptr<T>(new typename unique_ptr<T>::value_type[count]);
+    }
+    
 }
 
 #endif
-
-/*
-I am currently having an issue I am not sure what way to best solve.
-
-The `unique_ptr_impl` defines in both cases functions that use `m_ptr`,
-`m_ptr` is obviously not a member in `unique_ptr_impl`, only in `unique_ptr`
-
-If I move `m_ptr` to `unique_ptr_impl`, would this mean I am forced to
-
-```cpp
-template <typename T, bool is_array = is_array_v<T>>
-struct unique_ptr_impl {
-  using value_type = std::remove_all_extents<T>;
-  value_type& operator[](size_t index) const { return m_ptr[index]; }
-};
-
-template <typename T>
-struct unique_ptr_impl<T[], false> {
-  using value_type = T;
-  value_type& operator*() const { return *m_ptr; }
-  value_type* operator->() const { return m_ptr; }
-};
-
-template <typename T>
-struct unique_ptr : unique_ptr_impl<T> {
-public:
-  // ...
-  using pointer = value_type*;
-private:
-  pointer m_ptr;
-  deleter_type m_deleter;
-};
-```
-*/
