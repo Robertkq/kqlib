@@ -5,15 +5,6 @@
 
 namespace kq
 {
-    template<typename>
-    struct is_array_v : std::false_type {};
-
-    template<typename T>
-    struct is_array_v<T[]> : std::true_type{};
-    
-    template<typename T, size_t N>
-    struct is_array_v<T[N]> : std::true_type{};
-
 
     template<typename T>
     struct default_deleter
@@ -43,13 +34,24 @@ namespace kq
         }
     };
 
+    
+
+    // unique_ptr_impl is a helper class that properly defines the correct functions based on T
+
+/*
+value_type& operator[](size_t index) const { return m_pointer[index]; }
+        value_type& operator*() const { return *m_pointer; }
+        value_type* operator->() const { return m_pointer; }
+        */
+
+
     template<typename T, typename Dx = default_deleter<T>>
     struct unique_ptr
     {
     public:
-
-        using pointer = T*;
-        using value_type = T;
+        
+        using value_type = std::remove_all_extents<T>::type;
+        using pointer = value_type*;
         using deleter_type = Dx;
 
         unique_ptr();
@@ -70,15 +72,19 @@ namespace kq
 
         pointer get() const { return m_pointer; }
         deleter_type& get_deleter() { return m_deleter; }
-        const deleter_type& get_deleter() const { return m_deleter; }
+        const deleter_type& get_deleter() const { return m_deleter; }      
 
+        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
         value_type& operator*() const { return *m_pointer; }
+        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
         pointer operator->() const { return m_pointer; }
 
-    private:
+        template<typename U = T, typename std::enable_if<std::is_array_v<U>, int>::type = 0>
+        value_type& operator[](size_t index) const { return m_pointer[index]; }
 
-        T* m_pointer;
-        Dx m_deleter;
+    private:
+        pointer m_pointer;
+        Dx m_deleter;   
     }; // unique_ptr
 
     template<typename T, typename Dx>
@@ -134,37 +140,47 @@ namespace kq
         return ret;
     }
 
-    template<typename T, typename... Args, typename std::enable_if<!is_array_v<T>{}, int>::type = 0>
+    /*
+    template<typename T, typename... Args, typename std::enable_if<!std::is_array_v<T>, int>::type = 0>
     unique_ptr<T> make_unique(Args&&... args)
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
-
-    template<typename T, typename Dx>
-    struct unique_ptr<T[], Dx> // specialization of unique_ptr
-    {
-        using pointer = T*;
-        using element_type = T;
-        using deleter_type = Dx;
-
-        unique_ptr();
-        unique_ptr(const unique_ptr&) = delete;
-        unique_ptr(unique_ptr&&);
-
-        unique_ptr& operator=(const unique_ptr&) = delete;
-        unique_ptr& operator=(unique_ptr&&);
-
-    private:
-        pointer m_ptr;
-        deleter_type m_deleter;
-    };
-
-    template<typename T, typename Dx>
-    unique_ptr<T[], Dx>::unique_ptr()
-        : m_ptr(nullptr), m_deleter()
-    {
-        std::cout << "yey";
-    }
+    */
 }
 
 #endif
+
+/*
+I am currently having an issue I am not sure what way to best solve.
+
+The `unique_ptr_impl` defines in both cases functions that use `m_ptr`,
+`m_ptr` is obviously not a member in `unique_ptr_impl`, only in `unique_ptr`
+
+If I move `m_ptr` to `unique_ptr_impl`, would this mean I am forced to
+
+```cpp
+template <typename T, bool is_array = is_array_v<T>>
+struct unique_ptr_impl {
+  using value_type = std::remove_all_extents<T>;
+  value_type& operator[](size_t index) const { return m_ptr[index]; }
+};
+
+template <typename T>
+struct unique_ptr_impl<T[], false> {
+  using value_type = T;
+  value_type& operator*() const { return *m_ptr; }
+  value_type* operator->() const { return m_ptr; }
+};
+
+template <typename T>
+struct unique_ptr : unique_ptr_impl<T> {
+public:
+  // ...
+  using pointer = value_type*;
+private:
+  pointer m_ptr;
+  deleter_type m_deleter;
+};
+```
+*/
