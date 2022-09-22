@@ -34,16 +34,6 @@ namespace kq
         }
     };
 
-    
-
-    // unique_ptr_impl is a helper class that properly defines the correct functions based on T
-
-/*
-value_type& operator[](size_t index) const { return m_pointer[index]; }
-        value_type& operator*() const { return *m_pointer; }
-        value_type* operator->() const { return m_pointer; }
-        */
-
 
     template<typename T, typename Dx = default_deleter<T>>
     struct unique_ptr
@@ -74,6 +64,7 @@ value_type& operator[](size_t index) const { return m_pointer[index]; }
         deleter_type& get_deleter() { return m_deleter; }
         const deleter_type& get_deleter() const { return m_deleter; }      
 
+        // Used typename U to make those function non-dependent so they dont instanciate with unique_ptr<T>
         template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
         value_type& operator*() const { return *m_pointer; }
         template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
