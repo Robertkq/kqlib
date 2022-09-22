@@ -96,7 +96,7 @@ TEST_CASE("unique_ptr with array")
 
     SECTION("move assignment")
     {
-        unique_ptr<int[]> aux = make_unique<int>(N);
+        unique_ptr<int[]> aux = make_unique<int[]>(N);
         for (auto i = 0; i < N; ++i)
             aux[i] = i;
         unique_ptr<int[]> up;
