@@ -2,6 +2,7 @@
 #define KQMEMORY_
 
 #include "other.h"
+#include <mutex>
 
 namespace kq
 {
@@ -75,7 +76,7 @@ namespace kq
 
     private:
         pointer m_pointer;
-        Dx m_deleter;   
+        deleter_type m_deleter;   
     }; // unique_ptr
 
     template<typename T, typename Dx>
@@ -143,6 +144,46 @@ namespace kq
     {
         return unique_ptr<T>(new typename unique_ptr<T>::value_type[count]);
     }
+
+    struct ref_count { // handles reference counting for shared_ptr
+    public:
+        ref_count();
+        ref_count(const ref_count&) = delete;
+        ref_count(ref_count&& other) noexcept;
+    private:
+
+        std::mutex m_mutex;
+        size_t m_uses;
+        // size_t m_weaks; //FIXME: should look into implementing this 
+    };
+
+    ref_count::ref_count()
+        : m_mutex(), m_uses()
+    {}
+
+    ref_count::ref_count(ref_count&& other) noexcept
+        : m_mutex(), m_uses()
+    {
+        std::unique_lock(other.m_mutex);
+        m_uses = other.m_uses;
+        other.m_uses = 0;
+    }
+
+    template<typename T, typename Dx>
+    struct shared_ptr
+    {
+    public:
+        using value_type = T;
+        using pointer = value_type*;
+        using deleter_type = Dx;
+
+        shared_ptr();
+
+    private:
+        pointer m_pointer;
+        ref_count* m_refc;
+        deleter_type m_deleter;
+    };
     
 }
 
