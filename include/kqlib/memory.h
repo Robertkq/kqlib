@@ -150,6 +150,10 @@ namespace kq
         ref_count();
         ref_count(const ref_count&) = delete;
         ref_count(ref_count&& other) noexcept;
+
+        void Incref() noexcept;
+        bool Decref() noexcept;
+
     private:
 
         std::mutex m_mutex;
@@ -164,12 +168,26 @@ namespace kq
     ref_count::ref_count(ref_count&& other) noexcept
         : m_mutex(), m_uses()
     {
-        std::unique_lock(other.m_mutex);
+        std::unique_lock lock(other.m_mutex);
         m_uses = other.m_uses;
         other.m_uses = 0;
     }
 
-    template<typename T, typename Dx>
+    void ref_count::Incref() noexcept
+    { 
+        std::unique_lock lock(m_mutex);
+        ++m_uses; 
+    }
+
+    bool ref_count::Decref() noexcept 
+    {
+        std::unique_lock lock(m_mutex);
+        if(m_uses > 0)
+            --m_uses;
+        return m_uses == 0;
+    }
+
+    template<typename T, typename Dx = default_deleter<T>>
     struct shared_ptr
     {
     public:
@@ -178,12 +196,88 @@ namespace kq
         using deleter_type = Dx;
 
         shared_ptr();
+        shared_ptr(const shared_ptr& other);
+        shared_ptr(shared_ptr&& other);
+        ~shared_ptr();
+
+        shared_ptr& operator=(const shared_ptr& other);
+        shared_ptr& operator=(shared_ptr&& other);
 
     private:
         pointer m_pointer;
         ref_count* m_refc;
         deleter_type m_deleter;
     };
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>::shared_ptr()
+        : m_pointer(), m_refc(new ref_count), m_deleter()
+    {
+        m_refc->Incref();
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>::shared_ptr(const shared_ptr& other)
+        : m_pointer(other.m_pointer), m_refc(other.m_refc), m_deleter(other.m_deleter)
+    {
+        m_refc->Incref();
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>::shared_ptr(shared_ptr&& other)
+        : m_pointer(other.m_pointer), m_refc(other.m_refc), m_deleter(std::move(other.m_deleter))
+    {
+        other.m_pointer = nullptr;
+        other.m_refc = nullptr;
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>& shared_ptr<T, Dx>::operator=(const shared_ptr& other)
+    {
+        if (this != &other)
+        {
+            if (m_refc != nullptr && m_refc->Decref())
+            {
+                m_deleter(m_pointer);
+                delete m_refc;
+            }
+            m_pointer = other.m_pointer;
+            m_refc = other.m_refc;
+            m_refc->Incref();
+            m_deleter = other.m_deleter;
+        }
+        return *this;
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>& shared_ptr<T, Dx>::operator=(shared_ptr&& other)
+    {
+        if (this != &other)
+        {
+            if (m_refc != nullptr && m_refc->Decref())
+            {
+                m_deleter(m_pointer);
+                delete m_refc;
+            }
+            m_pointer = other.m_pointer;
+            m_refc = other.m_refc;
+            m_deleter = std::move(other.m_deleter);
+            other.m_pointer = nullptr;
+            other.m_refc = nullptr;
+        }
+        return *this;
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>::~shared_ptr()
+    {
+        if (m_refc != nullptr && m_refc->Decref())
+        {
+            m_deleter(m_pointer);
+            delete m_refc;
+        } 
+    }
+
     
 }
 
