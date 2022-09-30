@@ -342,23 +342,6 @@ namespace kq
 	}
 
 	template<typename T>
-	bool vector<T>::operator==(const vector& other) const
-	{
-		if (m_size != other.m_size)
-		{
-			return false;
-		}
-		for (size_t i = 0; i < m_size; i++)
-		{
-			if (*(m_data + i) != *(other.m_data + i))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	template<typename T>
 	typename vector<T>::value_type& vector<T>::push_back(const value_type& value)
 	{
 		if (m_size >= m_cap)
