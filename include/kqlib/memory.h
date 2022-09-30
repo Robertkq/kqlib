@@ -26,7 +26,7 @@ namespace kq
     {
         default_deleter() = default;
 
-        template<typename U, typename std::enable_if<std::is_convertible<U (*)[], T(*)[]>::value, int>::type = 0>
+        template<typename U, typename std::enable_if<std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
         default_deleter(const default_deleter<U>& other) {}
 
         void operator()(T* ptr) const noexcept
@@ -40,7 +40,7 @@ namespace kq
     struct unique_ptr
     {
     public:
-        
+
         using value_type = typename std::remove_all_extents<T>::type;
         using pointer = value_type*;
         using deleter_type = Dx;
@@ -63,7 +63,7 @@ namespace kq
 
         pointer get() const { return m_pointer; }
         deleter_type& get_deleter() { return m_deleter; }
-        const deleter_type& get_deleter() const { return m_deleter; }      
+        const deleter_type& get_deleter() const { return m_deleter; }
 
         // Used typename U to make those function non-dependent so they dont instanciate with unique_ptr<T>
         template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
@@ -76,7 +76,7 @@ namespace kq
 
     private:
         pointer m_pointer;
-        deleter_type m_deleter;   
+        deleter_type m_deleter;
     }; // unique_ptr
 
     template<typename T, typename Dx>
@@ -132,7 +132,7 @@ namespace kq
         return ret;
     }
 
-    
+
     template<typename T, typename... Args, typename std::enable_if<!std::is_array_v<T>, int>::type = 0>
     unique_ptr<T> make_unique(Args&&... args)
     {
@@ -174,15 +174,15 @@ namespace kq
     }
 
     void ref_count::Incref() noexcept
-    { 
-        std::unique_lock lock(m_mutex);
-        ++m_uses; 
-    }
-
-    bool ref_count::Decref() noexcept 
     {
         std::unique_lock lock(m_mutex);
-        if(m_uses > 0)
+        ++m_uses;
+    }
+
+    bool ref_count::Decref() noexcept
+    {
+        std::unique_lock lock(m_mutex);
+        if (m_uses > 0)
             --m_uses;
         return m_uses == 0;
     }
@@ -196,12 +196,30 @@ namespace kq
         using deleter_type = Dx;
 
         shared_ptr();
+        shared_ptr(pointer ptr);
         shared_ptr(const shared_ptr& other);
         shared_ptr(shared_ptr&& other);
         ~shared_ptr();
 
         shared_ptr& operator=(const shared_ptr& other);
         shared_ptr& operator=(shared_ptr&& other);
+
+        operator bool() const noexcept { return m_pointer != nullptr; }
+
+        pointer get() const { return m_pointer; }
+        void swap(shared_ptr& other) noexcept;
+        void reset(pointer ptr = nullptr);
+
+        template<typename U = T, std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        value_type& operator*() const { return *m_pointer; }
+        template<typename U = T, std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        pointer operator->() const { return m_pointer; }
+
+        template<typename U = T, std::enable_if<std::is_array_v<U>, int>::type = 0>
+        value_type& operator[](size_t index) const { return m_pointer[index]; }
+
+
+
 
     private:
         pointer m_pointer;
@@ -211,7 +229,13 @@ namespace kq
 
     template<typename T, typename Dx>
     shared_ptr<T, Dx>::shared_ptr()
-        : m_pointer(), m_refc(new ref_count), m_deleter()
+        : m_pointer(nullptr), m_refc(nullptr), m_deleter()
+    {
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>::shared_ptr(pointer ptr)
+        : m_pointer(ptr), m_refc(new ref_count), m_deleter()
     {
         m_refc->Incref();
     }
@@ -229,6 +253,16 @@ namespace kq
     {
         other.m_pointer = nullptr;
         other.m_refc = nullptr;
+    }
+
+    template<typename T, typename Dx>
+    shared_ptr<T, Dx>::~shared_ptr()
+    {
+        if (m_refc != nullptr && m_refc->Decref())
+        {
+            m_deleter(m_pointer);
+            delete m_refc;
+        }
     }
 
     template<typename T, typename Dx>
@@ -269,14 +303,20 @@ namespace kq
     }
 
     template<typename T, typename Dx>
-    shared_ptr<T, Dx>::~shared_ptr()
+    void shared_ptr<T, Dx>::swap(shared_ptr& other) noexcept
     {
-        if (m_refc != nullptr && m_refc->Decref())
-        {
-            m_deleter(m_pointer);
-            delete m_refc;
-        } 
+        kq::swap(m_pointer, other.m_pointer);
+        kq::swap(m_refc, other.m_refc);
+        kq::swap(m_deleter, other.m_deleter);
     }
+
+    template<typename T, typename Dx>
+    void shared_ptr<T, Dx>::reset(pointer ptr)
+    {
+        shared_ptr(ptr).swap(*this);
+    }
+
+    
 
     
 }
