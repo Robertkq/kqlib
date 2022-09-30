@@ -171,9 +171,6 @@ namespace kq
 		template<typename ilT>
 		vector& operator=(const std::initializer_list<ilT>& ilist);
 
-		bool operator==(const vector<T>& other) const;
-		bool operator!=(const vector<T>& other) const { return !(*this == other); }
-
 		size_t size() const					{ return m_size; }
 		size_t capacity() const				{ return m_cap; }
 		pointer data()					{ return m_data; } 
