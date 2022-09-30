@@ -2,9 +2,9 @@
 #define KQOTHER_
 
 #if __cplusplus >= 202002L
-#define _HAS_CXX_20 1
+#define _HAS_CXX_20_KQ 1
 #else
-#define _HAS_CXX_20 0
+#define _HAS_CXX_20_KQ 0
 #endif
 
 #include <initializer_list>
