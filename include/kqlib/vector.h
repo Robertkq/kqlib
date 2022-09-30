@@ -26,11 +26,15 @@ namespace kq
 		v_iterator& operator=(v_iterator&& other) noexcept;
 
 		bool operator==(const v_iterator& rhs) const { return m_ptr == rhs.m_ptr; }
+#if !_HAS_CXX_20_KQ
 		bool operator!=(const v_iterator& rhs) const { return m_ptr != rhs.m_ptr; }
 		bool operator<(const v_iterator& rhs) const { return m_ptr < rhs.m_ptr; }
 		bool operator>(const v_iterator& rhs) const { return m_ptr > rhs.m_ptr; }
 		bool operator<=(const v_iterator& rhs) const { return m_ptr <= rhs.m_ptr; }
 		bool operator>=(const v_iterator& rhs) const { return m_ptr >= rhs.m_ptr; }
+#elif
+		bool operator<=>(const v_iterator& rhs) const;
+#endif
 
 		v_iterator operator++(int) { pointer Tmp = m_ptr; ++m_ptr; return Tmp; }
 		v_iterator& operator++() { ++m_ptr; return *this; }
@@ -73,6 +77,18 @@ namespace kq
 		return *this; 
 	}
 
+#if _HAS_CXX_20_KQ
+	template<typename T, bool constant>
+	int v_iterator<T, constant>::operator<=>(const v_iterator& rhs) const
+	{
+		if (m_ptr == rhs.m_ptr)
+			return 0;
+		if (m_ptr < rhs.m_ptr)
+			return -1;
+		return 1;
+	}
+#endif
+
 	template<typename T, bool constant>
 	struct v_reverse_iterator
 	{
@@ -92,11 +108,15 @@ namespace kq
 		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept;
 
 		bool operator==(const v_reverse_iterator& other) const { return m_ptr == other.m_ptr; }
+#if !_HAS_CXX_20_KQ
 		bool operator!=(const v_reverse_iterator& other) const { return m_ptr != other.m_ptr; }
 		bool operator<(const v_reverse_iterator& rhs) const { return m_ptr > rhs.m_ptr; }
 		bool operator>(const v_reverse_iterator& rhs) const { return m_ptr < m_ptr; }
 		bool operator<=(const v_reverse_iterator& rhs) const { return m_ptr >= rhs.m_ptr; }
 		bool operator>=(const v_reverse_iterator& rhs) const { return m_ptr <= rhs.m_ptr; }
+#elif 
+		int operator<=>(const v_reverse_iterator& rhs) const;
+#endif
 
 		v_reverse_iterator operator++(int) { pointer Tmp = m_ptr; --m_ptr; return Tmp; }
 		v_reverse_iterator& operator++() { --m_ptr; return *this; }
@@ -140,6 +160,18 @@ namespace kq
 		}
 		return *this;
 	}
+
+#if _HAS_CXX_20_KQ
+	template<typename T, bool constant>
+	int v_reverse_iterator<T, constant>::<T, constant>::operator<=>(const v_reverse_iterator& rhs) const
+	{
+		if (m_ptr == rhs.m_ptr)
+			return 0;
+		if (m_ptr < rhs.m_ptr)
+			return 1;
+		return -1;
+	}
+#endif
 
 	template<typename T>
 	struct vector
