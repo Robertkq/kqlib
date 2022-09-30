@@ -58,6 +58,15 @@ TEST_CASE("unique_ptr with non-array", "[unique_ptr]")
         REQUIRE(*(up.release()) == 100);
         REQUIRE(!up);
     }
+
+    SECTION("swapping")
+    {
+        unique_ptr<int> up = make_unique<int>(100);
+        unique_ptr<int> aux = make_unique<int>(5);
+        up.swap(aux);
+        REQUIRE(*up == 5);
+        REQUIRE(up);
+    }
 }
 
 
@@ -133,5 +142,21 @@ TEST_CASE("unique_ptr with array")
         for (auto i = 0; i < N; ++i)
             REQUIRE(ptr[i] == i);
         REQUIRE(!up);
+    }
+
+    SECTION("swapping")
+    {
+        unique_ptr<int[]> up = make_unique<int[]>(N);
+        for (auto i = 0; i < N; ++i)
+            up[i] = i;
+        unique_ptr<int[]> aux = make_unique<int[]>(N);
+        for (auto i = 0; i < N; ++i)
+            aux[i] = i + 1;
+
+        up.swap(aux);
+
+        for (auto i = 0; i < N; ++i)
+            REQUIRE(up[i] == i + 1);
+        REQUIRE(!aux);
     }
 }
