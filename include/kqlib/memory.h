@@ -59,6 +59,7 @@ namespace kq
 
         void reset(pointer ptr = nullptr);
         pointer release();
+        void swap(unique_ptr& ptr);
         explicit operator bool() const { return m_pointer != nullptr; }
 
         pointer get() const { return m_pointer; }
@@ -132,6 +133,15 @@ namespace kq
         return ret;
     }
 
+    template<typename T, typename Dx>
+    void unique_ptr<T, Dx>::swap(unique_ptr& ptr)
+    {
+        m_deleter(m_pointer);
+        m_pointer = nullptr;
+        kq::swap(m_pointer, ptr.m_pointer);
+        kq::swap(m_deleter, ptr.m_deleter);
+    }
+
 
     template<typename T, typename... Args, typename std::enable_if<!std::is_array_v<T>, int>::type = 0>
     unique_ptr<T> make_unique(Args&&... args)
@@ -168,20 +178,20 @@ namespace kq
     ref_count::ref_count(ref_count&& other) noexcept
         : m_mutex(), m_uses()
     {
-        std::unique_lock lock(other.m_mutex);
+        std::unique_lock<std::mutex> lock(other.m_mutex);
         m_uses = other.m_uses;
         other.m_uses = 0;
     }
 
     void ref_count::Incref() noexcept
     {
-        std::unique_lock lock(m_mutex);
+        std::unique_lock<std::mutex> lock(m_mutex);
         ++m_uses;
     }
 
     bool ref_count::Decref() noexcept
     {
-        std::unique_lock lock(m_mutex);
+        std::unique_lock<std::mutex> lock(m_mutex);
         if (m_uses > 0)
             --m_uses;
         return m_uses == 0;
@@ -210,16 +220,14 @@ namespace kq
         void swap(shared_ptr& other) noexcept;
         void reset(pointer ptr = nullptr);
 
-        template<typename U = T, std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        // Used typename U to make those function non-dependent so they dont instanciate with shared_ptr<T>
+        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
         value_type& operator*() const { return *m_pointer; }
-        template<typename U = T, std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
         pointer operator->() const { return m_pointer; }
 
-        template<typename U = T, std::enable_if<std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<std::is_array_v<U>, int>::type = 0>
         value_type& operator[](size_t index) const { return m_pointer[index]; }
-
-
-
 
     private:
         pointer m_pointer;
@@ -230,8 +238,7 @@ namespace kq
     template<typename T, typename Dx>
     shared_ptr<T, Dx>::shared_ptr()
         : m_pointer(nullptr), m_refc(nullptr), m_deleter()
-    {
-    }
+    {}
 
     template<typename T, typename Dx>
     shared_ptr<T, Dx>::shared_ptr(pointer ptr)
