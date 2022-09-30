@@ -1,6 +1,12 @@
 #ifndef KQOTHER_
 #define KQOTHER_
 
+#if __cplusplus >= 202002L
+#define _HAS_CXX_20 1
+#else
+#define _HAS_CXX_20 0
+#endif
+
 #include <initializer_list>
 #include <utility>
 #include <type_traits>
