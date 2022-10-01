@@ -25,15 +25,15 @@ namespace kq
 		v_iterator& operator=(const v_iterator& other);
 		v_iterator& operator=(v_iterator&& other) noexcept;
 
-		bool operator==(const v_iterator& rhs) const { return m_ptr == rhs.m_ptr; }
+		friend bool operator==(const v_iterator& lhs, const v_iterator& rhs) { return lhs.m_ptr == rhs.m_ptr; }
 #if !_HAS_CXX_20_KQ
-		bool operator!=(const v_iterator& rhs) const { return m_ptr != rhs.m_ptr; }
-		bool operator<(const v_iterator& rhs) const { return m_ptr < rhs.m_ptr; }
-		bool operator>(const v_iterator& rhs) const { return m_ptr > rhs.m_ptr; }
-		bool operator<=(const v_iterator& rhs) const { return m_ptr <= rhs.m_ptr; }
-		bool operator>=(const v_iterator& rhs) const { return m_ptr >= rhs.m_ptr; }
+		friend bool operator!=(const v_iterator& lhs, const v_iterator& rhs) { return lhs.m_ptr != rhs.m_ptr; }
+		friend bool operator<(const v_iterator& lhs, const v_iterator& rhs) { return lhs.m_ptr < rhs.m_ptr; }
+		friend bool operator>(const v_iterator& lhs, const v_iterator& rhs) { return lhs.m_ptr > rhs.m_ptr; }
+		friend bool operator<=(const v_iterator& lhs, const v_iterator& rhs) { return lhs.m_ptr <= rhs.m_ptr; }
+		friend bool operator>=(const v_iterator& lhs, const v_iterator& rhs) { return lhs.m_ptr >= rhs.m_ptr; }
 #elif
-		bool operator<=>(const v_iterator& rhs) const;
+		friend bool operator<=>(const v_iterator& lhs, const v_iterator& rhs);
 #endif
 
 		v_iterator operator++(int) { pointer Tmp = m_ptr; ++m_ptr; return Tmp; }
@@ -79,11 +79,11 @@ namespace kq
 
 #if _HAS_CXX_20_KQ
 	template<typename T, bool constant>
-	int v_iterator<T, constant>::operator<=>(const v_iterator& rhs) const
+	int operator<=>(const v_iterator<T, constant>& lhs, const v_iterator<T, constant> rhs)
 	{
-		if (m_ptr == rhs.m_ptr)
+		if (lhs.m_ptr == rhs.m_ptr)
 			return 0;
-		if (m_ptr < rhs.m_ptr)
+		if (lhs.m_ptr < rhs.m_ptr)
 			return -1;
 		return 1;
 	}
@@ -107,15 +107,15 @@ namespace kq
 		v_reverse_iterator& operator=(const v_reverse_iterator& other);
 		v_reverse_iterator& operator=(v_reverse_iterator&& other) noexcept;
 
-		bool operator==(const v_reverse_iterator& other) const { return m_ptr == other.m_ptr; }
+		friend bool operator==(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs) { return lhs.m_ptr == rhs.m_ptr; }
 #if !_HAS_CXX_20_KQ
-		bool operator!=(const v_reverse_iterator& other) const { return m_ptr != other.m_ptr; }
-		bool operator<(const v_reverse_iterator& rhs) const { return m_ptr > rhs.m_ptr; }
-		bool operator>(const v_reverse_iterator& rhs) const { return m_ptr < m_ptr; }
-		bool operator<=(const v_reverse_iterator& rhs) const { return m_ptr >= rhs.m_ptr; }
-		bool operator>=(const v_reverse_iterator& rhs) const { return m_ptr <= rhs.m_ptr; }
+		friend bool operator!=(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs) { return lhs.m_ptr != rhs.m_ptr; }
+		friend bool operator<(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs) { return lhs.m_ptr > rhs.m_ptr; }
+		friend bool operator>(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs) { return lhs.m_ptr < rhs.m_ptr; }
+		friend bool operator<=(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs) { return lhs.m_ptr >= rhs.m_ptr; }
+		friend bool operator>=(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs) { return lhs.m_ptr <= rhs.m_ptr; }
 #elif 
-		int operator<=>(const v_reverse_iterator& rhs) const;
+		friend int operator<=>(const v_reverse_iterator& lhs, const v_reverse_iterator& rhs);
 #endif
 
 		v_reverse_iterator operator++(int) { pointer Tmp = m_ptr; --m_ptr; return Tmp; }
@@ -163,11 +163,11 @@ namespace kq
 
 #if _HAS_CXX_20_KQ
 	template<typename T, bool constant>
-	int v_reverse_iterator<T, constant>::<T, constant>::operator<=>(const v_reverse_iterator& rhs) const
+	int operator<=>(const v_reverse_iterator<T, constant>& lhs, const v_reverse_iterator<T, constant>& rhs) const
 	{
-		if (m_ptr == rhs.m_ptr)
+		if (lhs.m_ptr == rhs.m_ptr)
 			return 0;
-		if (m_ptr < rhs.m_ptr)
+		if (lhs.m_ptr < rhs.m_ptr)
 			return 1;
 		return -1;
 	}
@@ -202,6 +202,12 @@ namespace kq
 
 		template<typename ilT>
 		vector& operator=(const std::initializer_list<ilT>& ilist);
+
+#if !_HAS_CXX_20_KQ
+
+#elif
+		int operator<=>(const vector& other);
+#endif
 
 		size_t size() const					{ return m_size; }
 		size_t capacity() const				{ return m_cap; }
