@@ -136,8 +136,6 @@ namespace kq
     template<typename T, typename Dx>
     void unique_ptr<T, Dx>::swap(unique_ptr& ptr)
     {
-        m_deleter(m_pointer);
-        m_pointer = nullptr;
         kq::swap(m_pointer, ptr.m_pointer);
         kq::swap(m_deleter, ptr.m_deleter);
     }
