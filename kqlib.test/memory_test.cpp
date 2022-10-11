@@ -157,6 +157,66 @@ TEST_CASE("unique_ptr with array")
 
         for (auto i = 0; i < N; ++i)
             REQUIRE(up[i] == i + 1);
-        REQUIRE(!aux);
+        for (auto i = 0; i < N; ++i)
+            REQUIRE(aux[i] == i);
+    }
+}
+
+TEST_CASE("matrix of unique_ptrs")
+{
+    auto N = 5;
+    unique_ptr<unique_ptr<int[]>[]> mat = make_unique<unique_ptr<int[]>[]>(N);
+    
+    for (auto i = 0; i < N; ++i)
+    {
+        mat[i] = make_unique<int[]>(N);
+        for (auto j = 0; j < N; ++j)
+        {
+            mat[i][j] = i * N + j;
+        }
+    }
+    
+
+
+    SECTION("Checking correct initialization")
+    {
+        for (auto i = 0; i < N; ++i)
+        {
+            for (auto j = 0; j < N; ++j)
+            {
+                REQUIRE(mat[i][j] == i * N + j);
+            }
+        }
+    }
+
+    SECTION("Swapping")
+    {
+        int M = 3;
+        unique_ptr<unique_ptr<int[]>[]> aux = new unique_ptr<int[]>[M];
+        for (auto i = 0; i < M; ++i)
+        {
+            aux[i] = new int[M];
+            for (auto j = 0; j < M; ++j)
+            {
+                aux[i][j] = i * M + j;
+            }
+        }
+        mat.swap(aux);
+
+        for (auto i = 0; i < M; ++i)
+        {
+            for (auto j = 0; j < M; ++j)
+            {
+                REQUIRE(mat[i][j] == i * M + j);
+            }
+        }
+
+        for (auto i = 0; i < N; ++i)
+        {
+            for (auto j = 0; j < N; ++j)
+            {
+                REQUIRE(aux[i][j] == i * N + j);
+            }
+        }
     }
 }
