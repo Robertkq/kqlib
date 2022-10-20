@@ -113,6 +113,27 @@ namespace kq
 		constexpr static bool value = true;
 	};
 
+	template<typename T, typename = void>
+	struct iter_value
+	{
+		// no type if T is not an iterator / pointer
+	};
+
+	template<typename T>
+	struct iter_value<T*, void>
+	{
+		using type = T;
+	};
+
+	template<typename T>
+	struct iter_value<T, kq::void_t<typename T::value_type>>
+	{
+		using type = T::value_type;
+	};
+
+	template<typename T>
+	using iter_value_t = typename iter_value<T>::type;
+
 
 	// PROTOTYPES //////////////////////////////////////////////////////////////////////////////////////
 	template<typename T>
