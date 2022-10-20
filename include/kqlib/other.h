@@ -128,7 +128,7 @@ namespace kq
 	template<typename T>
 	struct iter_value<T, kq::void_t<typename T::value_type>>
 	{
-		using type = T::value_type;
+		using type = typename T::value_type;
 	};
 
 	template<typename T>
