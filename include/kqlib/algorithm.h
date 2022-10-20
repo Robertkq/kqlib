@@ -106,8 +106,8 @@ namespace kq
 		return ret;
 	}
 
-	template<typename iterType, typename Compare = greater<typename iterType::value_type>>
-	constexpr iterType max_element(iterType first, iterType last, Compare comp = greater<typename iterType::value_type>{})
+	template<typename iterType, typename Compare = greater<iter_value_t<iterType>>>
+	constexpr iterType max_element(iterType first, iterType last, Compare comp = greater<iter_value_t<iterType>>{})
 	{
 		if (first == last) { return last; }
 		iterType max = first;
@@ -122,8 +122,8 @@ namespace kq
 		return max;
 	}
 
-	template<typename iterType, typename Compare = less<typename iterType::value_type>>
-	constexpr iterType min_element(iterType first, iterType last, Compare comp = less<typename iterType::value_type>{})
+	template<typename iterType, typename Compare = less<iter_value_t<iterType>>>
+	constexpr iterType min_element(iterType first, iterType last, Compare comp = less<iter_value_t<iterType>>{})
 	{
 		if (first == last) { return last; }
 		iterType min = first;
@@ -138,8 +138,8 @@ namespace kq
 		return min;
 	}
 
-	template<typename iterType, typename Compare = less<typename iterType::value_type>>
-	void sort(iterType first, iterType last, Compare comp = less<typename iterType::value_type>{})
+	template<typename iterType, typename Compare = less<iter_value_t<iterType>>>
+	void sort(iterType first, iterType last, Compare comp = less<iter_value_t<iterType>>{})
 	{
 		if (first == last)
 		{
@@ -160,17 +160,14 @@ namespace kq
 		--last;
 		iterType pivot = last;
 		iterType smaller = first;
-		--smaller;
 		for (; first != last; ++first)
 		{
 			if (comp(*first, *pivot))
 			{
-				++smaller;
 				swap(*smaller, *first);
+				++smaller;
 			}
-			// Used to check `sort_partition_equal_to(*smaller, *first)` before swapping, it is most likely unefficient since comp should cover most general cases
 		}
-		++smaller;
 		swap(*smaller, *pivot);
 		return smaller;
 	}
