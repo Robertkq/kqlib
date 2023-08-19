@@ -3,7 +3,7 @@
 
 #include "string.h"
 #include "vector.h"
-//#include <iostream>
+#include <cmath>
 
 namespace kq {
 
@@ -64,7 +64,7 @@ namespace kq {
             if (negative) { d = d * -1; }
             double frac1, inte1,
                 frac2, inte2;
-            frac1 = modf(d, &inte1);
+            frac1 = std::modf(d, &inte1);
             ret = to_string(static_cast<int>(inte1));
             unsigned int p = precision;
             ret.reserve(ret.capacity() + 1 + p);
@@ -73,7 +73,7 @@ namespace kq {
             }
             while (p > 0) {
                 frac1 *= 10;
-                frac2 = modf(frac1, &inte2);
+                frac2 = std::modf(frac1, &inte2);
                 frac1 = frac2;
                 ret.push_back(static_cast<char>(48+inte2));
                 --p;

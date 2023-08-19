@@ -281,7 +281,7 @@ namespace kq
         friend std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&, kq::basic_string<CharT>&);
 
         template<typename CharT, typename Traits>
-        friend std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&, basic_string<CharT>&, CharT = '\n');
+        friend std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>&, basic_string<CharT>&, CharT);
 
     private:
         void realloc(size_t);
@@ -705,7 +705,9 @@ namespace kq
         else if (position == end())
         {
             push_back(elementToAdd);
+            return *(begin() + size() - 1);
         }
+        throw std::logic_error("bad iterators");
     }
 
     template<typename T>
@@ -1009,7 +1011,7 @@ namespace kq
     template<typename CharT, typename Traits>
     std::basic_istream<CharT, Traits>& getline(std::basic_istream<CharT, Traits>& is,
                                                basic_string<CharT>& str,
-                                                CharT delim)
+                                                CharT delim = '\n')
     {
         str.clear();
         char ch;

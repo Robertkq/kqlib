@@ -122,7 +122,7 @@ namespace kq
     };
 
     template<typename Key, typename T, bool constant>
-    typename um_iterator<Key, T, constant>& um_iterator<Key, T, constant>::operator=(const um_iterator& other)
+    um_iterator<Key, T, constant>& um_iterator<Key, T, constant>::operator=(const um_iterator& other)
     {
         if (this != &other)
         {
@@ -133,7 +133,7 @@ namespace kq
     }
 
     template<typename Key, typename T, bool constant>
-    typename um_iterator<Key, T, constant>& um_iterator<Key, T, constant>::operator=(um_iterator&& other) noexcept
+    um_iterator<Key, T, constant>& um_iterator<Key, T, constant>::operator=(um_iterator&& other) noexcept
     {
         if (this != &other)
         {

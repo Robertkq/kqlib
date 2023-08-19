@@ -57,7 +57,7 @@ namespace kq
 	};
 
 	template<typename T, bool constant>
-	typename v_iterator<T, constant>& v_iterator<T, constant>::operator=(const v_iterator& other)
+	v_iterator<T, constant>& v_iterator<T, constant>::operator=(const v_iterator& other)
 	{
 		if (this != &other)
 		{
@@ -67,7 +67,7 @@ namespace kq
 	}
 
 	template<typename T, bool constant>
-	typename v_iterator<T, constant>& v_iterator<T, constant>::operator=(v_iterator&& other) noexcept
+	v_iterator<T, constant>& v_iterator<T, constant>::operator=(v_iterator&& other) noexcept
 	{ 
 		if (this != &other)
 		{
@@ -141,7 +141,7 @@ namespace kq
 	};
 
 	template<typename T, bool constant>
-	typename v_reverse_iterator<T, constant>& v_reverse_iterator<T, constant>::operator=(const v_reverse_iterator& other)
+	v_reverse_iterator<T, constant>& v_reverse_iterator<T, constant>::operator=(const v_reverse_iterator& other)
 	{
 		if (this != &other)
 		{
@@ -151,7 +151,7 @@ namespace kq
 	}
 
 	template<typename T, bool constant>
-	typename v_reverse_iterator<T, constant>& v_reverse_iterator<T, constant>::operator=(v_reverse_iterator&& other) noexcept
+	v_reverse_iterator<T, constant>& v_reverse_iterator<T, constant>::operator=(v_reverse_iterator&& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -338,7 +338,7 @@ namespace kq
 	}
 
 	template<typename T>
-	typename vector<T>& vector<T>::operator=(const vector& other)
+	vector<T>& vector<T>::operator=(const vector& other)
 	{
 		if (this != &other)
 		{
@@ -355,7 +355,7 @@ namespace kq
 	}
 
 	template<typename T>
-	typename vector<T>& vector<T>::operator=(vector&& other) noexcept
+	vector<T>& vector<T>::operator=(vector&& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -372,7 +372,7 @@ namespace kq
 
 	template<typename T>
 	template<typename ilT>
-	typename vector<T>& vector<T>::operator=(const std::initializer_list<ilT>& ilist)
+	vector<T>& vector<T>::operator=(const std::initializer_list<ilT>& ilist)
 	{
 		clear();
 		assign(ilist);
