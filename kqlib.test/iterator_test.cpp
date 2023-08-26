@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "..\include\kqlib\vector.h"
+#include "kqlib/vector.h"
 
 using namespace kq;
 

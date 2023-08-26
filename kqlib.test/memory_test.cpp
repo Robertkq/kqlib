@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "..\include\kqlib\memory.h"
+#include "kqlib/memory.h"
 
 using namespace kq;
 

@@ -500,6 +500,8 @@ namespace kq
                 if (equal_to<key_type>{}(pair.first, key))
                     return pair.second;
             }
+            throw std::logic_error("This should never throw");
+            // as the expection message says, this line should never be executed and it's meant to solve some warnings
         }
     }
 

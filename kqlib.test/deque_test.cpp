@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "..\include\kqlib\deque.h"
-#include "..\include\kqlib\algorithm.h"
+#include "kqlib/deque.h"
+#include "kqlib/algorithm.h"
 
 using namespace kq;
 

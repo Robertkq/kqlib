@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "..\include\kqlib\string.h"
-#include "..\include\kqlib\algorithm.h"
+#include "kqlib/string.h"
+#include "kqlib/algorithm.h"
 
 using namespace kq;
 
@@ -152,7 +152,7 @@ TEST_CASE("erasing in string", "[string]")
     SECTION("erase(basic_string)")
     {
         str = "I want apples";
-        str.erase("apples");
+        str.erase(kq::string{"apples"});
         REQUIRE(str == "I want ");
         REQUIRE(str.size() == 7);
         REQUIRE(str.capacity() >= 7);

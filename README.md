@@ -6,16 +6,16 @@ Minimum C++11.
 
 # The main kqlib.h header includes:
 
-1. kqlib\algorithm.h
-2. kqlib\deque.h
-3. kqlib\format.h
-4. kqlib\linkedlist.h
-5. kqlib\other.h
-6. kqlib\pair.h
-7. kqlib\single_list.h
-8. kqlib\string.h
-9. kqlib\vector.h
-10. kqlib\unordered_map.h
+1. kqlib/algorithm.h
+2. kqlib/deque.h
+3. kqlib/format.h
+4. kqlib/linkedlist.h
+5. kqlib/other.h
+6. kqlib/pair.h
+7. kqlib/single_list.h
+8. kqlib/string.h
+9. kqlib/vector.h
+10. kqlib/unordered_map.h
 
 # Sample
 ```cpp
