@@ -2,7 +2,7 @@
 .vs/
 Debug/
 Release/
-out/*
+out/
 
 #Files
 include/main.cpp
