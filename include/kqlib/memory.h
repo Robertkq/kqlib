@@ -169,11 +169,11 @@ namespace kq
         // size_t m_weaks; //FIXME: should look into implementing this 
     };
 
-    ref_count::ref_count()
+    inline ref_count::ref_count()
         : m_mutex(), m_uses()
     {}
 
-    ref_count::ref_count(ref_count&& other) noexcept
+    inline ref_count::ref_count(ref_count&& other) noexcept
         : m_mutex(), m_uses()
     {
         std::unique_lock<std::mutex> lock(other.m_mutex);
@@ -181,13 +181,13 @@ namespace kq
         other.m_uses = 0;
     }
 
-    void ref_count::Incref() noexcept
+    inline void ref_count::Incref() noexcept
     {
         std::unique_lock<std::mutex> lock(m_mutex);
         ++m_uses;
     }
 
-    bool ref_count::Decref() noexcept
+    inline bool ref_count::Decref() noexcept
     {
         std::unique_lock<std::mutex> lock(m_mutex);
         if (m_uses > 0)
