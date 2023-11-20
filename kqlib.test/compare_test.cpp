@@ -1,7 +1,7 @@
 #include "catch.hpp"
-#include "..\include\kqlib\compare.h"
-#include "..\include\kqlib\vector.h"
-#include "..\include\kqlib\algorithm.h"
+#include "kqlib/compare.h"
+#include "kqlib/vector.h"
+#include "kqlib/algorithm.h"
 
 using namespace kq;
 

@@ -48,13 +48,13 @@ namespace kq
         unique_ptr();
         unique_ptr(const unique_ptr&) = delete;
         unique_ptr(pointer ptr);
-        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_constructible_v<Dx, Dx2>), int>::type = 0>
+        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible<T2*, T*>::value, std::is_constructible<Dx, Dx2>::value), int>::type = 0>
         unique_ptr(unique_ptr<T2, Dx2>&& other) noexcept;
         ~unique_ptr();
 
         unique_ptr& operator=(const unique_ptr&) = delete;
         unique_ptr& operator=(pointer ptr);
-        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type = 0>
+        template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible<T2*, T*>::value, std::is_assignable<Dx&, Dx2>::value), int>::type = 0>
         unique_ptr& operator=(unique_ptr<T2, Dx2>&& other) noexcept;
 
         void reset(pointer ptr = nullptr);
@@ -67,12 +67,12 @@ namespace kq
         const deleter_type& get_deleter() const { return m_deleter; }
 
         // Used typename U to make those function non-dependent so they dont instanciate with unique_ptr<T>
-        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<!std::is_array<U>::value, int>::type = 0>
         value_type& operator*() const { return *m_pointer; }
-        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<!std::is_array<U>::value, int>::type = 0>
         pointer operator->() const { return m_pointer; }
 
-        template<typename U = T, typename std::enable_if<std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<std::is_array<U>::value, int>::type = 0>
         value_type& operator[](size_t index) const { return m_pointer[index]; }
 
     private:
@@ -91,7 +91,7 @@ namespace kq
     {}
 
     template<typename T, typename Dx>
-    template<typename T2, typename Dx2, typename std::enable_if <(std::is_convertible_v<T2*, T*>, std::is_constructible_v<Dx, Dx2>), int>::type>
+    template<typename T2, typename Dx2, typename std::enable_if <(std::is_convertible<T2*, T*>::value, std::is_constructible<Dx, Dx2>::value), int>::type>
     unique_ptr<T, Dx>::unique_ptr(unique_ptr<T2, Dx2>&& other) noexcept
         : m_pointer(other.release()), m_deleter(other.get_deleter())
     {}
@@ -110,7 +110,7 @@ namespace kq
     }
 
     template<typename T, typename Dx>
-    template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible_v<T2*, T*>, std::is_assignable_v<Dx&, Dx2>), int>::type>
+    template<typename T2, typename Dx2, typename std::enable_if<(std::is_convertible<T2*, T*>::value, std::is_assignable<Dx&, Dx2>::value), int>::type>
     unique_ptr<T, Dx>& unique_ptr<T, Dx>::operator=(unique_ptr<T2, Dx2>&& other) noexcept
     {
         reset(other.release());
@@ -141,13 +141,13 @@ namespace kq
     }
 
 
-    template<typename T, typename... Args, typename std::enable_if<!std::is_array_v<T>, int>::type = 0>
+    template<typename T, typename... Args, typename std::enable_if<!std::is_array<T>::value, int>::type = 0>
     unique_ptr<T> make_unique(Args&&... args)
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
 
-    template<typename T, typename std::enable_if<std::is_array_v<T>, int>::type = 0>
+    template<typename T, typename std::enable_if<std::is_array<T>::value, int>::type = 0>
     unique_ptr<T> make_unique(size_t count)
     {
         return unique_ptr<T>(new typename unique_ptr<T>::value_type[count]);
@@ -219,12 +219,12 @@ namespace kq
         void reset(pointer ptr = nullptr);
 
         // Used typename U to make those function non-dependent so they dont instanciate with shared_ptr<T>
-        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<!std::is_array<U>::value, int>::type = 0>
         value_type& operator*() const { return *m_pointer; }
-        template<typename U = T, typename std::enable_if<!std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<!std::is_array<U>::value, int>::type = 0>
         pointer operator->() const { return m_pointer; }
 
-        template<typename U = T, typename std::enable_if<std::is_array_v<U>, int>::type = 0>
+        template<typename U = T, typename std::enable_if<std::is_array<U>::value, int>::type = 0>
         value_type& operator[](size_t index) const { return m_pointer[index]; }
 
     private:

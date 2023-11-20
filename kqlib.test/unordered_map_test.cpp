@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "..\include\kqlib\unordered_map.h"
-#include "..\include\kqlib\algorithm.h"
+#include "kqlib/unordered_map.h"
+#include "kqlib/algorithm.h"
 
 using namespace kq;
 
